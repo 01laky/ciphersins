@@ -1,0 +1,23 @@
+{
+	"name": "ciphersins",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.",
+	"license": "MIT",
+	"type": "module",
+	"engines": {
+		"node": ">=18"
+	},
+	"packageManager": "pnpm@9.15.9",
+	"scripts": {
+		"format": "prettier --check .",
+		"format:fix": "prettier --write ."
+	},
+	"prettier": {
+		"useTabs": true,
+		"tabWidth": 2
+	},
+	"devDependencies": {
+		"prettier": "^3.5.3"
+	}
+}

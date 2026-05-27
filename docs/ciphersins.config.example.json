@@ -1,6 +1,6 @@
 {
-	"include": ["src/**/*.{ts,tsx,js,jsx}"],
-	"exclude": ["**/*.test.ts", "**/dist/**", "**/node_modules/**"],
+	"include": ["**/*.{ts,tsx,js,jsx}", "**/*.{TS,TSX,JS,JSX}"],
+	"exclude": ["**/node_modules/**", "**/dist/**", "**/*.test.*", "**/*.spec.*"],
 	"failOn": "high",
 	"rules": {
 		"CS-JWT-02": "error",

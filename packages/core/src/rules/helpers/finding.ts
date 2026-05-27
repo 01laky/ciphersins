@@ -1,11 +1,10 @@
 import ts from "typescript";
 import { getLineSnippet } from "../../get-line-snippet.js";
-import type { Finding, Severity } from "../../types.js";
+import type { Finding, Rule } from "../../types.js";
 
 export interface CreateFindingOptions {
-	ruleId: string;
+	rule: Pick<Rule, "id" | "severity">;
 	message: string;
-	severity: Severity;
 	helpUrl: string;
 	filePath: string;
 	sourceFile: ts.SourceFile;
@@ -19,12 +18,12 @@ export function createFinding(options: CreateFindingOptions): Finding {
 	const findingLine = line + 1;
 
 	return {
-		ruleId: options.ruleId,
+		ruleId: options.rule.id,
 		message: options.message,
 		file: options.filePath,
 		line: findingLine,
 		column: character + 1,
-		severity: options.severity,
+		severity: options.rule.severity,
 		snippet: getLineSnippet(options.sourceFile, findingLine),
 		helpUrl: options.helpUrl,
 	};

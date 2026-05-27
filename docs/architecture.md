@@ -10,12 +10,12 @@ Source paths and globs resolve to scannable files, each file is parsed with the 
 
 ![End-to-end scan pipeline](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/pipeline.svg)
 
-| Stage   | Module                                   | Responsibility                      |
-| ------- | ---------------------------------------- | ----------------------------------- |
-| Resolve | `resolveFiles`, `resolveDefaultScanRoot` | Glob include/exclude via tinyglobby |
-| Parse   | `parseSourceFile`                        | TS/TSX/JS/JSX → `SourceFile` AST    |
-| Rules   | `runRules`, `allRules`                   | Per-file `Rule.run(context)`        |
-| Output  | `scan`, CLI                              | Findings + severity summary         |
+| Stage   | Module                                   | Responsibility                                       |
+| ------- | ---------------------------------------- | ---------------------------------------------------- |
+| Resolve | `resolveFiles`, `resolveDefaultScanRoot` | Glob include/exclude via tinyglobby                  |
+| Parse   | `parseSourceFile`                        | TS/TSX/JS/JSX → `SourceFile` AST                     |
+| Rules   | `runRules`, `allRules`                   | Per-file `Rule.run(context)`                         |
+| Output  | `scan`, CLI                              | Severity summary; CLI prints relative path + message |
 
 ## Rule detection (CS-JWT-01 example)
 

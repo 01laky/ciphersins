@@ -37,10 +37,10 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | Prefix              | Suite                  |
 | ------------------- | ---------------------- |
 | **CS-S01–S22**      | Scaffold / integration |
-| **CS-S23–S46**      | Edge cases             |
-| **CS-JWT-01-01–24** | CS-JWT-01 rule         |
+| **CS-S23–S47**      | Edge cases             |
+| **CS-JWT-01-01–43** | CS-JWT-01 rule         |
 
-Run `pnpm test` for the full suite (84 tests at v0.3.1).
+Run `pnpm test` for the full suite (105 tests at v0.3.3).
 
 ## Who maintains this?
 

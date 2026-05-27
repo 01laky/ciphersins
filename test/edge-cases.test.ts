@@ -452,9 +452,13 @@ describe("CS-S44 runScanCommand findings output", () => {
 			skippedPaths: [],
 		});
 
-		vi.doMock("@ciphersins/core", () => ({
-			scan: scanMock,
-		}));
+		vi.doMock("@ciphersins/core", async (importOriginal) => {
+			const actual = await importOriginal<typeof import("@ciphersins/core")>();
+			return {
+				...actual,
+				scan: scanMock,
+			};
+		});
 
 		const stdoutWrites: string[] = [];
 		const stdoutSpy = vi
@@ -497,6 +501,15 @@ describe("CS-S46 scan metadata consistency", () => {
 	it("CS-S46 returns empty skippedPaths when all roots resolve", async () => {
 		const result = await scan({ paths: [scaffoldDir], cwd: rootDir });
 		expect(result.skippedPaths).toEqual([]);
+		expect(result.scannedFiles.length).toBeGreaterThan(0);
+	});
+});
+
+describe("CS-S47 edge fixtures with CS-JWT-01 active", () => {
+	it("CS-S47 scans edge-case harness without JWT findings", async () => {
+		const result = await scan({ paths: [edgeDir], cwd: rootDir });
+
+		expect(result.findings).toEqual([]);
 		expect(result.scannedFiles.length).toBeGreaterThan(0);
 	});
 });

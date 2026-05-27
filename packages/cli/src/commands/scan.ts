@@ -1,8 +1,9 @@
-import { scan } from "@ciphersins/core";
+import { formatRelativePath, scan } from "@ciphersins/core";
 
 export async function runScanCommand(pathArg?: string): Promise<number> {
 	try {
-		const result = await scan(pathArg ? { paths: [pathArg] } : {});
+		const cwd = process.cwd();
+		const result = await scan(pathArg ? { paths: [pathArg], cwd } : { cwd });
 
 		if (result.skippedPaths.length > 0) {
 			for (const skipped of result.skippedPaths) {
@@ -16,8 +17,9 @@ export async function runScanCommand(pathArg?: string): Promise<number> {
 		}
 
 		for (const finding of result.findings) {
+			const displayPath = formatRelativePath(finding.file, cwd);
 			process.stdout.write(
-				`${finding.file}:${finding.line}:${finding.column}  ${finding.ruleId}  ${finding.severity}\n`,
+				`${displayPath}:${finding.line}:${finding.column}  ${finding.ruleId}  ${finding.severity}\n`,
 			);
 			process.stdout.write(`  ${finding.message}\n`);
 			if (finding.helpUrl) {

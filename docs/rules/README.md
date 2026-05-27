@@ -17,4 +17,4 @@ Implemented rules link to their documentation.
 
 ## Adding a rule
 
-See [`development.md`](../development.md#adding-a-rule-phase-1) for the contributor workflow.
+See [`development.md`](../development.md#adding-a-rule) for the contributor workflow.

@@ -65,6 +65,11 @@ If you decode for debugging, ensure `jwt.verify()` is also called on the same to
 | Verify in another file (helper module)                 | **Still flagged** — cross-file tracking is not implemented              |
 | `jose`, `passport-jwt`, custom `decode()`              | **Not covered** — only `jsonwebtoken` module                            |
 | Dynamic `import('jsonwebtoken')`                       | **Ignored** in v1                                                       |
+| Indirect call (`const d = jwt.decode; d(t)`)           | **Not flagged** — only direct decode call expressions                   |
+| Optional chaining (`jwt?.decode(t)`)                   | **Flagged** — treated as property access on bound import                |
+| Verify import without call                             | **Does not suppress** — only verify `CallExpression` sites count        |
+| Verify mentioned only in comments                      | **Does not suppress** decode findings                                   |
+| Local wrapper calling `jwt.decode` inside              | **Flagged** on inner decode call                                        |
 
 ## Fix
 

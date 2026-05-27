@@ -1,19 +1,19 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-0.3.2-blue)
+![core](https://img.shields.io/badge/core-0.3.3-blue)
 ![node](https://img.shields.io/badge/node-%3E%3D18-339933)
 ![rules](https://img.shields.io/badge/rules-1_implemented-9cf)
-![tests](https://img.shields.io/badge/tests-84_passing-brightgreen)
+![tests](https://img.shields.io/badge/tests-105_passing-brightgreen)
 [![ci](https://github.com/01laky/ciphersins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/ciphersins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-pre--release_0.3.2-yellow)
+![status](https://img.shields.io/badge/status-pre--release_0.3.3-yellow)
 
-**One CLI scan for crypto API footguns in Node/TS app code** — JWT misuse, timing-unsafe compares, weak RNG, and weak hashing patterns.
+**Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
-> _gitleaks for bad crypto API usage_ — not secrets buried in strings, but dangerous patterns in how your application calls crypto libraries.
+> _gitleaks for bad crypto API usage_ — not leaked secrets in strings, but **application-level** mistakes: calling crypto libraries in ways that skip integrity checks, confuse algorithms, or leak timing.
 
-Catch `jwt.decode()` without `jwt.verify()` before it ships — **not another regex grep on `node_modules`**.
+Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** Pre-release **`0.3.2`**. Monorepo scan pipeline, TypeScript compiler API parsing, and **CS-JWT-01** (jsonwebtoken decode without verify in the same file) are implemented. MVP rules, SARIF output, and config parsing are in progress. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
+**Status:** Pre-release **`0.3.3`**. Scan pipeline, TypeScript AST parsing, and **CS-JWT-01** (unsigned JWT acceptance via decode-only auth) are implemented. More JWT, comparison, RNG, and hash rules plus SARIF output are on the MVP roadmap. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
 
 ---
 
@@ -36,46 +36,46 @@ Catch `jwt.decode()` without `jwt.verify()` before it ships — **not another re
 
 ## Why not regex (or npm audit)?
 
-Crypto footguns in application code look like normal function calls — **`jwt.decode(token)` passes every string grep** until someone forges a token.
+Most crypto vulnerabilities in app code **do not look like secrets**. They look like ordinary API calls — until an attacker forges a token, guesses an HMAC byte-by-byte, or walks in through a decode-only auth path.
 
-| Approach                                   | What it finds                                   | What it misses                                                                  |
-| ------------------------------------------ | ----------------------------------------------- | ------------------------------------------------------------------------------- |
-| **Secret scanners** (gitleaks, trufflehog) | Hard-coded keys, tokens in strings              | `jwt.decode()` used as auth                                                     |
-| **`npm audit`**                            | Known CVEs in dependencies                      | Your app's misuse of a _safe_ library                                           |
-| **Regex on source**                        | Obvious `decode(` hits                          | Import aliases, destructured `require`, inline `require('jsonwebtoken').decode` |
-| **CipherSins**                             | AST + import context for known bad API patterns | Cross-file call graphs (v1 same-file scope)                                     |
+| Approach                                   | Security focus                                       | What it misses                                                                  |
+| ------------------------------------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **Secret scanners** (gitleaks, trufflehog) | Exposed keys and credentials in the repo             | Decode-only JWT auth, weak compare, bad RNG — no string to leak                 |
+| **`npm audit`**                            | Known CVEs in dependency versions                    | Correct library, **wrong cryptographic use** in your handlers                   |
+| **Regex on source**                        | Obvious `decode(` or `Math.random` string hits       | Import aliases, destructured `require`, inline `require('jsonwebtoken').decode` |
+| **CipherSins**                             | Cryptographic API misuse with import-aware AST rules | Cross-file call graphs (v1 same-file scope)                                     |
 
-CipherSins is a **rule-based static analyzer** for TypeScript/JavaScript application code — the layer between dependency CVE scanners and manual code review.
+CipherSins sits **between dependency scanning and manual security review**: it flags how your code uses JWT, compare, RNG, and hash primitives before those mistakes become auth bypasses.
 
 ### What breaks without it
 
-1. **Decode treated as verify** — `jwt.decode()` parses payload but does not check signature, issuer, or expiry.
-2. **Timing-unsafe compares** — `===` on auth tokens or HMAC digests (future **CS-CMP-01**).
-3. **Weak RNG in auth paths** — `Math.random()` for session IDs or tokens (future **CS-RNG-01**).
-4. **Legacy hash for passwords** — MD5/SHA1 or weak bcrypt cost (future **CS-HASH-\***).
-5. **Silent algorithm confusion** — `verify` without explicit algorithms (future **CS-JWT-02**).
+1. **Integrity skipped** — `jwt.decode()` reads payload bytes but never validates signature, issuer, audience, or expiry.
+2. **Timing side-channels** — `===` on MACs, session tokens, or API keys instead of constant-time compare (future **CS-CMP-01**).
+3. **Predictable entropy** — `Math.random()` where a CSPRNG belongs in session or token generation (future **CS-RNG-01**).
+4. **Broken password storage** — MD5/SHA1 or under-cost bcrypt where adaptive hashing is required (future **CS-HASH-\***).
+5. **Algorithm confusion** — `verify()` without pinning allowed algorithms (future **CS-JWT-02**).
 
-Each rule ships with **bad/good fixtures** and vitest IDs so regressions are caught in CI.
+Each rule ships with **bad/good fixtures** and vitest IDs so crypto regressions are caught in CI, not in incident response.
 
 ---
 
 ## Why use this
 
-- **AST + binding resolution** — tracks default import, namespace import, named aliases, CommonJS `require`, and inline `require('jsonwebtoken').decode`.
-- **Same-file scope (v1)** — conservative same-file analysis; any `jwt.verify()` anywhere in the file suppresses decode findings.
-- **CI-native CLI** — `ciphersins scan ./src` with file:line:column output and rule doc links.
-- **Monorepo-ready** — `@ciphersins/core` engine + `ciphersins` CLI; rules are plain TypeScript implementing a small `Rule` interface.
-- **Fixture-driven tests** — every rule has `fixtures/<rule-id>/{bad,good}/` and numbered vitest cases.
+- **Import-aware AST rules** — ties `decode`, `verify`, and compare calls to their real module bindings (default/namespace/named import, `require`, inline require).
+- **Conservative auth scope (v1)** — same-file analysis; any `jwt.verify()` in the file suppresses decode-only findings.
+- **Actionable security output** — severity, source snippet (API), line:column, and rule doc with fix guidance; CLI prints relative paths and message (snippet via `@ciphersins/core` API).
+- **Purpose-built rule set** — JWT, timing, RNG, and hash categories instead of generic lint noise.
+- **Fixture-proven** — every rule has `fixtures/<rule-id>/{bad,good}/` and numbered tests so cryptographic edge cases stay covered.
 
 ---
 
 ## Architecture
 
-Application source files enter through **glob resolution**, get parsed with the **TypeScript compiler API**, and each registered **rule** inspects the AST for known misuse patterns.
+Your application source is resolved by glob, parsed into a TypeScript AST, and checked by registered rules that encode **known cryptographic anti-patterns** — not generic syntax warnings.
 
 ![End-to-end scan pipeline](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/pipeline.svg)
 
-**Design constraints:** rules use AST analysis (no regex-only detection); findings include snippet, severity, and `helpUrl`; cross-file call-graph analysis is out of scope for v1.
+**Design constraints:** AST + binding analysis (no regex-only detection); each finding carries severity and a link to remediation docs; cross-file taint tracking is out of scope for v1.
 
 ### Rule example (CS-JWT-01)
 
@@ -93,6 +93,8 @@ Package layout:
 ---
 
 ## Rules at a glance
+
+MVP coverage targets the most common **crypto footguns in Node auth and data-protection code**:
 
 | ID                                     | Severity | Title                       | Status      |
 | -------------------------------------- | -------- | --------------------------- | ----------- |
@@ -127,7 +129,7 @@ pnpm verify
 
 ## First success in 30 seconds
 
-After `pnpm verify`, scan the JWT bad fixtures:
+After `pnpm verify`, scan intentionally **insecure JWT handling** in the bad fixtures:
 
 ```bash
 pnpm exec ciphersins scan fixtures/cs-jwt-01/bad
@@ -139,7 +141,7 @@ fixtures/cs-jwt-01/bad/default-import-decode-only.ts:4:9  CS-JWT-01  high
   https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md
 ```
 
-Scan clean fixtures — expect `No findings.`:
+The good fixtures show the same APIs used with proper verification — expect `No findings.`:
 
 ```bash
 pnpm exec ciphersins scan fixtures/cs-jwt-01/good
@@ -148,6 +150,8 @@ pnpm exec ciphersins scan fixtures/cs-jwt-01/good
 ---
 
 ## Quickstart
+
+Point the scanner at your auth, API, or middleware layer — anywhere tokens and digests are handled:
 
 ```bash
 # From repo root after pnpm install + build
@@ -170,10 +174,10 @@ Exclude: `node_modules`, `dist`, `*.test.*`, `*.spec.*`.
 | ------------------------------------------------------- | --------------------------------------------------- |
 | [Product proposal](./docs/proposal.MD)                  | Scope, MVP rules, architecture, success criteria    |
 | [Rules index](./docs/rules/README.md)                   | Per-rule docs and implementation status             |
-| [CS-JWT-01](./docs/rules/CS-JWT-01.md)                  | First rule — decode without verify                  |
+| [CS-JWT-01](./docs/rules/CS-JWT-01.md)                  | JWT integrity — decode without verify               |
 | [Architecture](./docs/architecture.md)                  | Scan pipeline and rule detection diagrams           |
+| [CLI reference](./docs/cli.md)                          | Commands, output format, exit codes                 |
 | [Architecture diagrams](./docs/img/README.md)           | Mermaid sources and SVG regeneration                |
-| [Comparison](./docs/comparison.md)                      | vs gitleaks, npm audit, Semgrep, ESLint             |
 | [FAQ](./docs/faq.md)                                    | Common questions                                    |
 | [Development](./docs/development.md)                    | Contributor setup, adding rules                     |
 | [Config example](./docs/ciphersins.config.example.json) | Intended config schema (parser not yet implemented) |
@@ -183,12 +187,12 @@ Exclude: `node_modules`, `dist`, `*.test.*`, `*.spec.*`.
 
 ## How this compares
 
-|                       | CipherSins                    | gitleaks / trufflehog | npm audit       | Semgrep / ESLint        |
-| --------------------- | ----------------------------- | --------------------- | --------------- | ----------------------- |
-| **Target**            | Crypto API misuse in app code | Secrets in repo       | Dependency CVEs | General patterns / lint |
-| **Example hit**       | `jwt.decode()` without verify | AWS key in `.env`     | lodash CVE      | Custom rule dependent   |
-| **TS import context** | Yes (AST + bindings)          | N/A                   | N/A             | Varies                  |
-| **npm package**       | v1.0.0 (pre-release)          | Published             | Built-in        | Published               |
+|                       | CipherSins                       | gitleaks / trufflehog | npm audit       | Semgrep / ESLint        |
+| --------------------- | -------------------------------- | --------------------- | --------------- | ----------------------- |
+| **Target**            | Cryptographic misuse in app code | Secrets in repo       | Dependency CVEs | General patterns / lint |
+| **Example hit**       | `jwt.decode()` without verify    | AWS key in `.env`     | lodash CVE      | Custom rule dependent   |
+| **TS import context** | Yes (AST + bindings)             | N/A                   | N/A             | Varies                  |
+| **npm package**       | v1.0.0 (pre-release)             | Published             | Built-in        | Published               |
 
 Full matrix: **[docs/comparison.md](./docs/comparison.md)**.
 
@@ -202,7 +206,7 @@ Full matrix: **[docs/comparison.md](./docs/comparison.md)**.
 pnpm exec ciphersins scan fixtures/cs-jwt-01/bad
 ```
 
-Covers: default/named/namespace import, require, destructured require, inline require, TSX, type annotations, local wrappers.
+Covers decode-only auth paths: default/named/namespace import, `require`, destructured require, inline require, TSX, type annotations, local wrappers.
 
 ### Scan JWT good fixtures (should be clean)
 
@@ -210,7 +214,7 @@ Covers: default/named/namespace import, require, destructured require, inline re
 pnpm exec ciphersins scan fixtures/cs-jwt-01/good
 ```
 
-Covers: decode+verify in same file, verify in nested/dead code, verify-only, local `decode()` not from jsonwebtoken, decode only in strings/comments.
+Covers verified tokens: decode+verify in same file, verify in nested/dead code, verify-only, local `decode()` not from jsonwebtoken, decode only in strings/comments.
 
 ### Programmatic scan (core API)
 
@@ -221,14 +225,17 @@ const result = await scan({ paths: ["./src"], cwd: process.cwd() });
 console.log(result.findings, result.summary);
 ```
 
+Use in custom CI steps when you need structured findings before gating a deploy on crypto rule severity.
+
 ---
 
 ## Non-goals
 
-- **Not a secret scanner** — does not hunt API keys or passwords in strings.
-- **Not `npm audit`** — does not report dependency CVEs.
-- **Not a full SAST suite** — focused MVP rule set for crypto footguns.
+- **Not a secret scanner** — does not hunt API keys, private keys, or passwords in strings.
+- **Not `npm audit`** — does not report dependency CVEs or transitive package risk.
+- **Not a full SAST suite** — focused MVP rule set for **crypto and auth primitive misuse**.
 - **No cross-file call graphs in v1** — same-file scope per rule unless noted.
+- **Findings do not fail CI exit code in v0.3.x** — `--fail-on` planned for v1.0.0 ([`docs/cli.md`](./cli.md)).
 - **No SARIF / config file parsing yet** — planned before v1.0.0 npm publish.
 
 ---
@@ -244,7 +251,7 @@ pnpm verify
 | Command                            | Description                                             |
 | ---------------------------------- | ------------------------------------------------------- |
 | `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke |
-| `pnpm test`                        | Vitest — CS-S01–S46, CS-JWT-01-01–24                    |
+| `pnpm test`                        | Vitest — CS-S01–S48, CS-JWT-01-01–43                    |
 | `pnpm exec ciphersins scan [path]` | Run linked CLI                                          |
 | `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                   |
 | `pnpm format:fix`                  | Apply Prettier (tabs)                                   |
@@ -256,8 +263,6 @@ Adding a rule: [`docs/development.md#adding-a-rule`](./docs/development.md#addin
 ## Author
 
 **Ladislav Kostolny** — [01laky@gmail.com](mailto:01laky@gmail.com) · GitHub [@01laky](https://github.com/01laky)
-
-Also: [llm-stream-assemble](https://github.com/01laky/llm-stream-assemble) — zero-dependency TypeScript LLM stream assembly.
 
 ---
 

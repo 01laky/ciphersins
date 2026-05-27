@@ -1,6 +1,6 @@
 {
 	"name": "ciphersins",
-	"version": "0.3.2",
+	"version": "0.3.3",
 	"private": true,
 	"description": "Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.",
 	"license": "MIT",

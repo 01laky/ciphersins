@@ -1,5 +1,7 @@
 # CipherSins — Implementation Proposal
 
+> **Note:** This document describes the **v1.0 target** and roadmap. Current release (**0.3.x**) implements the scan pipeline, CLI `scan` command, and **CS-JWT-01** only. Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md).
+
 ## What It Is (One-Liner)
 
 **CipherSins** is a standalone CLI scanner for **crypto API misuse** in application code (TypeScript/JavaScript). Metaphor: _"gitleaks for bad crypto API usage"_ — not for leaked secrets in strings, but for **footguns** in code (JWT, timing compare, weak hash, RNG, symmetric crypto).
@@ -268,7 +270,7 @@ MVP can be documentation only + link to `crypto.timingSafeEqual`.
 6. JSON + SARIF + config file
 7. **npm publish `1.0.0`** when all MVP success criteria pass — no publish before that
 
-Implementation prompts live in [`prompts/`](../prompts/) (one agent spec per phase).
+Implementation phase prompts are maintained locally (gitignored `prompts/` directory).
 
 ---
 
@@ -397,7 +399,7 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 - User wanted an original name — generic `cryptoguard-cli` was rejected / `crypto-guard-cli` is taken (Web3).
 - Chosen **CipherSins** = cipher + sins (crypto sins in code).
-- Workspace scaffolded at **0.1.0** (docs, hooks, proposal); implementation starts from [`prompts/phase-0-monorepo-scaffold-agent-prompt.md`](../prompts/phase-0-monorepo-scaffold-agent-prompt.md).
+- Workspace scaffolded at **0.1.0** (docs, hooks, proposal); rule implementation from **0.3.0** (CS-JWT-01).
 - **No npm publish until v1.0.0** — MVP complete in git first.
 - Minimal scope: no extra abstractions, no tests for the sake of tests, no commits unless requested.
 - User communication: Slovak; code/comments/README: English.

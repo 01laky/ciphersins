@@ -53,9 +53,8 @@ export const csJwt01Rule: Rule = {
 
 			findings.push(
 				createFinding({
-					ruleId: RULE_ID,
+					rule: csJwt01Rule,
 					message: MESSAGE,
-					severity: "high",
 					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,

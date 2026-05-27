@@ -7,6 +7,8 @@ import { describe, expect, it } from "vitest";
 import {
 	allRules,
 	createEmptySummary,
+	createRuleContext,
+	csJwt01Rule,
 	formatRelativePath,
 	getLineSnippet,
 	parseSourceFile,
@@ -31,6 +33,11 @@ describe("CS-S01 exports", () => {
 		expect(typeof scan).toBe("function");
 		expect(typeof parseSourceFile).toBe("function");
 		expect(Array.isArray(allRules)).toBe(true);
+	});
+
+	it("CS-S48 exposes createRuleContext and csJwt01Rule", () => {
+		expect(typeof createRuleContext).toBe("function");
+		expect(typeof csJwt01Rule.run).toBe("function");
 	});
 });
 
@@ -389,6 +396,6 @@ describe("CS-S22 CLI help and version", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("0.3.2");
+		expect(result.stdout.trim()).toBe("0.3.3");
 	});
 });

@@ -22,7 +22,7 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 | ---------------------------------- | ------------------------------------------------------------------ |
 | `pnpm verify`                      | format → typecheck → build → install (link bin) → test → CLI smoke |
 | `pnpm build`                       | Build `@ciphersins/core` and `ciphersins` CLI                      |
-| `pnpm test`                        | Vitest (scaffold, edge-cases, rule tests)                          |
+| `pnpm test`                        | Vitest — CS-S01–S48, CS-JWT-01-01–43                               |
 | `pnpm exec ciphersins scan [path]` | Run local CLI against a path                                       |
 | `pnpm smoke:cli`                   | Post-build CLI smoke via `scripts/smoke-cli.mjs`                   |
 | `pnpm diagrams:build`              | Regenerate README SVGs from `docs/img/*.mmd`                       |
@@ -67,7 +67,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.3.2` = architecture diagrams; `0.3.1` = docs landing page).
+- Repo version bumps after each completed phase (`0.3.3` = test hardening + docs; `0.3.2` = architecture diagrams).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

@@ -3,6 +3,25 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.3]
+
+### Added
+
+- **CS-JWT-01 edge-case fixtures** — verify-unused import, comment-only verify, verify alias, sign-only, type-only import, optional-chaining decode, indirect decode (documented false negative).
+- **Expanded tests** — CS-JWT-01-25–43, CS-S47 (edge harness clean under JWT rule), CS-S48 (core exports).
+- **`docs/cli.md`** — commands, output format, exit codes.
+- **`test/fixtures/edge-cases/empty-file.ts`** — fixes CS-S35 harness fixture.
+
+### Changed
+
+- **`createFinding()`** accepts `rule` object for severity/id consistency.
+- **CS-JWT-01 bindings** skip type-only imports and type-only named specifiers.
+- **CLI** prints relative paths via `formatRelativePath`; passes `cwd` to `scan()`.
+- Strengthened CS-JWT-01 directory test (16 findings / 14 bad files); per-file assertions for all fixtures.
+- **`docs/ciphersins.config.example.json`** aligned with implemented default globs.
+- **`docs/proposal.MD`** banner clarifying 0.3.x vs v1.0 target; removed broken `prompts/` links.
+- CLI `--version` output updated to `0.3.3`.
+
 ## [0.3.2]
 
 ### Added

@@ -4,7 +4,6 @@ import { resolveFiles } from "./resolve-files.js";
 import { runRules } from "./run-rules.js";
 import { allRules } from "./rules/index.js";
 import {
-	SEVERITIES,
 	type Finding,
 	type ScanOptions,
 	type ScanResult,
@@ -68,5 +67,3 @@ export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
 		skippedPaths,
 	};
 }
-
-export { SEVERITIES };

@@ -60,7 +60,7 @@ function handleImportDeclaration(
 	}
 
 	const importClause = node.importClause;
-	if (!importClause) {
+	if (!importClause || importClause.isTypeOnly) {
 		return;
 	}
 
@@ -80,6 +80,10 @@ function handleImportDeclaration(
 		ts.isNamedImports(importClause.namedBindings)
 	) {
 		for (const element of importClause.namedBindings.elements) {
+			if (element.isTypeOnly) {
+				continue;
+			}
+
 			const localName = element.name.text;
 			const importedName = element.propertyName?.text ?? element.name.text;
 

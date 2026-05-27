@@ -1,13 +1,33 @@
 {
 	"name": "ciphersins",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"private": true,
 	"description": "Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.",
 	"license": "MIT",
+	"author": "Ladislav Kostolny <01laky@gmail.com>",
 	"type": "module",
 	"engines": {
 		"node": ">=18"
 	},
+	"keywords": [
+		"security",
+		"static-analysis",
+		"sast",
+		"jwt",
+		"jsonwebtoken",
+		"crypto",
+		"typescript",
+		"cli",
+		"linter"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/01laky/ciphersins.git"
+	},
+	"bugs": {
+		"url": "https://github.com/01laky/ciphersins/issues"
+	},
+	"homepage": "https://github.com/01laky/ciphersins#readme",
 	"packageManager": "pnpm@9.15.9",
 	"scripts": {
 		"build": "pnpm -r build",

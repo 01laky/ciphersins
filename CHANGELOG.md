@@ -3,6 +3,19 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.3.1]
+
+### Added
+
+- **README landing page** — badges, contents TOC, why/architecture/quickstart sections, author block (aligned with [llm-stream-assemble](https://github.com/01laky/llm-stream-assemble) doc style).
+- **`docs/comparison.md`** — CipherSins vs secret scanners, npm audit, Semgrep/ESLint.
+- **`docs/faq.md`** — common questions (npm, scope, test IDs).
+
+### Changed
+
+- Root and workspace **`package.json`** — `author`, `repository`, `bugs`, `homepage`, and `keywords` metadata.
+- CLI `--version` output updated to `0.3.1`.
+
 ## [0.3.0]
 
 ### Added

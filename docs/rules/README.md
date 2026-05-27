@@ -1,6 +1,8 @@
 # CipherSins rules index
 
-MVP rule set from [`proposal.MD`](../proposal.MD). Implemented rules link to their documentation.
+Static analysis rules for crypto API misuse. Product spec: [`proposal.MD`](../proposal.MD). Landing page: [README](../README.md).
+
+Implemented rules link to their documentation.
 
 | ID                          | Severity | Title                       | Status      |
 | --------------------------- | -------- | --------------------------- | ----------- |

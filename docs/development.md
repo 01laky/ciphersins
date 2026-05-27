@@ -64,7 +64,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.3.0` = first rule CS-JWT-01).
+- Repo version bumps after each completed phase (`0.3.1` = docs landing page refactor; `0.3.0` = CS-JWT-01).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

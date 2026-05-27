@@ -1,19 +1,19 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-0.5.0-blue)
+![core](https://img.shields.io/badge/core-0.6.0-blue)
 ![node](https://img.shields.io/badge/node-%3E%3D18-339933)
-![rules](https://img.shields.io/badge/rules-4%2F8_implemented-9cf)
-![tests](https://img.shields.io/badge/tests-298_passing-brightgreen)
+![rules](https://img.shields.io/badge/rules-5%2F8_implemented-9cf)
+![tests](https://img.shields.io/badge/tests-431_passing-brightgreen)
 [![ci](https://github.com/01laky/ciphersins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/ciphersins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-pre--release_0.5.0-yellow)
+![status](https://img.shields.io/badge/status-pre--release_0.6.0-yellow)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
-> _gitleaks for bad crypto API usage_ — not leaked secrets in strings, but **application-level** mistakes: calling crypto libraries in ways that skip integrity checks, confuse algorithms, or leak timing.
+> _Like gitleaks for dangerous crypto call patterns_ — not secrets buried in strings, but **how your app uses crypto libraries**: decode-only JWT auth, timing-unsafe compares, `Math.random()` in auth paths, MD5/SHA1 password storage, and weak bcrypt cost.
 
 Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** Pre-release **`0.5.0`**. Scan pipeline, TypeScript AST parsing, and **four MVP rules** are implemented: **CS-JWT-01** (decode without verify), **CS-CMP-01** (timing-unsafe compare on auth material), **CS-RNG-01** (`Math.random` in auth context), **CS-HASH-01** (MD5/SHA1 password hashing). Remaining JWT and hash rules, SARIF output, and config parsing are on the roadmap. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
+**Status:** Pre-release **`0.6.0`**. Scan pipeline, TypeScript AST parsing, and **five MVP rules** are implemented: **CS-JWT-01** (decode without verify), **CS-CMP-01** (timing-unsafe compare on auth material), **CS-RNG-01** (`Math.random` in auth context), **CS-HASH-01** (MD5/SHA1 password hashing), **CS-HASH-02** (weak bcrypt cost). Remaining JWT rules, SARIF output, and config parsing are on the roadmap. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
 
 ---
 
@@ -52,7 +52,7 @@ CipherSins sits **between dependency scanning and manual security review**: it f
 1. **Integrity skipped** — `jwt.decode()` reads payload bytes but never validates signature, issuer, audience, or expiry.
 2. **Timing side-channels** — `===` / `==` on tokens, secrets, or hashes when a crypto/auth import is present (**CS-CMP-01**).
 3. **Predictable entropy** — `Math.random()` in auth-named functions or bindings (**CS-RNG-01**).
-4. **Broken password storage** — MD5/SHA1 `createHash` or weak-digest PBKDF2 in password-named code (**CS-HASH-01**); weak bcrypt cost (**CS-HASH-02**, planned).
+4. **Broken password storage** — MD5/SHA1 `createHash` or weak-digest PBKDF2 in password-named code (**CS-HASH-01**); weak bcrypt cost (**CS-HASH-02**).
 5. **Algorithm confusion** — `verify()` without pinning allowed algorithms (future **CS-JWT-02**).
 
 Each rule ships with **bad/good fixtures** and vitest IDs so crypto regressions are caught in CI, not in incident response.
@@ -105,7 +105,7 @@ MVP coverage targets the most common **crypto footguns in Node auth and data-pro
 | [CS-CMP-01](./docs/rules/CS-CMP-01.md)   | high     | Timing-unsafe compare       | implemented |
 | [CS-RNG-01](./docs/rules/CS-RNG-01.md)   | high     | Math.random in auth context | implemented |
 | [CS-HASH-01](./docs/rules/CS-HASH-01.md) | high     | MD5/SHA1 for password       | implemented |
-| CS-HASH-02                               | medium   | Weak bcrypt cost            | planned     |
+| [CS-HASH-02](./docs/rules/CS-HASH-02.md) | medium   | Weak bcrypt cost            | implemented |
 
 Full index: [`docs/rules/README.md`](./docs/rules/README.md).
 
@@ -172,11 +172,15 @@ Exclude: `node_modules`, `dist`, `*.test.*`, `*.spec.*`.
 
 | Doc                                                     | Description                                         |
 | ------------------------------------------------------- | --------------------------------------------------- |
+| [About](./docs/about.md)                                | Product positioning, tagline, what we find          |
 | [Product proposal](./docs/proposal.MD)                  | Scope, MVP rules, architecture, success criteria    |
 | [Rules index](./docs/rules/README.md)                   | Per-rule docs and implementation status             |
 | [CS-JWT-01](./docs/rules/CS-JWT-01.md)                  | JWT integrity — decode without verify               |
 | [CS-CMP-01](./docs/rules/CS-CMP-01.md)                  | Timing-unsafe compare on auth material              |
 | [CS-RNG-01](./docs/rules/CS-RNG-01.md)                  | Math.random in auth context                         |
+| [CS-HASH-01](./docs/rules/CS-HASH-01.md)                | MD5/SHA1 password hashing                           |
+| [CS-HASH-02](./docs/rules/CS-HASH-02.md)                | Weak bcrypt cost                                    |
+| [Comparison](./docs/comparison.md)                      | vs gitleaks, npm audit, Semgrep, ESLint             |
 | [Architecture](./docs/architecture.md)                  | Scan pipeline and rule detection diagrams           |
 | [CLI reference](./docs/cli.md)                          | Commands, output format, exit codes                 |
 | [Architecture diagrams](./docs/img/README.md)           | Mermaid sources and SVG regeneration                |
@@ -237,7 +241,7 @@ Use in custom CI steps when you need structured findings before gating a deploy 
 - **Not `npm audit`** — does not report dependency CVEs or transitive package risk.
 - **Not a full SAST suite** — focused MVP rule set for **crypto and auth primitive misuse**.
 - **No cross-file call graphs in v1** — same-file scope per rule unless noted.
-- **Findings do not fail CI exit code in v0.3.x** — `--fail-on` planned for v1.0.0 ([`docs/cli.md`](./cli.md)).
+- **Findings do not fail CI exit code in v0.6.x** — `--fail-on` planned for v1.0.0 ([`docs/cli.md`](./docs/cli.md)).
 - **No SARIF / config file parsing yet** — planned before v1.0.0 npm publish.
 
 ---
@@ -250,13 +254,13 @@ pnpm install
 pnpm verify
 ```
 
-| Command                            | Description                                                  |
-| ---------------------------------- | ------------------------------------------------------------ |
-| `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke      |
-| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/CMP/RNG/HASH/AUTH/INT rule tests |
-| `pnpm exec ciphersins scan [path]` | Run linked CLI                                               |
-| `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                        |
-| `pnpm format:fix`                  | Apply Prettier (tabs)                                        |
+| Command                            | Description                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------- |
+| `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke                         |
+| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/CMP/RNG/HASH/BCOST/BCBIND/INT tests (431 at v0.6.0) |
+| `pnpm exec ciphersins scan [path]` | Run linked CLI                                                                  |
+| `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                           |
+| `pnpm format:fix`                  | Apply Prettier (tabs)                                                           |
 
 Adding a rule: [`docs/development.md#adding-a-rule`](./docs/development.md#adding-a-rule).
 

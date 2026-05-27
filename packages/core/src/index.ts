@@ -35,4 +35,5 @@ export {
 	csCmp01Rule,
 	csRng01Rule,
 	csHash01Rule,
+	csHash02Rule,
 } from "./rules/index.js";

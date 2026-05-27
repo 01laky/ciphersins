@@ -119,4 +119,31 @@ describe("password context helpers", () => {
 	it("CS-PWD-15 isPasswordContextName('objectHash') is false", () => {
 		expect(isPasswordContextName("objectHash")).toBe(false);
 	});
+
+	it("CS-PWD-16 callHasPasswordContext in bcrypt hashPassword function", () => {
+		const file = path.join(
+			rootDir,
+			"fixtures/cs-hash-02/bad/hash-sync-cost-8.ts",
+		);
+		const sourceFile = parseSourceFile(file);
+		let bcryptCall: ts.CallExpression | undefined;
+
+		function visit(node: ts.Node): void {
+			if (bcryptCall) {
+				return;
+			}
+			if (
+				ts.isCallExpression(node) &&
+				node.expression.getText(sourceFile).includes("hashSync")
+			) {
+				bcryptCall = node;
+				return;
+			}
+			ts.forEachChild(node, visit);
+		}
+
+		visit(sourceFile);
+		expect(bcryptCall).toBeDefined();
+		expect(callHasPasswordContext(bcryptCall!)).toBe(true);
+	});
 });

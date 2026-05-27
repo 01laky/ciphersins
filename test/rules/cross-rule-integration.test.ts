@@ -10,18 +10,30 @@ const jwtGoodDir = path.join(rootDir, "fixtures/cs-jwt-01/good");
 const cmpGoodDir = path.join(rootDir, "fixtures/cs-cmp-01/good");
 const rngGoodDir = path.join(rootDir, "fixtures/cs-rng-01/good");
 const hashGoodDir = path.join(rootDir, "fixtures/cs-hash-01/good");
+const hash02GoodDir = path.join(rootDir, "fixtures/cs-hash-02/good");
 
 const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
 const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
 const rngBadDir = path.join(rootDir, "fixtures/cs-rng-01/bad");
 const hashBadDir = path.join(rootDir, "fixtures/cs-hash-01/bad");
+const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");
 
 const edgeCasesDir = path.join(rootDir, "test/fixtures/edge-cases");
+
+const allGoodDirs = [
+	jwtGoodDir,
+	cmpGoodDir,
+	rngGoodDir,
+	hashGoodDir,
+	hash02GoodDir,
+];
+
+const allBadDirs = [jwtBadDir, cmpBadDir, rngBadDir, hashBadDir, hash02BadDir];
 
 describe("cross-rule integration", () => {
 	it("CS-INT-01 all good fixture directories scan clean with zero total findings", async () => {
 		const result = await scan({
-			paths: [jwtGoodDir, cmpGoodDir, rngGoodDir, hashGoodDir],
+			paths: allGoodDirs,
 			cwd: rootDir,
 		});
 
@@ -30,7 +42,7 @@ describe("cross-rule integration", () => {
 
 	it("CS-INT-02 all bad fixture directories include JWT, CMP, RNG, and HASH rule hits", async () => {
 		const result = await scan({
-			paths: [jwtBadDir, cmpBadDir, rngBadDir, hashBadDir],
+			paths: allBadDirs,
 			cwd: rootDir,
 		});
 
@@ -39,6 +51,7 @@ describe("cross-rule integration", () => {
 		expect(ruleIds.has("CS-CMP-01")).toBe(true);
 		expect(ruleIds.has("CS-RNG-01")).toBe(true);
 		expect(ruleIds.has("CS-HASH-01")).toBe(true);
+		expect(ruleIds.has("CS-HASH-02")).toBe(true);
 	});
 
 	it("CS-INT-03 jwt good fixtures stay clean with CMP and RNG rules active", async () => {
@@ -57,9 +70,9 @@ describe("cross-rule integration", () => {
 			result.findings.filter((f) => f.ruleId === ruleId).length;
 
 		expect(byRule("CS-JWT-01")).toBe(16);
-		expect(byRule("CS-CMP-01")).toBe(13);
+		expect(byRule("CS-CMP-01")).toBe(12);
 		expect(byRule("CS-RNG-01")).toBe(12);
-		expect(result.findings).toHaveLength(41);
+		expect(result.findings).toHaveLength(40);
 	});
 
 	it("CS-INT-05 cmp and rng good directories stay clean when scanned together", async () => {
@@ -73,16 +86,16 @@ describe("cross-rule integration", () => {
 
 	it("CS-INT-06 cmp and hash good directories stay clean when scanned together", async () => {
 		const result = await scan({
-			paths: [cmpGoodDir, hashGoodDir],
+			paths: [cmpGoodDir, hashGoodDir, hash02GoodDir],
 			cwd: rootDir,
 		});
 
 		expect(result.findings).toEqual([]);
 	});
 
-	it("CS-INT-07 combined bad directories include CS-HASH-01", async () => {
+	it("CS-INT-07 combined bad directories include CS-HASH-01 and CS-HASH-02", async () => {
 		const result = await scan({
-			paths: [jwtBadDir, cmpBadDir, rngBadDir, hashBadDir],
+			paths: allBadDirs,
 			cwd: rootDir,
 		});
 
@@ -91,11 +104,12 @@ describe("cross-rule integration", () => {
 		expect(ruleIds.has("CS-CMP-01")).toBe(true);
 		expect(ruleIds.has("CS-RNG-01")).toBe(true);
 		expect(ruleIds.has("CS-HASH-01")).toBe(true);
+		expect(ruleIds.has("CS-HASH-02")).toBe(true);
 	});
 
-	it("CS-INT-08 combined bad directories yield exact per-rule finding counts with HASH", async () => {
+	it("CS-INT-08 combined bad directories yield exact per-rule finding counts with HASH-02", async () => {
 		const result = await scan({
-			paths: [jwtBadDir, cmpBadDir, rngBadDir, hashBadDir],
+			paths: allBadDirs,
 			cwd: rootDir,
 		});
 
@@ -103,13 +117,14 @@ describe("cross-rule integration", () => {
 			result.findings.filter((f) => f.ruleId === ruleId).length;
 
 		expect(byRule("CS-JWT-01")).toBe(16);
-		expect(byRule("CS-CMP-01")).toBe(13);
+		expect(byRule("CS-CMP-01")).toBe(12);
 		expect(byRule("CS-RNG-01")).toBe(12);
-		expect(byRule("CS-HASH-01")).toBe(27);
-		expect(result.findings).toHaveLength(68);
+		expect(byRule("CS-HASH-01")).toBe(28);
+		expect(byRule("CS-HASH-02")).toBe(26);
+		expect(result.findings).toHaveLength(94);
 	});
 
-	it("CS-INT-09 jwt good fixtures stay clean with four rules active", async () => {
+	it("CS-INT-09 jwt good fixtures stay clean with five rules active", async () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
@@ -117,7 +132,7 @@ describe("cross-rule integration", () => {
 
 	it("CS-INT-10 hash good and jwt bad in one scan yields only JWT findings", async () => {
 		const result = await scan({
-			paths: [hashGoodDir, jwtBadDir],
+			paths: [hashGoodDir, hash02GoodDir, jwtBadDir],
 			cwd: rootDir,
 		});
 
@@ -125,12 +140,73 @@ describe("cross-rule integration", () => {
 		expect(result.findings.every((f) => f.ruleId === "CS-JWT-01")).toBe(true);
 	});
 
-	it("CS-INT-11 all four good dirs plus edge-cases scan clean", async () => {
+	it("CS-INT-11 all five good dirs plus edge-cases scan clean", async () => {
 		const result = await scan({
-			paths: [jwtGoodDir, cmpGoodDir, rngGoodDir, hashGoodDir, edgeCasesDir],
+			paths: [...allGoodDirs, edgeCasesDir],
 			cwd: rootDir,
 		});
 
 		expect(result.findings).toEqual([]);
+	});
+
+	it("CS-INT-12 bcrypt-and-md5-password.ts yields HASH-02 and HASH-01", async () => {
+		const file = path.join(hash02BadDir, "bcrypt-and-md5-password.ts");
+		const result = await scan({ paths: [file], cwd: rootDir });
+
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
+		).toHaveLength(1);
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-HASH-01"),
+		).toHaveLength(1);
+	});
+
+	it("CS-INT-13 hash-02 good and jwt bad yields only JWT findings", async () => {
+		const result = await scan({
+			paths: [hash02GoodDir, jwtBadDir],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.length).toBeGreaterThan(0);
+		expect(result.findings.every((f) => f.ruleId === "CS-JWT-01")).toBe(true);
+	});
+
+	it("CS-INT-14 hash-01 good and single hash-02 bad file yields only HASH-02", async () => {
+		const file = path.join(hash02BadDir, "hash-sync-cost-8.ts");
+		const result = await scan({
+			paths: [hashGoodDir, file],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.length).toBeGreaterThan(0);
+		expect(result.findings.every((f) => f.ruleId === "CS-HASH-02")).toBe(true);
+	});
+
+	it("CS-INT-15 bcrypt-hash-password.ts stays clean with all five rules", async () => {
+		const file = path.join(hashGoodDir, "bcrypt-hash-password.ts");
+		const result = await scan({ paths: [file], cwd: rootDir });
+
+		expect(result.findings).toEqual([]);
+	});
+
+	it("CS-INT-16 hash-01 bad directory alone keeps 27 HASH-01 findings", async () => {
+		const result = await scan({ paths: [hashBadDir], cwd: rootDir });
+
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-HASH-01"),
+		).toHaveLength(27);
+		expect(
+			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
+		).toHaveLength(0);
+	});
+
+	it("CS-INT-17 all five good directories scan clean with expected file counts", async () => {
+		const result = await scan({
+			paths: allGoodDirs,
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(68);
 	});
 });

@@ -1,10 +1,19 @@
 {
 	"name": "ciphersins",
-	"version": "0.5.0",
-	"description": "Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.",
+	"version": "0.6.0",
+	"description": "Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS app code.",
 	"license": "MIT",
 	"author": "Ladislav Kostolny <01laky@gmail.com>",
 	"type": "module",
+	"keywords": [
+		"security",
+		"static-analysis",
+		"sast",
+		"jwt",
+		"crypto-misuse",
+		"bcrypt",
+		"cli"
+	],
 	"engines": {
 		"node": ">=18"
 	},

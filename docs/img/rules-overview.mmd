@@ -5,6 +5,7 @@ flowchart TB
 		CMP["CS-CMP-01 · auth === / == + import gate"]
 		RNG["CS-RNG-01 · Math.random auth context"]
 		HASH["CS-HASH-01 · weak hash + password context"]
+		HASH2["CS-HASH-02 · weak bcrypt cost"]
 	end
 
 	subgraph JWT_FLOW["CS-JWT-01"]
@@ -44,6 +45,15 @@ flowchart TB
 		PWD -->|yes| HFIND["createFinding()"]
 	end
 
+	subgraph HASH2_FLOW["CS-HASH-02"]
+		BBIND["getBcryptBindings()"]
+		COST{"isWeakBcryptOperation()?"}
+		PWD2{"callHasPasswordContext()?"}
+		BBIND --> COST
+		COST -->|yes| PWD2
+		PWD2 -->|yes| H2FIND["createFinding()"]
+	end
+
 	subgraph REPORT["Finding output"]
 		direction LR
 		LOC["file · line · column"]
@@ -55,17 +65,19 @@ flowchart TB
 	CMP --> CMP_FLOW
 	RNG --> RNG_FLOW
 	HASH --> HASH_FLOW
+	HASH2 --> HASH2_FLOW
 	JFIND --> REPORT
 	CFIND --> REPORT
 	RFIND --> REPORT
 	HFIND --> REPORT
+	H2FIND --> REPORT
 
 	classDef rule fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffedd5
 	classDef decision fill:#312e81,stroke:#a5b4fc,stroke-width:2px,color:#eef2ff
 	classDef clean fill:#134e4a,stroke:#5eead4,stroke-width:2px,color:#f0fdfa
 	classDef report fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
 
-	class JWT,CMP,RNG,HASH rule
-	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD decision
+	class JWT,CMP,RNG,HASH,HASH2 rule
+	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2 decision
 	class JCLEAN,CCLEAN,CSKIP clean
 	class LOC,MSG,DOC report

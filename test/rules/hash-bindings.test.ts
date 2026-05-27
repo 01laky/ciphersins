@@ -178,4 +178,13 @@ describe("hash binding helpers", () => {
 
 		expect(isWeakHashOperation(call, bindings)).toBe(true);
 	});
+
+	it("CS-HBIND-14 tracks node:crypto default import for member access", () => {
+		const sourceFile = parseSource(
+			'import crypto from "node:crypto";\nvoid crypto;\n',
+		);
+		const bindings = getHashBindings(sourceFile);
+
+		expect(bindings.cryptoMemberObjects.has("crypto")).toBe(true);
+	});
 });

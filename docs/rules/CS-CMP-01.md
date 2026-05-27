@@ -42,21 +42,22 @@ export function checkToken(token: string, expected: string) {
 ## What CipherSins checks
 
 - **`===` or `==`** `BinaryExpression` where at least one operand suggests auth material (identifier/property name heuristic).
-- File imports or requires a **crypto/auth module** (`crypto`, `jsonwebtoken`, `bcrypt`, `argon2`, etc.).
+- File imports or requires a **crypto/auth module** (`crypto`, `jsonwebtoken`, `argon2`, `scrypt`, etc.). **`bcrypt` / `bcryptjs` alone do not open the gate** — use CS-HASH-02 for bcrypt cost issues.
 - Same-file scope only (v1).
 
 ## False positives and limits
 
-| Scenario                                        | Behavior                                       |
-| ----------------------------------------------- | ---------------------------------------------- |
-| `token === expected` without crypto/auth import | **Not flagged** — import gate                  |
-| `username === 'admin'` with crypto import       | **Not flagged** — `username` not auth material |
-| `author === publisher`                          | **Not flagged** — `author` ≠ segment `auth`    |
-| `token !== expected`                            | **Not flagged** — wrong operator               |
-| `isEqual(token, expected)` / `deepEqual`        | **Not flagged** — not `===`/`==` AST nodes     |
-| `token === timingSafeEqual(a, b)`               | **Not flagged** — operand is timing-safe call  |
-| `token == null` with crypto import              | **Flagged** — loose equality on auth operand   |
-| `bcrypt.compareSync(a, b)`                      | **Not flagged** — correct API shape            |
+| Scenario                                         | Behavior                                          |
+| ------------------------------------------------ | ------------------------------------------------- |
+| `token === expected` without crypto/auth import  | **Not flagged** — import gate                     |
+| `token === expected` with **only** bcrypt import | **Not flagged** — bcrypt is not a CMP gate module |
+| `username === 'admin'` with crypto import        | **Not flagged** — `username` not auth material    |
+| `author === publisher`                           | **Not flagged** — `author` ≠ segment `auth`       |
+| `token !== expected`                             | **Not flagged** — wrong operator                  |
+| `isEqual(token, expected)` / `deepEqual`         | **Not flagged** — not `===`/`==` AST nodes        |
+| `token === timingSafeEqual(a, b)`                | **Not flagged** — operand is timing-safe call     |
+| `token == null` with crypto import               | **Flagged** — loose equality on auth operand      |
+| `bcrypt.compareSync(a, b)`                       | **Not flagged** — correct API shape               |
 
 ## Fix
 

@@ -1,11 +1,19 @@
 {
 	"name": "@ciphersins/core",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"private": true,
-	"description": "CipherSins static analysis engine for crypto API misuse in TypeScript/JavaScript",
+	"description": "CipherSins scan engine — AST rules for crypto API misuse in TypeScript/JavaScript",
 	"license": "MIT",
 	"author": "Ladislav Kostolny <01laky@gmail.com>",
 	"type": "module",
+	"keywords": [
+		"security",
+		"static-analysis",
+		"sast",
+		"crypto-misuse",
+		"jwt",
+		"typescript"
+	],
 	"sideEffects": false,
 	"engines": {
 		"node": ">=18"

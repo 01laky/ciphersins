@@ -55,18 +55,18 @@ export function hashPassword(password: string, salt: Buffer) {
 
 ## False positives and limits
 
-| Scenario                                                 | Behavior                                                       |
-| -------------------------------------------------------- | -------------------------------------------------------------- |
-| `createHash('md5')` in `computeFileChecksum()`           | **Not flagged** — no password context                          |
-| `createHash('sha256')` in `hashPassword()`               | **Not flagged** — strong algorithm                             |
-| `pbkdf2Sync(apiKey, …, 'md5')` in `deriveApiKey()`       | **Not flagged** — weak digest but no password naming           |
-| `fileHash` / `hashCode` / `objectHash` naming            | **Not flagged** — `hash` segment alone is not password context |
-| `bcrypt.hash(password, 12)`                              | **Not flagged** — adaptive hash (cost check = **CS-HASH-02**)  |
-| Local `function createHash()` stub without crypto import | **Not flagged** — callee not tracked                           |
-| `createHash(algorithmVariable)` non-literal              | **Not flagged in v1**                                          |
-| `CryptoJS.MD5(password)`                                 | **Not flagged in v1**                                          |
-| Weak hash inside `*.test.ts` / `*.spec.ts`               | **Excluded by default scan globs**, not rule logic             |
-| Multiple weak calls in one function                      | **One finding per call site**                                  |
+| Scenario                                                 | Behavior                                                                            |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `createHash('md5')` in `computeFileChecksum()`           | **Not flagged** — no password context                                               |
+| `createHash('sha256')` in `hashPassword()`               | **Not flagged** — strong algorithm                                                  |
+| `pbkdf2Sync(apiKey, …, 'md5')` in `deriveApiKey()`       | **Not flagged** — weak digest but no password naming                                |
+| `fileHash` / `hashCode` / `objectHash` naming            | **Not flagged** — `hash` segment alone is not password context                      |
+| `bcrypt.hash(password, 12)`                              | **Not flagged** by HASH-01 — weak cost covered by **[CS-HASH-02](./CS-HASH-02.md)** |
+| Local `function createHash()` stub without crypto import | **Not flagged** — callee not tracked                                                |
+| `createHash(algorithmVariable)` non-literal              | **Not flagged in v1**                                                               |
+| `CryptoJS.MD5(password)`                                 | **Not flagged in v1**                                                               |
+| Weak hash inside `*.test.ts` / `*.spec.ts`               | **Excluded by default scan globs**, not rule logic                                  |
+| Multiple weak calls in one function                      | **One finding per call site**                                                       |
 
 ## Fix
 
@@ -75,4 +75,4 @@ Replace MD5/SHA1 password storage with `bcrypt` (cost ≥ 12), `argon2`, `scrypt
 ## References
 
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
-- Planned: **CS-HASH-02** — weak bcrypt cost
+- Related: [CS-HASH-02](./CS-HASH-02.md) — weak bcrypt cost

@@ -104,4 +104,20 @@ describe("crypto-auth import helpers", () => {
 		expect(fileHasCryptoAuthImport(sourceFile)).toBe(true);
 		expect(isTimingSafeEqualCall(call, imports)).toBe(false);
 	});
+
+	it("CS-CRYPTO-08 import bcrypt alone does not open CMP auth import gate", () => {
+		const sourceFile = parseSource(
+			'import bcrypt from "bcrypt";\nexport const x = 1;\n',
+		);
+
+		expect(fileHasCryptoAuthImport(sourceFile)).toBe(false);
+	});
+
+	it("CS-CRYPTO-09 import argon2 opens CMP auth import gate", () => {
+		const sourceFile = parseSource(
+			'import argon2 from "argon2";\nexport const x = 1;\n',
+		);
+
+		expect(fileHasCryptoAuthImport(sourceFile)).toBe(true);
+	});
 });

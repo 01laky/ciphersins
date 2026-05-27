@@ -80,4 +80,12 @@ describe("isMathRandomCall helper", () => {
 		expect(indirectCall).toBeDefined();
 		expect(isMathRandomCall(indirectCall!, sourceFile)).toBe(false);
 	});
+
+	it("CS-MATH-05 detects Math.random inside nested function in auth context source", () => {
+		const sourceFile = parseSource(
+			"function generateToken() { return Math.random(); }\n",
+		);
+		const call = findMathRandomCall(sourceFile);
+		expect(isMathRandomCall(call, sourceFile)).toBe(true);
+	});
 });

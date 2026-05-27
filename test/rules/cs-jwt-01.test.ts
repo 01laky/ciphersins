@@ -506,3 +506,72 @@ describe("CS-JWT-01 CLI", () => {
 		expect(result.stdout).toContain("No findings.");
 	});
 });
+
+describe("CS-JWT-01 extended edge cases", () => {
+	it("CS-JWT-01-44 summary.high equals CS-JWT-01 finding count for bad directory", async () => {
+		const result = await scan({ paths: [jwtBadDir], cwd: rootDir });
+		const jwtFindings = result.findings.filter((f) => f.ruleId === "CS-JWT-01");
+
+		expect(result.summary.high).toBe(jwtFindings.length);
+		expect(result.summary.high).toBe(16);
+		expect(result.summary.medium).toBe(0);
+	});
+
+	it("CS-JWT-01-45 good directory scans exactly 15 files with zero findings", async () => {
+		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
+
+		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(15);
+	});
+
+	it("CS-JWT-01-46 bad directory finding signatures are unique", async () => {
+		const result = await scan({ paths: [jwtBadDir], cwd: rootDir });
+		const signatures = result.findings.map(findingSignature);
+
+		expect(new Set(signatures).size).toBe(signatures.length);
+		expect(signatures).toHaveLength(16);
+	});
+
+	it("CS-JWT-01-47 CLI bad scan output matches default-import-decode-only.ts line format", () => {
+		const result = spawnSync(process.execPath, [cliEntry, "scan", jwtBadDir], {
+			encoding: "utf8",
+			cwd: rootDir,
+		});
+
+		expect(result.status).toBe(0);
+		expect(result.stdout).toMatch(
+			/fixtures\/cs-jwt-01\/bad\/default-import-decode-only\.ts:\d+:\d+\s+CS-JWT-01\s+high/,
+		);
+	});
+
+	it("CS-JWT-01-48 multiple-decode-no-verify.ts yields two findings on distinct lines", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "multiple-decode-no-verify.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(2);
+		const lines = result.findings.map((f) => f.line).sort((a, b) => a - b);
+		expect(lines).toEqual([4, 8]);
+	});
+
+	it("CS-JWT-01-49 verify-in-comment-only finding snippet contains decode call", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "verify-in-comment-only.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.snippet).toMatch(/decode/i);
+	});
+
+	it("CS-JWT-01-50 optional-chaining-decode.ts finding line points at decode call", async () => {
+		const file = fixturePath("bad", "optional-chaining-decode.ts");
+		const result = await scan({ paths: [file], cwd: rootDir });
+		const finding = result.findings[0];
+
+		expect(finding).toBeDefined();
+		expect(finding!.line).toBeGreaterThan(0);
+		expect(finding!.snippet).toMatch(/jwt\?\.decode|decode/i);
+	});
+});

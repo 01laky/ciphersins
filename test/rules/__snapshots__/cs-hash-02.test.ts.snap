@@ -1,0 +1,40 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CS-HASH-02 extended edge cases > CS-HASH-02-67 golden snapshot for hash-async-callback-weak.ts 1`] = `
+{
+  "column": 9,
+  "file": "hash-async-callback-weak.ts",
+  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-02.md",
+  "line": 4,
+  "message": "Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).",
+  "ruleId": "CS-HASH-02",
+  "severity": "medium",
+  "snippet": "	return bcrypt.hash(password, 8, () => {});",
+}
+`;
+
+exports[`CS-HASH-02 finding shape > CS-HASH-02-47 golden snapshot for hash-sync-cost-8.ts 1`] = `
+{
+  "column": 9,
+  "file": "hash-sync-cost-8.ts",
+  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-02.md",
+  "line": 4,
+  "message": "Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).",
+  "ruleId": "CS-HASH-02",
+  "severity": "medium",
+  "snippet": "	return bcrypt.hashSync(password, 8);",
+}
+`;
+
+exports[`CS-HASH-02 finding shape > CS-HASH-02-48 golden snapshot for gen-salt-weak.ts 1`] = `
+{
+  "column": 9,
+  "file": "gen-salt-weak.ts",
+  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-02.md",
+  "line": 4,
+  "message": "Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).",
+  "ruleId": "CS-HASH-02",
+  "severity": "medium",
+  "snippet": "	return bcrypt.genSalt(8);",
+}
+`;

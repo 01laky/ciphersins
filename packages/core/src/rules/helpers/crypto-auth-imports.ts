@@ -4,8 +4,6 @@ const CRYPTO_AUTH_MODULES = new Set([
 	"crypto",
 	"node:crypto",
 	"jsonwebtoken",
-	"bcrypt",
-	"bcryptjs",
 	"argon2",
 	"@node-rs/argon2",
 	"scrypt",

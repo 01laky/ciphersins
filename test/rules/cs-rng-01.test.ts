@@ -345,3 +345,79 @@ describe("CS-RNG-01 CLI", () => {
 		expect(result.stdout).toContain("No findings.");
 	});
 });
+
+describe("CS-RNG-01 extended edge cases", () => {
+	it("CS-RNG-01-31 good directory scans exactly 8 files with zero findings", async () => {
+		const result = await scan({ paths: [rngGoodDir], cwd: rootDir });
+
+		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(8);
+	});
+
+	it("CS-RNG-01-32 bad directory finding signatures are unique", async () => {
+		const result = await scan({ paths: [rngBadDir], cwd: rootDir });
+		const signatures = result.findings.map(findingSignature);
+
+		expect(new Set(signatures).size).toBe(signatures.length);
+		expect(signatures).toHaveLength(12);
+	});
+
+	it("CS-RNG-01-33 otp-loop-random.ts yields three findings on distinct lines", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "otp-loop-random.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(3);
+		const lines = result.findings.map((f) => f.line).sort((a, b) => a - b);
+		expect(lines).toEqual([2, 3, 4]);
+	});
+
+	it("CS-RNG-01-34 csRng01Rule.run matches scan for session-id-function.ts", async () => {
+		const file = fixturePath("bad", "session-id-function.ts");
+		const scanResult = await scan({ paths: [file], cwd: rootDir });
+
+		expect(scanResult.findings).toHaveLength(1);
+
+		const findings = csRng01Rule.run(createRuleContext(file));
+
+		expect(findings).toHaveLength(1);
+		expect(findings[0]?.ruleId).toBe("CS-RNG-01");
+		expect(findings[0]?.line).toBe(scanResult.findings[0]?.line);
+		expect(findings[0]?.column).toBe(scanResult.findings[0]?.column);
+		expect(findingSignature(findings[0]!)).toBe(
+			findingSignature(scanResult.findings[0]!),
+		);
+	});
+
+	it("CS-RNG-01-35 CLI bad scan output matches session-id-function.ts line format", () => {
+		const result = spawnSync(process.execPath, [cliEntry, "scan", rngBadDir], {
+			encoding: "utf8",
+			cwd: rootDir,
+		});
+
+		expect(result.status).toBe(0);
+		expect(result.stdout).toMatch(
+			/fixtures\/cs-rng-01\/bad\/session-id-function\.ts:\d+:\d+\s+CS-RNG-01\s+high/,
+		);
+	});
+
+	it("CS-RNG-01-36 optional-chaining-math-random.ts finding snippet contains Math.random", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "optional-chaining-math-random.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.snippet).toMatch(/Math(\?\.|\.)random/i);
+	});
+
+	it("CS-RNG-01-37 shadowed-math-auth-context.ts stays clean with all five rules", async () => {
+		const result = await scan({
+			paths: [fixturePath("good", "shadowed-math-auth-context.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toEqual([]);
+	});
+});

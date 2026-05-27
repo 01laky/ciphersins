@@ -11,6 +11,7 @@ const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
 const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
 const rngBadDir = path.join(rootDir, "fixtures/cs-rng-01/bad");
 const hashBadDir = path.join(rootDir, "fixtures/cs-hash-01/bad");
+const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");
 
 function assert(condition, message) {
 	if (!condition) {
@@ -40,6 +41,7 @@ for (const [dir, ruleId] of [
 	[cmpBadDir, "CS-CMP-01"],
 	[rngBadDir, "CS-RNG-01"],
 	[hashBadDir, "CS-HASH-01"],
+	[hash02BadDir, "CS-HASH-02"],
 ]) {
 	const result = spawnSync(process.execPath, [cliEntry, "scan", dir], {
 		encoding: "utf8",
@@ -60,6 +62,7 @@ for (const goodDir of [
 	path.join(rootDir, "fixtures/cs-cmp-01/good"),
 	path.join(rootDir, "fixtures/cs-rng-01/good"),
 	path.join(rootDir, "fixtures/cs-hash-01/good"),
+	path.join(rootDir, "fixtures/cs-hash-02/good"),
 ]) {
 	const goodScan = spawnSync(process.execPath, [cliEntry, "scan", goodDir], {
 		encoding: "utf8",

@@ -2,6 +2,8 @@ import { runScanCommand } from "./commands/scan.js";
 
 const HELP = `ciphersins — static scanner for crypto API misuse in Node/TS app code
 
+JWT, timing compares, auth RNG, and password-hashing footguns — not secret scanning.
+
 Usage:
   ciphersins scan [path]
 
@@ -9,6 +11,7 @@ Commands:
   scan [path]   Scan TypeScript/JavaScript files (default path: ./src or .)
 
 Run ciphersins scan with no path to use the default scan root.
+Docs: https://github.com/01laky/ciphersins/blob/main/docs/about.md
 `;
 
 async function main(): Promise<void> {
@@ -20,7 +23,7 @@ async function main(): Promise<void> {
 	}
 
 	if (command === "--version" || command === "-v") {
-		process.stdout.write("0.5.0\n");
+		process.stdout.write("0.6.0\n");
 		process.exit(0);
 	}
 

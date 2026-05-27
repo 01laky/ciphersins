@@ -75,8 +75,8 @@ describe("CS-CMP-01 directory scans", () => {
 	it("CS-CMP-01-02 flags bad fixtures with high severity", async () => {
 		const result = await scan({ paths: [cmpBadDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(13);
-		expect(result.scannedFiles).toHaveLength(12);
+		expect(result.findings).toHaveLength(12);
+		expect(result.scannedFiles).toHaveLength(11);
 		expect(result.findings.every((f) => f.ruleId === "CS-CMP-01")).toBe(true);
 		expect(result.findings.every((f) => f.severity === "high")).toBe(true);
 		expect(result.findings.every((f) => f.message === CS_CMP_01_MESSAGE)).toBe(
@@ -119,13 +119,13 @@ describe("CS-CMP-01 per-file bad fixtures", () => {
 		expect(result.findings.length).toBeGreaterThanOrEqual(1);
 	});
 
-	it("CS-CMP-01-20 bcrypt-import-token-compare.ts yields at least one finding", async () => {
+	it("CS-CMP-01-20 bcrypt-import-token-compare.ts yields no findings (bcrypt is not a CMP gate)", async () => {
 		const result = await scan({
-			paths: [fixturePath("bad", "bcrypt-import-token-compare.ts")],
+			paths: [fixturePath("good", "bcrypt-import-token-compare.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings.length).toBeGreaterThanOrEqual(1);
+		expect(result.findings).toEqual([]);
 	});
 
 	it("CS-CMP-01-21 multiple-auth-compares.ts yields exactly two findings", async () => {
@@ -437,5 +437,73 @@ describe("CS-CMP-01 CLI", () => {
 
 		expect(result.status).toBe(0);
 		expect(result.stdout).toContain("No findings.");
+	});
+});
+
+describe("CS-CMP-01 extended edge cases", () => {
+	it("CS-CMP-01-39 good directory scans exactly 14 files with zero findings", async () => {
+		const result = await scan({ paths: [cmpGoodDir], cwd: rootDir });
+
+		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(14);
+	});
+
+	it("CS-CMP-01-40 bad directory finding signatures are unique", async () => {
+		const result = await scan({ paths: [cmpBadDir], cwd: rootDir });
+		const signatures = result.findings.map(findingSignature);
+
+		expect(new Set(signatures).size).toBe(signatures.length);
+		expect(signatures).toHaveLength(12);
+	});
+
+	it("CS-CMP-01-41 CLI bad scan output matches token-strict-equal.ts line format", () => {
+		const result = spawnSync(process.execPath, [cliEntry, "scan", cmpBadDir], {
+			encoding: "utf8",
+			cwd: rootDir,
+		});
+
+		expect(result.status).toBe(0);
+		expect(result.stdout).toMatch(
+			/fixtures\/cs-cmp-01\/bad\/token-strict-equal\.ts:\d+:\d+\s+CS-CMP-01\s+high/,
+		);
+	});
+
+	it("CS-CMP-01-42 multiple-auth-compares.ts yields two findings on distinct lines", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "multiple-auth-compares.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(2);
+		const lines = result.findings.map((f) => f.line).sort((a, b) => a - b);
+		expect(lines).toEqual([4, 5]);
+	});
+
+	it("CS-CMP-01-43 token-equals-null.ts finding snippet contains loose equality", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "token-equals-null.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.snippet).toMatch(/==/);
+	});
+
+	it("CS-CMP-01-44 bcrypt-import-token-compare.ts stays clean with all five rules", async () => {
+		const result = await scan({
+			paths: [fixturePath("good", "bcrypt-import-token-compare.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toEqual([]);
+	});
+
+	it("CS-CMP-01-45 hash-compare-with-crypto-import finding line points at compare", async () => {
+		const file = fixturePath("bad", "hash-compare-with-crypto-import.ts");
+		const result = await scan({ paths: [file], cwd: rootDir });
+		const finding = result.findings[0];
+
+		expect(finding).toBeDefined();
+		expect(finding!.snippet).toMatch(/===|==/);
 	});
 });

@@ -80,6 +80,7 @@ describe("CS-HASH-01 rule registry", () => {
 			"CS-CMP-01",
 			"CS-RNG-01",
 			"CS-HASH-01",
+			"CS-HASH-02",
 		]);
 	});
 });
@@ -633,5 +634,52 @@ describe("CS-HASH-01 extended edge cases", () => {
 
 		expect(result.findings).toHaveLength(1);
 		expect(result.findings[0]?.snippet).toMatch(/sha-1/i);
+	});
+
+	it("CS-HASH-01-59 good directory scans exactly 14 files with zero findings", async () => {
+		const result = await scan({ paths: [hashGoodDir], cwd: rootDir });
+
+		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(14);
+	});
+
+	it("CS-HASH-01-60 bad directory finding signatures are unique", async () => {
+		const result = await scan({ paths: [hashBadDir], cwd: rootDir });
+		const hashFindings = filterByRule(result.findings, "CS-HASH-01");
+		const signatures = hashFindings.map(findingSignature);
+
+		expect(new Set(signatures).size).toBe(signatures.length);
+		expect(signatures).toHaveLength(27);
+	});
+
+	it("CS-HASH-01-61 multiple-weak-hashes.ts yields two findings on distinct lines", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "multiple-weak-hashes.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toHaveLength(2);
+		const lines = result.findings.map((f) => f.line).sort((a, b) => a - b);
+		expect(lines[0]).not.toBe(lines[1]);
+	});
+
+	it("CS-HASH-01-62 summary.high equals CS-HASH-01 finding count for bad directory", async () => {
+		const result = await scan({ paths: [hashBadDir], cwd: rootDir });
+		const hashFindings = filterByRule(result.findings, "CS-HASH-01");
+
+		expect(result.summary.high).toBe(hashFindings.length);
+		expect(result.summary.high).toBe(27);
+	});
+
+	it("CS-HASH-01-63 CLI bad scan output matches create-hash-md5-password.ts line format", () => {
+		const result = spawnSync(process.execPath, [cliEntry, "scan", hashBadDir], {
+			encoding: "utf8",
+			cwd: rootDir,
+		});
+
+		expect(result.status).toBe(0);
+		expect(result.stdout).toMatch(
+			/fixtures\/cs-hash-01\/bad\/create-hash-md5-password\.ts:\d+:\d+\s+CS-HASH-01\s+high/,
+		);
 	});
 });

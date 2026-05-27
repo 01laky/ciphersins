@@ -10,6 +10,7 @@ import {
 	createRuleContext,
 	csCmp01Rule,
 	csHash01Rule,
+	csHash02Rule,
 	csJwt01Rule,
 	csRng01Rule,
 	formatRelativePath,
@@ -44,17 +45,19 @@ describe("CS-S01 exports", () => {
 		expect(typeof csCmp01Rule.run).toBe("function");
 		expect(typeof csRng01Rule.run).toBe("function");
 		expect(typeof csHash01Rule.run).toBe("function");
+		expect(typeof csHash02Rule.run).toBe("function");
 	});
 });
 
 describe("CS-S02 rule registry", () => {
 	it("CS-S02 registers JWT, CMP, RNG, and HASH rules in stable order", () => {
-		expect(allRules).toHaveLength(4);
+		expect(allRules).toHaveLength(5);
 		expect(allRules.map((r) => r.id)).toEqual([
 			"CS-JWT-01",
 			"CS-CMP-01",
 			"CS-RNG-01",
 			"CS-HASH-01",
+			"CS-HASH-02",
 		]);
 	});
 });
@@ -66,6 +69,7 @@ describe("CS-S49 rule registry order", () => {
 			"CS-CMP-01",
 			"CS-RNG-01",
 			"CS-HASH-01",
+			"CS-HASH-02",
 		]);
 	});
 });
@@ -418,6 +422,6 @@ describe("CS-S22 CLI help and version", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("0.5.0");
+		expect(result.stdout.trim()).toBe("0.6.0");
 	});
 });

@@ -1,14 +1,14 @@
 # CipherSins — Implementation Proposal
 
-> **Note:** This document describes the **v1.0 target** and roadmap. Current release (**0.3.x**) implements the scan pipeline, CLI `scan` command, and **CS-JWT-01** only. Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md).
+> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.6.0**) implements the scan pipeline, CLI `scan` command, and **five MVP rules** (CS-JWT-01, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
 
 ## What It Is (One-Liner)
 
-**CipherSins** is a standalone CLI scanner for **crypto API misuse** in application code (TypeScript/JavaScript). Metaphor: _"gitleaks for bad crypto API usage"_ — not for leaked secrets in strings, but for **footguns** in code (JWT, timing compare, weak hash, RNG, symmetric crypto).
+**CipherSins** is a standalone CLI scanner for **crypto API misuse** in application code (TypeScript/JavaScript). Metaphor: _like gitleaks for dangerous crypto call patterns_ — not secrets buried in strings, but **how your application calls crypto libraries** (JWT integrity, timing compares, auth RNG, password hashing, bcrypt cost).
 
 **npm package name:** `ciphersins`  
 **CLI binary / command:** `ciphersins` → `npx ciphersins scan`  
-**Tagline:** _Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code._
+**Tagline:** _Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS app code._
 
 ---
 
@@ -325,11 +325,11 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 ### Versioning — repo vs npm
 
-| Artifact  | Recommendation                                                                                                                                   |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Git repo  | **0.1.0** — initial scaffold and docs (current). Bump **PATCH/MINOR** in-repo after each completed phase (`0.2.0`, `0.3.0`, …) — no npm publish. |
-| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.                      |
-| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                                  |
+| Artifact  | Recommendation                                                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Git repo  | Pre-release **0.6.0** in-repo (5/8 MVP rules). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
+| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.     |
+| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                 |
 
 ### npm publish policy
 

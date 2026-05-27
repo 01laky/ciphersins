@@ -3,6 +3,24 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.6.0]
+
+### Added
+
+- **CS-HASH-02** — flags weak bcrypt cost (`hash`/`hashSync`/`genSalt*` with numeric literal **< 10**) in password context; tracks `bcrypt` and `bcryptjs`.
+- Shared helpers: `bcrypt-cost`, `bcrypt-bindings`.
+- Fixtures `fixtures/cs-hash-02/{bad,good}/` (25 bad / 17 good).
+- Tests: CS-HASH-02-01–69, CS-BCOST-01–09, CS-BCBIND-01–18, CS-INT-01–17, CS-CRYPTO-01–09; extended edge cases for all five rules.
+- **`docs/rules/CS-HASH-02.md`**; smoke-cli HASH-02 regression.
+
+### Changed
+
+- `allRules` registry: CS-JWT-01, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02 (stable order).
+- Scaffold CS-S02 / CS-S48 / CS-S49; CS-INT-08 combined bad total **94** findings (HASH-02 **26**, HASH-01 **28** incl. cross-rule fixture).
+- CS-HASH-01 doc links CS-HASH-02 as implemented; rules index and diagram updated.
+- **`docs/about.md`**, refreshed FAQ/comparison/architecture/cli/development; expanded npm keywords.
+- CLI `--version` output updated to `0.6.0`.
+
 ## [0.5.0]
 
 ### Added

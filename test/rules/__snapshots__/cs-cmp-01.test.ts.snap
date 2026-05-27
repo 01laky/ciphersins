@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CS-CMP-01 finding shape > CS-CMP-01-15 golden snapshot for token-strict-equal.ts 1`] = `
+{
+  "column": 9,
+  "file": "token-strict-equal.ts",
+  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-CMP-01.md",
+  "line": 4,
+  "message": "Timing-unsafe equality compare (=== or ==) on auth-related value; use crypto.timingSafeEqual or a constant-time compare.",
+  "ruleId": "CS-CMP-01",
+  "severity": "high",
+  "snippet": "	return token === expected;",
+}
+`;

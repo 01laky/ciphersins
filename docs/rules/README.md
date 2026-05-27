@@ -10,8 +10,8 @@ Implemented rules link to their documentation.
 | CS-JWT-02                   | high     | Verify without algorithms   | planned     |
 | CS-JWT-03                   | critical | Algorithm none / bypass     | planned     |
 | CS-JWT-04                   | medium   | Missing exp validation      | planned     |
-| CS-CMP-01                   | high     | Timing-unsafe compare       | planned     |
-| CS-RNG-01                   | high     | Math.random in auth context | planned     |
+| [CS-CMP-01](./CS-CMP-01.md) | high     | Timing-unsafe compare       | implemented |
+| [CS-RNG-01](./CS-RNG-01.md) | high     | Math.random in auth context | implemented |
 | CS-HASH-01                  | high     | MD5/SHA1 for password       | planned     |
 | CS-HASH-02                  | medium   | Weak bcrypt cost            | planned     |
 

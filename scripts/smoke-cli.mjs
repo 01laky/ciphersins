@@ -8,6 +8,8 @@ const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
 const fixtureDir = path.join(rootDir, "test/fixtures/scaffold");
 const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
+const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
+const rngBadDir = path.join(rootDir, "fixtures/cs-rng-01/bad");
 
 function assert(condition, message) {
 	if (!condition) {
@@ -32,19 +34,43 @@ assert(
 	`unexpected stdout: ${direct.stdout}`,
 );
 
-const jwtScan = spawnSync(process.execPath, [cliEntry, "scan", jwtBadDir], {
-	encoding: "utf8",
-	cwd: rootDir,
-});
+for (const [dir, ruleId] of [
+	[jwtBadDir, "CS-JWT-01"],
+	[cmpBadDir, "CS-CMP-01"],
+	[rngBadDir, "CS-RNG-01"],
+]) {
+	const result = spawnSync(process.execPath, [cliEntry, "scan", dir], {
+		encoding: "utf8",
+		cwd: rootDir,
+	});
+	assert(
+		result.status === 0,
+		`${ruleId} bad scan exit ${result.status}\n${result.stderr}`,
+	);
+	assert(
+		result.stdout.includes(ruleId),
+		`expected ${ruleId} in:\n${result.stdout}`,
+	);
+}
 
-assert(
-	jwtScan.status === 0,
-	`jwt bad scan exit ${jwtScan.status}\n${jwtScan.stderr}`,
-);
-assert(
-	jwtScan.stdout.includes("CS-JWT-01"),
-	`expected CS-JWT-01 in:\n${jwtScan.stdout}`,
-);
+for (const goodDir of [
+	path.join(rootDir, "fixtures/cs-jwt-01/good"),
+	path.join(rootDir, "fixtures/cs-cmp-01/good"),
+	path.join(rootDir, "fixtures/cs-rng-01/good"),
+]) {
+	const goodScan = spawnSync(process.execPath, [cliEntry, "scan", goodDir], {
+		encoding: "utf8",
+		cwd: rootDir,
+	});
+	assert(
+		goodScan.status === 0,
+		`good scan exit ${goodScan.status} for ${goodDir}\n${goodScan.stderr}`,
+	);
+	assert(
+		goodScan.stdout.includes("No findings."),
+		`expected No findings. for ${goodDir}:\n${goodScan.stdout}`,
+	);
+}
 
 const cliBin = path.join(rootDir, "node_modules/.bin/ciphersins");
 assert(fs.existsSync(cliBin), `missing linked bin at ${cliBin}`);

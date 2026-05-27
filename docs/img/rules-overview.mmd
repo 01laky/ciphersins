@@ -1,43 +1,59 @@
 flowchart TB
-	subgraph SOURCE["Application source · e.g. auth.ts"]
-		direction LR
-		IMP["import / require jsonwebtoken"]
-		CALL["jwt.decode() CallExpression"]
+	subgraph RULES["Registered rules · packages/core/src/rules"]
+		direction TB
+		JWT["CS-JWT-01 · jsonwebtoken bindings"]
+		CMP["CS-CMP-01 · auth === / == + import gate"]
+		RNG["CS-RNG-01 · Math.random auth context"]
 	end
 
-	subgraph RULE["CS-JWT-01 · packages/core/src/rules"]
-		direction TB
+	subgraph JWT_FLOW["CS-JWT-01"]
 		BIND["getJsonWebTokenBindings()"]
 		WALK["collectCallExpressions()"]
 		VERIFY{"any jwt.verify() in file?"}
-		DECODE["matches decode call sites"]
-		FIND["createFinding()"]
+		DECODE["decode call sites"]
 		BIND --> WALK --> VERIFY
-		VERIFY -->|yes| CLEAN["return []"]
-		VERIFY -->|no| DECODE --> FIND
+		VERIFY -->|yes| JCLEAN["return []"]
+		VERIFY -->|no| DECODE --> JFIND["createFinding()"]
+	end
+
+	subgraph CMP_FLOW["CS-CMP-01"]
+		GATE{"crypto/auth import?"}
+		BIN["collectEqualityBinaryExpressions()"]
+		AUTH{"auth-material operand?"}
+		SAFE{"timingSafeEqual operand?"}
+		GATE -->|no| CCLEAN["return []"]
+		GATE -->|yes| BIN --> SAFE
+		SAFE -->|yes| CSKIP["skip"]
+		SAFE -->|no| AUTH -->|yes| CFIND["createFinding()"]
+	end
+
+	subgraph RNG_FLOW["CS-RNG-01"]
+		MR["isMathRandomCall()"]
+		CTX{"callHasAuthContext()?"}
+		MR --> CTX
+		CTX -->|yes| RFIND["createFinding()"]
 	end
 
 	subgraph REPORT["Finding output"]
 		direction LR
 		LOC["file · line · column"]
-		MSG["CS-JWT-01 · high"]
-		DOC["helpUrl → docs/rules/CS-JWT-01.md"]
+		MSG["ruleId · severity"]
+		DOC["helpUrl → docs/rules/"]
 	end
 
-	IMP --> BIND
-	CALL --> WALK
-	FIND --> LOC
-	FIND --> MSG
-	FIND --> DOC
+	JWT --> JWT_FLOW
+	CMP --> CMP_FLOW
+	RNG --> RNG_FLOW
+	JFIND --> REPORT
+	CFIND --> REPORT
+	RFIND --> REPORT
 
-	classDef source fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe
 	classDef rule fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffedd5
 	classDef decision fill:#312e81,stroke:#a5b4fc,stroke-width:2px,color:#eef2ff
 	classDef clean fill:#134e4a,stroke:#5eead4,stroke-width:2px,color:#f0fdfa
 	classDef report fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
 
-	class IMP,CALL source
-	class BIND,WALK,DECODE,FIND rule
-	class VERIFY decision
-	class CLEAN clean
+	class JWT,CMP,RNG rule
+	class VERIFY,GATE,AUTH,SAFE,CTX decision
+	class JCLEAN,CCLEAN,CSKIP clean
 	class LOC,MSG,DOC report

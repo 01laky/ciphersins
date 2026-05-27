@@ -29,4 +29,9 @@ export {
 } from "./resolve-files.js";
 export { runRules } from "./run-rules.js";
 export { createEmptySummary, scan, summarizeFindings } from "./scan.js";
-export { allRules, csJwt01Rule } from "./rules/index.js";
+export {
+	allRules,
+	csJwt01Rule,
+	csCmp01Rule,
+	csRng01Rule,
+} from "./rules/index.js";

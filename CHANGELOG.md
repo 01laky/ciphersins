@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.0]
+
+### Added
+
+- **CS-CMP-01** — flags `===` / `==` on auth-material operands when crypto/auth imports are present; skips `timingSafeEqual` operand compares.
+- **CS-RNG-01** — flags direct `Math.random()` in auth-named scope chains; respects shadowed `Math`.
+- Shared helpers: `auth-material-names`, `crypto-auth-imports`, `enclosing-function`, `collect-binary-expressions`, `is-math-random-call`.
+- Fixtures `fixtures/cs-cmp-01/{bad,good}/`, `fixtures/cs-rng-01/{bad,good}/`.
+- Tests: CS-CMP-01-01–27, CS-RNG-01-01–22, CS-AUTH-01–10, CS-INT-01–03, CS-S49.
+- **`docs/rules/CS-CMP-01.md`**, **`docs/rules/CS-RNG-01.md`**.
+- smoke-cli regression for CMP/RNG bad dirs and good-dir clean scans.
+
+### Changed
+
+- `parseSourceFile` sets AST parent pointers (`setParent: true`) for enclosing-scope analysis.
+- `allRules` registry: CS-JWT-01, CS-CMP-01, CS-RNG-01 (stable order).
+- Scaffold CS-S02 / CS-S03 / CS-S48 / CS-S49; CS-S47 covers all active rules.
+- README, comparison, rules index, and `docs/img/rules-overview` diagram updated.
+- CLI `--version` output updated to `0.4.0`.
+
 ## [0.3.3]
 
 ### Added

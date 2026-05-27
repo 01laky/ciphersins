@@ -34,10 +34,12 @@ CipherSins uses **AST + import binding resolution** to connect `jwt.decode` to t
 
 General SAST tools can encode similar rules, but CipherSins is **purpose-built** for a curated MVP rule set:
 
-- Consistent rule IDs (`CS-JWT-01`, …)
+- Consistent rule IDs (`CS-JWT-01`, `CS-CMP-01`, `CS-RNG-01`, …)
 - Bad/good fixtures per rule
 - Numbered vitest cases per rule
 - Linked rule documentation with fix guidance
+
+**Implemented in 0.4.x:** JWT decode-without-verify, timing-unsafe `===`/`==` on auth material (with import gate), and `Math.random()` in auth-named contexts.
 
 You might still use Semgrep or ESLint alongside CipherSins for broader coverage.
 

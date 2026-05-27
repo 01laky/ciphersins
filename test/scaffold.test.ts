@@ -8,7 +8,9 @@ import {
 	allRules,
 	createEmptySummary,
 	createRuleContext,
+	csCmp01Rule,
 	csJwt01Rule,
+	csRng01Rule,
 	formatRelativePath,
 	getLineSnippet,
 	parseSourceFile,
@@ -35,16 +37,32 @@ describe("CS-S01 exports", () => {
 		expect(Array.isArray(allRules)).toBe(true);
 	});
 
-	it("CS-S48 exposes createRuleContext and csJwt01Rule", () => {
+	it("CS-S48 exposes createRuleContext and bundled rules", () => {
 		expect(typeof createRuleContext).toBe("function");
 		expect(typeof csJwt01Rule.run).toBe("function");
+		expect(typeof csCmp01Rule.run).toBe("function");
+		expect(typeof csRng01Rule.run).toBe("function");
 	});
 });
 
 describe("CS-S02 rule registry", () => {
-	it("CS-S02 registers CS-JWT-01 in the rule registry", () => {
-		expect(allRules).toHaveLength(1);
-		expect(allRules[0]?.id).toBe("CS-JWT-01");
+	it("CS-S02 registers JWT, CMP, and RNG rules in stable order", () => {
+		expect(allRules).toHaveLength(3);
+		expect(allRules.map((r) => r.id)).toEqual([
+			"CS-JWT-01",
+			"CS-CMP-01",
+			"CS-RNG-01",
+		]);
+	});
+});
+
+describe("CS-S49 rule registry order", () => {
+	it("CS-S49 keeps stable allRules order", () => {
+		expect(allRules.map((rule) => rule.id)).toEqual([
+			"CS-JWT-01",
+			"CS-CMP-01",
+			"CS-RNG-01",
+		]);
 	});
 });
 
@@ -396,6 +414,6 @@ describe("CS-S22 CLI help and version", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("0.3.3");
+		expect(result.stdout.trim()).toBe("0.4.0");
 	});
 });

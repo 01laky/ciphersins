@@ -18,6 +18,10 @@ Tagline: _gitleaks for bad crypto API usage_.
 
 **No.** `npm audit` reports dependency CVEs. CipherSins reports **application-level misuse** of otherwise fine dependencies (e.g. `jwt.decode` used as authentication).
 
+## How many rules are implemented?
+
+**3 of 8** MVP rules at **0.4.0**: CS-JWT-01, CS-CMP-01, CS-RNG-01. See [rules index](./rules/README.md).
+
 ## Why same-file scope for CS-JWT-01?
 
 v1.0 flags decode when **no `jwt.verify()` exists anywhere in the same file**. Cross-file helpers (decode in one module, verify in another) are a known limitation documented in [CS-JWT-01](./rules/CS-JWT-01.md).
@@ -30,17 +34,21 @@ Unreachable `if (false) { jwt.verify(...) }` still suppresses findings — v1 do
 
 ## How do I add a rule?
 
-See [development.md — Adding a rule](./development.md#adding-a-rule). Worked example: **CS-JWT-01** in `packages/core/src/rules/cs-jwt-01.ts`.
+See [development.md — Adding a rule](./development.md#adding-a-rule). Worked examples: **CS-JWT-01**, **CS-CMP-01**, **CS-RNG-01** in `packages/core/src/rules/`.
 
 ## What test IDs mean
 
 | Prefix              | Suite                  |
 | ------------------- | ---------------------- |
 | **CS-S01–S22**      | Scaffold / integration |
-| **CS-S23–S47**      | Edge cases             |
+| **CS-S23–S49**      | Edge cases             |
 | **CS-JWT-01-01–43** | CS-JWT-01 rule         |
+| **CS-CMP-01-01–27** | CS-CMP-01 rule         |
+| **CS-RNG-01-01–22** | CS-RNG-01 rule         |
+| **CS-AUTH-01–10**   | Auth-material helper   |
+| **CS-INT-01–03**    | Cross-rule integration |
 
-Run `pnpm test` for the full suite (105 tests at v0.3.3).
+Run `pnpm test` for the full suite (200 tests at v0.4.0).
 
 ## Who maintains this?
 

@@ -505,8 +505,8 @@ describe("CS-S46 scan metadata consistency", () => {
 	});
 });
 
-describe("CS-S47 edge fixtures with CS-JWT-01 active", () => {
-	it("CS-S47 scans edge-case harness without JWT findings", async () => {
+describe("CS-S47 edge fixtures with all rules active", () => {
+	it("CS-S47 scans edge-case harness without findings", async () => {
 		const result = await scan({ paths: [edgeDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);

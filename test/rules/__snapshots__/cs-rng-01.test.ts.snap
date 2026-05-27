@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CS-RNG-01 finding shape > CS-RNG-01-12 golden snapshot for session-id-function.ts 1`] = `
+{
+  "column": 9,
+  "file": "session-id-function.ts",
+  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-RNG-01.md",
+  "line": 2,
+  "message": "Math.random() used where auth-related naming suggests secrets, tokens, or session identifiers; use crypto.randomBytes or crypto.randomUUID.",
+  "ruleId": "CS-RNG-01",
+  "severity": "high",
+  "snippet": "	return Math.random().toString(36).slice(2);",
+}
+`;

@@ -35,7 +35,7 @@ export function parseSourceFile(
 			absolutePath,
 			text,
 			ts.ScriptTarget.Latest,
-			false,
+			true,
 			scriptKind,
 		);
 	} catch (error) {

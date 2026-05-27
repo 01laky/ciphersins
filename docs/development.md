@@ -22,7 +22,7 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 | ---------------------------------- | ------------------------------------------------------------------ |
 | `pnpm verify`                      | format → typecheck → build → install (link bin) → test → CLI smoke |
 | `pnpm build`                       | Build `@ciphersins/core` and `ciphersins` CLI                      |
-| `pnpm test`                        | Vitest — CS-S01–S48, CS-JWT-01-01–43                               |
+| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/CMP/RNG/AUTH/INT tests                 |
 | `pnpm exec ciphersins scan [path]` | Run local CLI against a path                                       |
 | `pnpm smoke:cli`                   | Post-build CLI smoke via `scripts/smoke-cli.mjs`                   |
 | `pnpm diagrams:build`              | Regenerate README SVGs from `docs/img/*.mmd`                       |
@@ -51,7 +51,7 @@ Config file parsing is **not implemented yet**. See [`ciphersins.config.example.
 
 ## Adding a rule
 
-Worked example: **CS-JWT-01** (`packages/core/src/rules/cs-jwt-01.ts`).
+Worked examples: **CS-JWT-01**, **CS-CMP-01**, **CS-RNG-01** in `packages/core/src/rules/`. Shared **`auth-material-names`** helper is reused by CMP and RNG.
 
 1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/` with minimal samples
 2. Implement `Rule` in `packages/core/src/rules/` using AST analysis (no regex-only detection)
@@ -67,7 +67,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.3.3` = test hardening + docs; `0.3.2` = architecture diagrams).
+- Repo version bumps after each completed phase (`0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

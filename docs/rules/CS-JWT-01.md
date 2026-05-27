@@ -106,7 +106,7 @@ See [False positives and limits](#false-positives-and-limits) above. Cross-file 
 
 ## Source
 
-[`packages/core/src/rules/cs-jwt-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-01.ts) — scope helper: [`jsonwebtoken-verify-scope.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/helpers/jsonwebtoken-verify-scope.ts).
+[`packages/ciphersins/src/rules/cs-jwt-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/cs-jwt-01.ts) — scope helper: [`jsonwebtoken-verify-scope.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/helpers/jsonwebtoken-verify-scope.ts).
 
 ## Fix
 

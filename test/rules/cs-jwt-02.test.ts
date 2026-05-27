@@ -9,13 +9,13 @@ import {
 	csJwt02Rule,
 	parseSourceFile,
 	scan,
-} from "@ciphersins/core";
-import { collectCallExpressions } from "../../packages/core/src/rules/helpers/collect-call-expressions.js";
+} from "ciphersins";
+import { collectCallExpressions } from "../../packages/ciphersins/src/rules/helpers/collect-call-expressions.js";
 import {
 	getJsonWebTokenBindings,
 	matchesJsonWebTokenMethodCall,
-} from "../../packages/core/src/rules/helpers/jsonwebtoken-bindings.js";
-import { verifyCallMissingAlgorithms } from "../../packages/core/src/rules/helpers/jwt-verify-options.js";
+} from "../../packages/ciphersins/src/rules/helpers/jsonwebtoken-bindings.js";
+import { verifyCallMissingAlgorithms } from "../../packages/ciphersins/src/rules/helpers/jwt-verify-options.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
@@ -23,7 +23,7 @@ const jwt02BadDir = path.join(rootDir, "fixtures/cs-jwt-02/bad");
 const jwt02GoodDir = path.join(rootDir, "fixtures/cs-jwt-02/good");
 const jwt01BadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
 const jwt01GoodDir = path.join(rootDir, "fixtures/cs-jwt-01/good");
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 const CS_JWT_02_MESSAGE =
 	"jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.";

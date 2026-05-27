@@ -4,7 +4,7 @@ import {
 	fileHasCryptoAuthImport,
 	getCryptoAuthImports,
 	isTimingSafeEqualCall,
-} from "../../packages/core/src/rules/helpers/crypto-auth-imports.js";
+} from "../../packages/ciphersins/src/rules/helpers/crypto-auth-imports.js";
 
 function parseSource(source: string, fileName = "sample.ts"): ts.SourceFile {
 	return ts.createSourceFile(

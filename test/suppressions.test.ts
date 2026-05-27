@@ -1,6 +1,6 @@
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseSourceFile, parseSuppressions, scan } from "@ciphersins/core";
+import { parseSourceFile, parseSuppressions, scan } from "ciphersins";
 
 const fixturesDir = path.resolve(import.meta.dirname, "fixtures/suppressions");
 

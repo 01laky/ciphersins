@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const cliDist = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliDist = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 const binDir = path.join(rootDir, "node_modules/.bin");
 const binPath = path.join(binDir, "ciphersins");
 

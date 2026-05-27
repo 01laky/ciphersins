@@ -2,8 +2,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { resolveFiles, scan } from "@ciphersins/core";
-import { isScannableExtension } from "../../packages/core/src/resolve-files.js";
+import { resolveFiles, scan } from "ciphersins";
+import { isScannableExtension } from "../../packages/ciphersins/src/resolve-files.js";
 import { skippedPath } from "../helpers/skipped-path.js";
 
 function withTempDir(

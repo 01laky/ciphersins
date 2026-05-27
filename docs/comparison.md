@@ -69,15 +69,15 @@ You might still use Semgrep or ESLint alongside CipherSins for broader coverage.
 
 ## Roadmap overlap
 
-| Feature                                   | Status at v1.0.0                                 |
-| ----------------------------------------- | ------------------------------------------------ |
-| JSON output                               | **Implemented**                                  |
-| SARIF 2.1.0 output                        | **Implemented**                                  |
-| `ciphersins.config.json`                  | **Implemented** (full schema)                    |
-| `--only` / `--ignore` rule filters        | **Implemented**                                  |
-| Inline suppressions                       | **Implemented**                                  |
-| `--fail-on` for CI gates                  | **Implemented**                                  |
-| Programmatic `formatJson` / `formatSarif` | **Implemented** (`@ciphersins/core`)             |
-| npm publish                               | **Published** (`ciphersins`, `@ciphersins/core`) |
+| Feature                                   | Status at v1.0.0                           |
+| ----------------------------------------- | ------------------------------------------ |
+| JSON output                               | **Implemented**                            |
+| SARIF 2.1.0 output                        | **Implemented**                            |
+| `ciphersins.config.json`                  | **Implemented** (full schema)              |
+| `--only` / `--ignore` rule filters        | **Implemented**                            |
+| Inline suppressions                       | **Implemented**                            |
+| `--fail-on` for CI gates                  | **Implemented**                            |
+| Programmatic `formatJson` / `formatSarif` | **Implemented** (`ciphersins`)             |
+| npm publish                               | **Published** (`ciphersins`, `ciphersins`) |
 
 See [proposal.md](./proposal.md) for the full MVP checklist.

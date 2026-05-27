@@ -4,9 +4,9 @@ import {
 	severityRank,
 	severityToSarifLevel,
 	summaryExceedsFailOn,
-} from "@ciphersins/core";
-import { formatFailSummary } from "../../packages/cli/src/format-fail-summary.js";
-import { parseScanArgs } from "../../packages/cli/src/parse-scan-args.js";
+} from "ciphersins";
+import { formatFailSummary } from "../../packages/ciphersins/src/format-fail-summary.js";
+import { parseScanArgs } from "../../packages/ciphersins/src/parse-scan-args.js";
 
 describe("CS-CLI scan args and severity helpers", () => {
 	it("CS-CLI-01 parseScanArgs([]) defaults to pretty with no fail-on", () => {

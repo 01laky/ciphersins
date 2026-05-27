@@ -9,7 +9,7 @@ import {
 	formatSarif,
 	scan,
 	type Finding,
-} from "@ciphersins/core";
+} from "ciphersins";
 import { jwt03BadFile, jwt03GoodDir, rootDir } from "../cli/helpers.js";
 import { skippedPath } from "../helpers/skipped-path.js";
 

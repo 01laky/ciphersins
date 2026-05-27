@@ -147,7 +147,7 @@ See [False positives and limits](#false-positives-and-limits). Template-literal 
 
 ## Source
 
-[`packages/core/src/rules/cs-jwt-03.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-03.ts)
+[`packages/ciphersins/src/rules/cs-jwt-03.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/cs-jwt-03.ts)
 
 ## References
 

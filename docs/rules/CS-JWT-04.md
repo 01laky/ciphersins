@@ -112,7 +112,7 @@ See [cli.md](../cli.md#inline-suppressions).
 
 ## Source
 
-[`packages/core/src/rules/cs-jwt-04.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-04.ts)
+[`packages/ciphersins/src/rules/cs-jwt-04.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/cs-jwt-04.ts)
 
 ## Cross-rule with CS-JWT-02
 

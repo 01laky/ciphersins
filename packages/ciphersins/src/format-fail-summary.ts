@@ -1,5 +1,5 @@
-import { SEVERITIES, type Severity } from "@ciphersins/core";
-import { severityRank } from "@ciphersins/core";
+import { SEVERITIES, type Severity } from "./types.js";
+import { severityRank } from "./reporting/severity.js";
 
 export function formatFailSummary(
 	summary: Record<Severity, number>,

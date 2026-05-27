@@ -43,7 +43,7 @@ Architecture: [architecture.md](./architecture.md) · CLI: [cli.md](./cli.md)
 
 ## Install & status
 
-**v1.0.0** — stable release on npm (`ciphersins`, `@ciphersins/core`). See [README](../README.md#install) and [releasing.md](./releasing.md) for publish workflow.
+**v1.0.0** — stable release on npm (`ciphersins`, `ciphersins`). See [README](../README.md#install) and [releasing.md](./releasing.md) for publish workflow.
 
 ## Maintainer
 

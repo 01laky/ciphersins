@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
 	expressionContainsAuthMaterial,
 	isAuthMaterialName,
-} from "../../packages/core/src/rules/helpers/auth-material-names.js";
+} from "../../packages/ciphersins/src/rules/helpers/auth-material-names.js";
 
 function parseExpressionStatementSource(source: string): ts.Expression {
 	const file = ts.createSourceFile(

@@ -1,12 +1,12 @@
 # Releasing CipherSins
 
-Maintainer checklist for publishing **`ciphersins`** and **`@ciphersins/core`** to npm.
+Maintainer checklist for publishing **`ciphersins`** to npm.
 
 npm publish runs **locally** (not in GitHub Actions). The release workflow only verifies the tag and creates a GitHub Release.
 
 ## Prerequisites
 
-- npm account with publish access to both package names (`ciphersins`, `@ciphersins/core`)
+- npm account with publish access to `ciphersins`
 - Local clone on `main` with a clean working tree
 - [pnpm](https://pnpm.io/) 9.x (matches `packageManager` in root `package.json`)
 
@@ -24,21 +24,11 @@ Or export a token for the session:
 export NODE_AUTH_TOKEN=npm_...
 ```
 
-### Create the `@ciphersins` npm organization (required)
-
-`@ciphersins/core` is a **scoped** package — npm requires an organization with that exact name before the first publish.
-
-1. Open [npm — Create an Org](https://www.npmjs.com/org/create)
-2. Organization name: **`ciphersins`** (lowercase, no `@`)
-3. Add your npm user as **Owner**
-4. Verify:
+Unscoped package — same model as [llm-stream-assemble](https://github.com/01laky/llm-stream-assemble). No npm organization required.
 
 ```bash
 npm whoami
-npm org ls ciphersins
 ```
-
-If you see `Scope not found` or `403` on publish, the org is missing or your user is not a member. The publish script checks this **before** running the full test suite.
 
 ## Pre-release verification
 
@@ -50,14 +40,13 @@ npm run verify
 npm run pack:check
 ```
 
-`pack:check` runs `npm pack --dry-run` in both publishable packages after build and confirms tarball contents.
+`pack:check` runs `npm pack --dry-run` in `packages/ciphersins` after build and confirms tarball contents (README, LICENSE, dist, bin).
 
 ## Version bump (patch/minor/major)
 
-1. Bump `version` in **all three** manifests (keep them aligned):
+1. Bump `version` in **both** manifests (keep them aligned):
    - `package.json` (root, private)
-   - `packages/core/package.json`
-   - `packages/cli/package.json`
+   - `packages/ciphersins/package.json`
 2. Run `node scripts/sync-version.mjs` (also runs automatically via `npm run build`).
 3. Add a `[x.y.z]` section to [CHANGELOG.md](../CHANGELOG.md).
 4. Commit, push to `main`, and ensure CI is green.
@@ -70,35 +59,40 @@ npm run publish:npm
 
 This script:
 
-1. Checks root/core/cli versions match
+1. Checks root and package versions match
 2. Verifies npm login (`npm whoami` or `NODE_AUTH_TOKEN`)
-3. Runs `npm run verify`
+3. Runs `npm run verify` (unless `--skip-verify`)
 4. Runs `npm run pack:check`
-5. Publishes `@ciphersins/core`, then `ciphersins` (with `--provenance` by default)
+5. `npm publish` from `packages/ciphersins/` (plain local publish — no `--provenance` unless you pass it)
+
+After first publish following the v1.0.2 merge, deprecate the old engine package:
+
+```bash
+npm deprecate ciphersins-core "Merged into ciphersins — npm install ciphersins"
+```
 
 ### Options
 
 ```bash
-npm run publish:npm -- --dry-run        # pack:check + pnpm publish --dry-run only
+npm run publish:npm -- --dry-run        # pack:check only, no registry upload
 npm run publish:npm -- --skip-verify    # skip full verify (not recommended)
-npm run publish:npm -- --no-provenance  # omit Sigstore attestation
+npm run publish:npm -- --provenance      # Sigstore attestation (GitHub Actions OIDC only)
 ```
 
 Manual equivalent:
 
 ```bash
 npm run build
-pnpm --filter @ciphersins/core publish --access public --no-git-checks --provenance
-pnpm --filter ciphersins publish --access public --no-git-checks --provenance
+npm publish --access public   # in packages/ciphersins
 ```
 
 ## GitHub Release (tag)
 
-After npm packages are live:
+After npm package is live:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.0.2
+git push origin v1.0.2
 ```
 
 The [release workflow](../.github/workflows/release.yml) on tag `v*.*.*`:
@@ -107,7 +101,7 @@ The [release workflow](../.github/workflows/release.yml) on tag `v*.*.*`:
 2. Runs `pack:check`
 3. Creates a GitHub Release with auto-generated notes
 
-Tag must match package version (e.g. tag `v1.0.0` → package version `1.0.0`).
+Tag must match package version (e.g. tag `v1.0.2` → package version `1.0.2`).
 
 ## After publish
 
@@ -115,17 +109,16 @@ Verify installs:
 
 ```bash
 npx ciphersins@latest --version
-npm view @ciphersins/core version
+npm view ciphersins version
+node -e "import('ciphersins').then(({ scan }) => console.log(typeof scan))"
 ```
 
 ## Troubleshooting
 
-| Issue                                       | Fix                                                                                                                |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `Scope not found` / `@ciphersins/core` 404  | Create npm org **ciphersins** at [npmjs.com/org/create](https://www.npmjs.com/org/create); `npm org ls ciphersins` |
-| `ENEEDAUTH` / need auth                     | `npm login` or `export NODE_AUTH_TOKEN=npm_...` before `npm run publish:npm`                                       |
-| `402 Payment Required` / package name taken | Ensure npm org/user owns `ciphersins` and `@ciphersins/core`                                                       |
-| CLI publish fails on `@ciphersins/core`     | Publish core first; keep `workspace:*` in git — pnpm publish resolves it to semver                                 |
-| Tag push does nothing                       | Check Actions tab; tag must match `v*.*.*` pattern                                                                 |
-| Provenance errors locally                   | Use `--no-provenance`, or npm 9+ with `npm login`                                                                  |
-| `pnpm install --frozen-lockfile` fails      | CLI must use `workspace:*` for `@ciphersins/core`; do not commit semver there                                      |
+| Issue                                       | Fix                                                                                           |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `ENEEDAUTH` / need auth                     | `npm login` or `export NODE_AUTH_TOKEN=npm_...` before `npm run publish:npm`                  |
+| `402 Payment Required` / package name taken | Package name already owned by another npm user — pick a different name or contact npm support |
+| npm page missing README                     | Ensure `scripts/sync-package-docs.mjs` ran; tarball must include `README.md` and `LICENSE`    |
+| Tag push does nothing                       | Check Actions tab; tag must match `v*.*.*` pattern                                            |
+| Provenance errors locally                   | Default publish omits `--provenance`. Use `--provenance` only in GitHub Actions with OIDC     |

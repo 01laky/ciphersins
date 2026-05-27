@@ -3,7 +3,7 @@
 exports[`CS-CLI format and output integration > CS-CLI-20 JSON golden snapshot for jwt-03 bad file 1`] = `
 "{
   "schemaVersion": 2,
-  "version": "1.0.0",
+  "version": "1.0.2",
   "tool": "ciphersins",
   "summary": {
     "low": 0,
@@ -273,7 +273,7 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
             },
           ],
-          "version": "1.0.0",
+          "version": "1.0.2",
         },
       },
     },

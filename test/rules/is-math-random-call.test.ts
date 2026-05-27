@@ -1,6 +1,6 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { isMathRandomCall } from "../../packages/core/src/rules/helpers/is-math-random-call.js";
+import { isMathRandomCall } from "../../packages/ciphersins/src/rules/helpers/is-math-random-call.js";
 
 function parseSource(source: string): ts.SourceFile {
 	return ts.createSourceFile(

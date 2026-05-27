@@ -6,7 +6,7 @@ import {
 	getLineSnippet,
 	getPositionForLineColumn,
 	parseSourceFile,
-} from "@ciphersins/core";
+} from "ciphersins";
 
 describe("CS-PARSE parseSourceFile edge cases", () => {
 	it("CS-PARSE-01 shebang line parses without treating it as a statement", () => {
@@ -52,7 +52,7 @@ jwt.decode(tôkén);
 			fs.writeFileSync(file, source);
 			const parsed = parseSourceFile(file);
 			expect(parsed.statements.length).toBeGreaterThan(0);
-			const { scan } = await import("@ciphersins/core");
+			const { scan } = await import("ciphersins");
 			const result = await scan({ paths: [file], cwd: tempDir });
 			expect(result.findings.some((f) => f.ruleId === "CS-JWT-01")).toBe(true);
 		} finally {
@@ -90,7 +90,7 @@ export { AuthService };
 			fs.writeFileSync(file, source);
 			const parsed = parseSourceFile(file);
 			expect(parsed.statements.length).toBeGreaterThan(0);
-			const { scan } = await import("@ciphersins/core");
+			const { scan } = await import("ciphersins");
 			const result = await scan({ paths: [file], cwd: tempDir });
 			expect(result.findings).toEqual([]);
 		} finally {

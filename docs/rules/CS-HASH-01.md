@@ -92,7 +92,7 @@ See [False positives and limits](#false-positives-and-limits). Non-literal diges
 
 ## Source
 
-[`packages/core/src/rules/cs-hash-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-hash-01.ts)
+[`packages/ciphersins/src/rules/cs-hash-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/cs-hash-01.ts)
 
 ## References
 

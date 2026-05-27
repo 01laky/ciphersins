@@ -98,7 +98,7 @@ See [False positives and limits](#false-positives-and-limits). Variable options 
 
 ## Source
 
-[`packages/core/src/rules/cs-jwt-02.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-02.ts)
+[`packages/ciphersins/src/rules/cs-jwt-02.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/cs-jwt-02.ts)
 
 ## False positives and limits
 

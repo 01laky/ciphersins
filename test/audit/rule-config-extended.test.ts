@@ -7,7 +7,7 @@ import {
 	RULE_IDS,
 	selectRules,
 	type Finding,
-} from "@ciphersins/core";
+} from "ciphersins";
 
 describe("CS-RULE-CFG extended rule config", () => {
 	it("CS-RULE-CFG-05 parseRulesConfig empty object returns empty severities and disabled", () => {

@@ -12,11 +12,11 @@ import {
 	summaryExceedsFailOn,
 	type Finding,
 	type Severity,
-} from "@ciphersins/core";
-import { loadConfigFile } from "../../packages/cli/src/config/load-config.js";
-import { mergeScanOptions } from "../../packages/cli/src/config/merge-scan-options.js";
-import { formatFailSummary } from "../../packages/cli/src/format-fail-summary.js";
-import { parseScanArgs } from "../../packages/cli/src/parse-scan-args.js";
+} from "ciphersins";
+import { loadConfigFile } from "../../packages/ciphersins/src/config/load-config.js";
+import { mergeScanOptions } from "../../packages/ciphersins/src/config/merge-scan-options.js";
+import { formatFailSummary } from "../../packages/ciphersins/src/format-fail-summary.js";
+import { parseScanArgs } from "../../packages/ciphersins/src/parse-scan-args.js";
 import {
 	allBadDirs,
 	cli,
@@ -30,6 +30,7 @@ import {
 	jwt03GoodDir,
 	jwt02GoodDir,
 	jwt04BadDir,
+	pkgVersion,
 	rootDir,
 } from "./helpers.js";
 
@@ -426,10 +427,10 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 		expect(doc.summary.total).toBe(191);
 	});
 
-	it("CS-CLI-EXT-39 JSON version field matches package version 1.0.0", () => {
+	it("CS-CLI-EXT-39 JSON version field matches package version", () => {
 		const result = cli(["--format", "json", "--no-config", jwt03GoodDir]);
 		const doc = JSON.parse(result.stdout);
-		expect(doc.version).toBe("1.0.0");
+		expect(doc.version).toBe(pkgVersion);
 		expect(doc.tool).toBe("ciphersins");
 	});
 });
@@ -502,7 +503,7 @@ describe("CS-CLI extended edge cases — SARIF output contract", () => {
 		const result = cli(["--format", "sarif", "--no-config", jwt03GoodDir]);
 		const driver = JSON.parse(result.stdout).runs[0].tool.driver;
 		expect(driver.name).toBe("CipherSins");
-		expect(driver.version).toBe("1.0.0");
+		expect(driver.version).toBe(pkgVersion);
 		expect(driver.informationUri).toContain("CipherSins");
 	});
 });
@@ -651,12 +652,12 @@ describe("CS-CLI extended edge cases — help routing", () => {
 		expect(result.stdout).toContain("docs/cli.md");
 	});
 
-	it("CS-CLI-EXT-58 top-level --version prints 1.0.0", () => {
+	it("CS-CLI-EXT-58 top-level --version prints package version", () => {
 		const result = spawnSync(process.execPath, [cliEntry, "--version"], {
 			encoding: "utf8",
 			cwd: rootDir,
 		});
-		expect(result.stdout.trim()).toBe("1.0.0");
+		expect(result.stdout.trim()).toBe(pkgVersion);
 	});
 });
 

@@ -8,3 +8,5 @@ test-results/
 .DS_Store
 *.tgz
 *.log
+packages/ciphersins/README.md
+packages/ciphersins/LICENSE

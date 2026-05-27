@@ -4,21 +4,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const coreDir = path.join(rootDir, "packages/core");
-const cliDir = path.join(rootDir, "packages/cli");
+const pkgDir = path.join(rootDir, "packages/ciphersins");
 
 execFileSync("node", ["scripts/sync-version.mjs"], {
 	cwd: rootDir,
 	stdio: "inherit",
 });
 
-process.stdout.write("typecheck-packages: packages/core\n");
-execFileSync("npm", ["run", "typecheck"], { cwd: coreDir, stdio: "inherit" });
-
-process.stdout.write(
-	"typecheck-packages: packages/core (build for CLI types)\n",
-);
-execFileSync("npm", ["run", "build"], { cwd: coreDir, stdio: "inherit" });
-
-process.stdout.write("typecheck-packages: packages/cli\n");
-execFileSync("npm", ["run", "typecheck"], { cwd: cliDir, stdio: "inherit" });
+process.stdout.write("typecheck-packages: packages/ciphersins\n");
+execFileSync("npm", ["run", "typecheck"], { cwd: pkgDir, stdio: "inherit" });

@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
-import { normalizeSarifForSnapshot } from "../../packages/core/src/reporting/normalize-sarif-snapshot.js";
+import { normalizeSarifForSnapshot } from "../../packages/ciphersins/src/reporting/normalize-sarif-snapshot.js";
 import {
 	allBadDirs,
 	cli,

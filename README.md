@@ -1,11 +1,11 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-1.0.0_stable-green)
+![core](https://img.shields.io/badge/core-1.0.2_stable-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-339933)
 ![rules](https://img.shields.io/badge/rules-8%2F8_implemented-9cf)
 ![tests](https://img.shields.io/badge/tests-1164_passing-brightgreen)
 [![ci](https://github.com/01laky/CipherSins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/CipherSins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-v1.0.0-green)
+![status](https://img.shields.io/badge/status-v1.0.2-green)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
@@ -13,7 +13,7 @@
 
 Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** **`1.0.0`** — first stable release on npm. Scan pipeline, TypeScript AST parsing, **all eight MVP rules**, and **full CLI**: JSON/SARIF (`schemaVersion: 2`), `--fail-on` CI gating, `--list-rules`, `--print-config`, `--cwd`, `--include`/`--exclude`, `--max-findings`, `--verbose`, config discovery, inline suppressions, exit codes **0–4**. Rules: **CS-JWT-01** … **CS-HASH-02** (see [Rules at a glance](#rules-at-a-glance)). Install: `npm install --save-dev ciphersins` or `@ciphersins/core`. Review [CHANGELOG.md](./CHANGELOG.md).
+**Status:** **`1.0.2`** — single npm package (`ciphersins`) with CLI + programmatic API.
 
 ---
 
@@ -63,7 +63,7 @@ Each rule ships with **bad/good fixtures** and vitest IDs so crypto regressions 
 
 - **Import-aware AST rules** — ties `decode`, `verify`, and compare calls to their real module bindings (default/namespace/named import, `require`, inline require).
 - **Conservative auth scope (v1)** — same-file analysis; any `jwt.verify()` in the file suppresses decode-only findings.
-- **Actionable security output** — severity, source snippet (API), line:column, and rule doc with fix guidance; CLI prints relative paths and message (snippet via `@ciphersins/core` API).
+- **Actionable security output** — severity, source snippet (API), line:column, and rule doc with fix guidance; CLI prints relative paths and message (snippet via `ciphersins` API).
 - **Purpose-built rule set** — JWT, timing, RNG, and hash categories instead of generic lint noise.
 - **Fixture-proven** — every rule has `fixtures/<rule-id>/{bad,good}/` and numbered tests so cryptographic edge cases stay covered.
 
@@ -85,10 +85,9 @@ Diagram sources: [`docs/img/`](./docs/img/) (Mermaid `.mmd` + committed SVG). Re
 
 Package layout:
 
-| Package            | Role                                       |
-| ------------------ | ------------------------------------------ |
-| `@ciphersins/core` | Scan engine, rule registry, parser helpers |
-| `ciphersins`       | CLI binary (`ciphersins scan [path]`)      |
+| Export             | Role                                             |
+| ------------------ | ------------------------------------------------ |
+| `ciphersins` (npm) | CLI binary + `import { scan } from "ciphersins"` |
 
 ---
 
@@ -121,7 +120,7 @@ npm install -g ciphersins
 npx ciphersins scan ./src
 ```
 
-Library API: `npm install @ciphersins/core`
+Library API: `npm install ciphersins`
 
 **Requirements:** Node.js **20+**
 
@@ -243,7 +242,7 @@ Covers verified tokens: decode+verify in same function, verify in nested/dead co
 ### Programmatic scan (core API)
 
 ```typescript
-import { scan } from "@ciphersins/core";
+import { scan } from "ciphersins";
 
 const result = await scan({ paths: ["./src"], cwd: process.cwd() });
 console.log(result.findings, result.summary);
@@ -275,7 +274,7 @@ pnpm verify
 | Command                            | Description                                                                                                              |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke                                                                  |
-| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1164** at v1.0.0) |
+| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1164** at v1.0.2) |
 | `pnpm exec ciphersins scan [path]` | Run linked CLI                                                                                                           |
 | `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                                                                    |
 | `pnpm format:fix`                  | Apply Prettier (tabs)                                                                                                    |

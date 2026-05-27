@@ -2,13 +2,11 @@ import fs from "node:fs";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import path from "node:path";
-import {
-	formatJson,
-	formatRelativePath,
-	formatSarif,
-	scan,
-	summaryExceedsFailOn,
-} from "@ciphersins/core";
+import { formatJson } from "../reporting/format-json.js";
+import { formatRelativePath } from "../get-line-snippet.js";
+import { formatSarif } from "../reporting/format-sarif.js";
+import { scan } from "../scan.js";
+import { summaryExceedsFailOn } from "../reporting/severity.js";
 import { loadConfig } from "../config/load-config.js";
 import { mergeScanOptions } from "../config/merge-scan-options.js";
 import { runListRulesCommand } from "./list-rules.js";

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
 	getBcryptBindings,
 	isWeakBcryptOperation,
-} from "../../packages/core/src/rules/helpers/bcrypt-bindings.js";
+} from "../../packages/ciphersins/src/rules/helpers/bcrypt-bindings.js";
 
 function parseSource(source: string, fileName = "sample.ts"): ts.SourceFile {
 	return ts.createSourceFile(

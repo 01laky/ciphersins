@@ -16,5 +16,4 @@ function syncPackageVersion(relativePath) {
 	return packageJson.version;
 }
 
-syncPackageVersion("packages/core");
-syncPackageVersion("packages/cli");
+syncPackageVersion("packages/ciphersins");

@@ -2,12 +2,12 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { parseSourceFile } from "@ciphersins/core";
-import { isAuthMaterialName } from "../../packages/core/src/rules/helpers/auth-material-names.js";
+import { parseSourceFile } from "ciphersins";
+import { isAuthMaterialName } from "../../packages/ciphersins/src/rules/helpers/auth-material-names.js";
 import {
 	callHasPasswordContext,
 	isPasswordContextName,
-} from "../../packages/core/src/rules/helpers/password-context.js";
+} from "../../packages/ciphersins/src/rules/helpers/password-context.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");

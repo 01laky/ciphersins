@@ -1,6 +1,6 @@
 # CLI reference
 
-Command-line interface for `ciphersins` (`packages/cli`). Product overview: [about.md](./about.md).
+Command-line interface for `ciphersins` (`packages/ciphersins`). Product overview: [about.md](./about.md).
 
 ## Commands
 
@@ -81,7 +81,7 @@ Machine-readable document with `schemaVersion: 2`, severity summary, relative pa
 }
 ```
 
-Programmatic equivalent: `formatJson()` from `@ciphersins/core`.
+Programmatic equivalent: `formatJson()` from `ciphersins`.
 
 #### JSON schema (`schemaVersion: 2`)
 
@@ -141,7 +141,7 @@ Example with findings and skipped paths:
 
 GitHub Code Scanning–compatible SARIF with full `tool.driver.rules` catalog (all 8 MVP rules), `partialFingerprints`, and `originalUriBaseIds.%WORKINGDIR%`.
 
-Programmatic equivalent: `formatSarif()` from `@ciphersins/core`.
+Programmatic equivalent: `formatSarif()` from `ciphersins`.
 
 #### SARIF field mapping
 
@@ -254,7 +254,7 @@ Monorepo / source build:
 - name: CipherSins scan
   run: |
     npm run build
-    node packages/cli/dist/cli.js scan ./src \
+    node packages/ciphersins/dist/cli.js scan ./src \
       --format sarif \
       --output ciphersins.sarif \
       --fail-on high

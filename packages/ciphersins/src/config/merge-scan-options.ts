@@ -2,16 +2,15 @@ import {
 	assertKnownRuleIds,
 	mergeDisabledRuleIds,
 	parseRulesConfig,
-	resolveDefaultScanRoot,
-	type ScanOptions,
-	type Severity,
-} from "@ciphersins/core";
+} from "../rule-config.js";
+import { resolveDefaultScanRoot } from "../resolve-files.js";
+import type { ScanOptions, Severity } from "../types.js";
 import type { ParsedScanArgsSuccess } from "../parse-scan-args.js";
 import { resolveCliPath } from "../expand-path.js";
 import type { CipherSinsConfig } from "./load-config.js";
 
 export interface MergedScanCommandOptions {
-	scanOptions: import("@ciphersins/core").ScanOptions;
+	scanOptions: ScanOptions;
 	failOn?: Severity;
 	failOnDisabled: boolean;
 	format: ParsedScanArgsSuccess["format"];

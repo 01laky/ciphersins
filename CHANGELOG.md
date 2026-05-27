@@ -3,6 +3,25 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.0.2]
+
+### Changed
+
+- **Single npm package** — merged `ciphersins-core` engine and `ciphersins` CLI into one publishable `ciphersins` package (`packages/ciphersins/`). One install, one `npm publish`.
+- **Import path** — programmatic API: `import { scan } from "ciphersins"` (was `ciphersins-core`).
+
+### Deprecated
+
+- **`ciphersins-core` on npm** — deprecated after publish; use `ciphersins` instead. CLI usage unchanged (`npx ciphersins scan`).
+
+## [1.0.1]
+
+### Fixed
+
+- **npm README** — tarball now includes root `README.md` and `LICENSE` (via `scripts/sync-package-docs.mjs`); npm package pages show full project documentation.
+- **Local npm publish** — default publish omits `--provenance` (requires GitHub Actions OIDC); use `--provenance` in CI only.
+- **Package rename** — engine published as unscoped `ciphersins-core` (was `@ciphersins/core`).
+
 ## [1.0.0]
 
 ### Added
@@ -11,14 +30,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 - **Vitest coverage (CS-VC-01–04)** — `@vitest/coverage-v8`, 90% thresholds on core/cli, `test:coverage` / `test:ci` scripts, JUnit reporter, CI artifact upload.
 - **Per-rule doc sections** — all 8 rules document **Suppressing**, **Library scope**, **Limitations**, and **Source**.
 - **npm publish `--provenance`** — release workflow signs packages with Sigstore provenance.
-- **Version SSOT** — `scripts/sync-version.mjs` generates `packages/core/src/version.ts` and `packages/cli/src/version.ts` from root `package.json`.
+- **Version SSOT** — `scripts/sync-version.mjs` generates `packages/ciphersins/src/version.ts` from root `package.json`.
 - **`ScanResult` diagnostics** — `parseErrors`, `ruleErrors`, and `warnings` arrays; scan no longer throws `AggregateError` on parse failures.
 - **`RuleExecutionError`** — per-rule execution failures collected instead of aborting the scan.
 - **`SkippedPath` reasons** — `skippedPaths: { path, reason }[]` with `missing`, `non-scannable-extension`, `too-large`, `outside-scan-root`.
 - **JSON `schemaVersion: 2`** — structured `skippedPaths` in machine output.
 - **CLI flags** — `--list-rules`, `--print-config`, `--cwd`, `--include`/`--exclude`, `--max-findings`, `--verbose`/`--debug`, `--color`/`--no-color`, `--strict-config`; exit codes **3** (config) and **4** (internal); `scan --version`; config discovery walks parent directories; `~/` path expansion.
 - **`SECURITY.md`**, **`release.yml`**, **`dependabot.yml`**, **CodeQL** workflow, issue/PR templates, **macOS CI** matrix.
-- **npm publish prep** — `@ciphersins/core` publishable; `prepublishOnly` scripts; [docs/releasing.md](./docs/releasing.md); `npm run pack:check`.
+- **npm publish prep** — `ciphersins-core` publishable (unscoped); `prepublishOnly` scripts; [docs/releasing.md](./docs/releasing.md); `npm run pack:check`; local `npm publish` via `scripts/publish.mjs`.
 
 ### Changed
 
@@ -32,7 +51,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 - **Suppressions** — anchored comment pattern; space-separated rule IDs; uppercase normalization; unknown-rule warnings.
 - **CLI** — pretty output with snippets/code frame and ANSI colors; fail summary plural/order polish.
 - **Reporting** — SARIF `security-severity`, `automationDetails.id`, camelCase driver rule names.
-- **Public API trim** — removed fs/jwt helpers and `normalizeSarifForSnapshot` from `@ciphersins/core` exports.
+- **Public API trim** — removed fs/jwt helpers and `normalizeSarifForSnapshot` from `ciphersins` exports.
 - **Engines** — Node **≥ 20** (CI: ubuntu + macOS × Node 20/22/24).
 - **Docs** — `docs/proposal.md` (renamed, de-personalized); CLI reference for all new flags and exit codes; JSON schema and SARIF field mapping; FAQ test ID ranges and CI/suppression/custom-rule entries; expanded `CONTRIBUTING.md`; architecture diagrams updated (schemaVersion 2, function-level JWT-01, all 8 rules overview).
 - **Audit test suite (§9)** — **1164** total tests including CS-VC-01–04, CS-JWT-01-86–88, CS-CLI-92–98, CS-REP-EXT-28, rule FN coverage, and integration audits.
@@ -41,7 +60,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 
 ### Fixed
 
-- **CLI workspace dep** — `packages/cli` uses `workspace:*` for `@ciphersins/core` (pnpm publish resolves to semver).
+- **CLI workspace dep** — `packages/ciphersins` uses `workspace:*` for `ciphersins` (pnpm publish resolves to semver).
 
 ## [0.9.1]
 
@@ -69,7 +88,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 - **`--fail-on <severity>`** — CI gating (exit **1** when findings at/above threshold); **`--fail-on none`** overrides config.
 - **`--output <file>`**, **`--quiet`**, **`--config`**, **`--no-config`** flags.
 - **`ciphersins.config.json`** subset — `include`, `exclude`, `failOn` with auto-discovery in cwd.
-- **Core reporting module** — `packages/core/src/reporting/` with `formatJson`, `formatSarif`, `severityRank`, `summaryExceedsFailOn`, `findingPrimaryLocationLineHash`, `normalizeSarifForSnapshot`.
+- **Core reporting module** — `packages/ciphersins/src/reporting/` with `formatJson`, `formatSarif`, `severityRank`, `summaryExceedsFailOn`, `findingPrimaryLocationLineHash`, `normalizeSarifForSnapshot`.
 - **Tests** — CS-CLI-01–60, CS-CLI-EXT-01–60, CS-REP-01–05, CS-REP-EXT-01–20; CI fixture; golden snapshots (**928** total with rule suite).
 - **Piped stdout** — `ensureBlockingStdout()` prevents truncation when spawned under `child_process` (macOS `PIPE_BUF`).
 - **`ciphersins scan --help`** — dedicated subcommand help with flags and exit codes.
@@ -157,7 +176,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 
 ### Fixed
 
-- **`scripts/link-cli-bin.mjs`** — after build, symlinks `node_modules/.bin/ciphersins` to `packages/cli/dist/cli.js`. Restores **CS-S04b** and smoke-cli linked-bin checks on CI where `pnpm install` runs before `dist/` exists and no post-build install relinks the bin.
+- **`scripts/link-cli-bin.mjs`** — after build, symlinks `node_modules/.bin/ciphersins` to `packages/ciphersins/dist/cli.js`. Restores **CS-S04b** and smoke-cli linked-bin checks on CI where `pnpm install` runs before `dist/` exists and no post-build install relinks the bin.
 
 ### Changed
 
@@ -252,7 +271,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 
 ### Changed
 
-- `allRules` registry includes CS-JWT-01; `csJwt01Rule` exported from `@ciphersins/core`.
+- `allRules` registry includes CS-JWT-01; `csJwt01Rule` exported from `ciphersins`.
 - Scaffold test CS-S02 expects one registered rule.
 - README rules table and development docs reference CS-JWT-01.
 
@@ -272,7 +291,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 
 ### Added
 
-- **pnpm monorepo** with `packages/core` (`@ciphersins/core`) and `packages/cli` (`ciphersins` bin).
+- **pnpm monorepo** with `packages/ciphersins` (`ciphersins`) and `packages/ciphersins` (`ciphersins` bin).
 - **Scan engine** — TypeScript compiler API parsing (`allowJs`, TS/TSX/JS/JSX), `resolveDefaultScanRoot()` (`./src` when present, else `.`), default include/exclude globs via `tinyglobby`, empty rule registry, and `scan()` returning findings summary plus `scannedFiles` / `skippedPaths` metadata.
 - **Core helpers** — `parseSourceFile`, `getLineSnippet`, `formatRelativePath`, `createEmptySummary`, `summarizeFindings`, and `ParseSourceFileError` for Phase 1 rule authors.
 - **CLI** — `ciphersins scan [path]`, `--help`, `--version`; warnings on missing paths; exit `0` with `No findings.` when registry is empty.
@@ -285,7 +304,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versioning foll
 ### Added
 
 - **`docs/proposal.MD`** — implementation brief: scope, MVP rules (CS-JWT-\*, CS-CMP-01, etc.),
-  monorepo architecture (`packages/core`, `packages/cli`), CLI interface, and success criteria.
+  monorepo architecture (`packages/ciphersins`, `packages/ciphersins`), CLI interface, and success criteria.
 - **Git hooks** (`.githooks/` + `scripts/setup-githooks.sh`) to strip Cursor/Copilot co-author
   and marketing trailers from commit messages.
 - **Prettier** config (`.prettierrc` + `package.json`) with tab indentation (`useTabs: true`).

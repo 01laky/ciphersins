@@ -12,12 +12,12 @@ import {
 	ParseSourceFileError,
 	resolveFiles,
 	scan,
-} from "@ciphersins/core";
+} from "ciphersins";
 import {
 	isScannableExtension,
 	listDirectoryEntries,
 	readPathKind,
-} from "../packages/core/src/resolve-files.js";
+} from "../packages/ciphersins/src/resolve-files.js";
 import { skippedPath } from "./helpers/skipped-path.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
@@ -26,7 +26,7 @@ const edgeDir = path.join(testDir, "fixtures/edge-cases");
 const scaffoldDir = path.join(testDir, "fixtures/scaffold");
 const scaffoldRootDir = path.join(testDir, "fixtures/scaffold-root");
 const multilineFixture = path.join(edgeDir, "multiline.ts");
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 function cli(args: string[]) {
 	return spawnSync(process.execPath, [cliEntry, ...args], {
@@ -393,7 +393,7 @@ describe("CS-S43 CLI parse failure exit code", () => {
 
 			try {
 				const { runScanCommand } =
-					await import("../packages/cli/src/commands/scan.js");
+					await import("../packages/ciphersins/src/commands/scan.js");
 				const exitCode = await runScanCommand(["--no-config", unreadable]);
 				expect(exitCode).toBe(2);
 			} finally {
@@ -432,7 +432,8 @@ describe("CS-S44 runScanCommand findings output", () => {
 	it("CS-S44 prints finding lines when scan returns results", async () => {
 		vi.resetModules();
 
-		const scanMock = vi.fn().mockResolvedValue({
+		const scanModule = await import("../packages/ciphersins/src/scan.js");
+		const scanSpy = vi.spyOn(scanModule, "scan").mockResolvedValue({
 			findings: [
 				{
 					ruleId: "CS-TEST-OUT",
@@ -452,14 +453,6 @@ describe("CS-S44 runScanCommand findings output", () => {
 			warnings: [],
 		});
 
-		vi.doMock("@ciphersins/core", async (importOriginal) => {
-			const actual = await importOriginal<typeof import("@ciphersins/core")>();
-			return {
-				...actual,
-				scan: scanMock,
-			};
-		});
-
 		const stdoutWrites: string[] = [];
 		const writeSpy = vi
 			.spyOn(process.stdout, "write")
@@ -476,11 +469,12 @@ describe("CS-S44 runScanCommand findings output", () => {
 			});
 
 		const { runScanCommand: runScanCommandMocked } =
-			await import("../packages/cli/src/commands/scan.js");
+			await import("../packages/ciphersins/src/commands/scan.js");
 
 		try {
 			const exitCode = await runScanCommandMocked(["--no-config", "./src"]);
 			expect(exitCode).toBe(0);
+			expect(scanSpy).toHaveBeenCalled();
 			expect(stdoutWrites.join("")).toContain("CS-TEST-OUT");
 			expect(stdoutWrites.join("")).toContain("test finding for CLI output");
 			expect(stdoutWrites.join("")).toContain(
@@ -489,7 +483,7 @@ describe("CS-S44 runScanCommand findings output", () => {
 			expect(stdoutWrites.join("")).not.toContain("No findings.");
 		} finally {
 			writeSpy.mockRestore();
-			vi.doUnmock("@ciphersins/core");
+			scanSpy.mockRestore();
 			vi.resetModules();
 		}
 	});

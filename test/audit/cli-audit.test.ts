@@ -11,6 +11,7 @@ import {
 	jwt03BadDir,
 	jwt03BadFile,
 	jwt03GoodDir,
+	pkgVersion,
 	rootDir,
 } from "../cli/helpers.js";
 
@@ -54,7 +55,7 @@ describe("CS-CLI audit spawn tests", () => {
 			{ encoding: "utf8", cwd: rootDir },
 		);
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("1.0.0");
+		expect(result.stdout.trim()).toBe(pkgVersion);
 	});
 
 	it("CS-CLI-71 execFile default buffer does not truncate JSON output", () => {
@@ -386,18 +387,20 @@ jwt.decode("token");
 	});
 
 	it("CS-CLI-96 internal scan error exits 4", async () => {
-		const core = await import("@ciphersins/core");
+		vi.resetModules();
+		const scanModule = await import("../../packages/ciphersins/src/scan.js");
 		const scanSpy = vi
-			.spyOn(core, "scan")
+			.spyOn(scanModule, "scan")
 			.mockRejectedValueOnce(new Error("internal boom"));
 		try {
 			const { runScanCommand } =
-				await import("../../packages/cli/src/commands/scan.js");
+				await import("../../packages/ciphersins/src/commands/scan.js");
 			const code = await runScanCommand(["--no-config", jwt03GoodDir]);
 			expect(code).toBe(4);
 			expect(scanSpy).toHaveBeenCalled();
 		} finally {
 			scanSpy.mockRestore();
+			vi.resetModules();
 		}
 	});
 

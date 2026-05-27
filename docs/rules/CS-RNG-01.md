@@ -75,7 +75,7 @@ See [False positives and limits](#false-positives-and-limits). Indirect calls an
 
 ## Source
 
-[`packages/core/src/rules/cs-rng-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-rng-01.ts)
+[`packages/ciphersins/src/rules/cs-rng-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/cs-rng-01.ts)
 
 ## References
 

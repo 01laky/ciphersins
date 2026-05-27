@@ -12,7 +12,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## Is it on npm?
 
-**Yes** — `npm install -g ciphersins` or `npx ciphersins scan ./src`. Library: `@ciphersins/core`. Requires Node **20+**. See [README](../README.md#install) and [cli.md](./cli.md).
+**Yes** — `npm install -g ciphersins` or `npx ciphersins scan ./src`. Library: `ciphersins`. Requires Node **20+**. See [README](../README.md#install) and [cli.md](./cli.md).
 
 ## Does it find secrets or API keys?
 
@@ -42,7 +42,7 @@ Unreachable `if (false) { jwt.verify(...) }` still suppresses findings — v1 do
 
 ## How do I add a rule?
 
-See [development.md — Adding a rule](./development.md#adding-a-rule). Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02** in `packages/core/src/rules/`.
+See [development.md — Adding a rule](./development.md#adding-a-rule). Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02** in `packages/ciphersins/src/rules/`.
 
 ## What test IDs mean
 
@@ -84,7 +84,7 @@ Install from npm or build from source, then scan with `--fail-on` for gating:
 - run: npx ciphersins@1.0.0 scan ./src --fail-on high --format sarif --output ciphersins.sarif
 ```
 
-Monorepo checkout: `npm run build` then `node packages/cli/dist/cli.js scan ./src --no-config --fail-on high`. See [cli.md](./cli.md).
+Monorepo checkout: `npm run build` then `node packages/ciphersins/dist/cli.js scan ./src --no-config --fail-on high`. See [cli.md](./cli.md).
 
 ## How do inline suppressions work?
 
@@ -92,7 +92,7 @@ Use `// ciphersins-ignore-next-line [RULE-ID]` or `// ciphersins-ignore [RULE-ID
 
 ## Can I add custom rules?
 
-**Not in v1.0.0.** Rules live in `@ciphersins/core` and are registered in `packages/core/src/rules/index.ts`. Use `--only` / `--ignore` and config `rules` to tune severity. Custom rule plugins are planned post-1.0 — see [development.md](./development.md#adding-a-rule) for contributing a built-in rule.
+**Not in v1.0.0.** Rules live in `ciphersins` and are registered in `packages/ciphersins/src/rules/index.ts`. Use `--only` / `--ignore` and config `rules` to tune severity. Custom rule plugins are planned post-1.0 — see [development.md](./development.md#adding-a-rule) for contributing a built-in rule.
 
 ## Who maintains this?
 

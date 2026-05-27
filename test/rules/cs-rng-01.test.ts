@@ -3,18 +3,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import {
-	allRules,
-	createRuleContext,
-	csRng01Rule,
-	scan,
-} from "@ciphersins/core";
+import { allRules, createRuleContext, csRng01Rule, scan } from "ciphersins";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
 const rngBadDir = path.join(rootDir, "fixtures/cs-rng-01/bad");
 const rngGoodDir = path.join(rootDir, "fixtures/cs-rng-01/good");
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 const CS_RNG_01_MESSAGE =
 	"Math.random() used where auth-related naming suggests secrets, tokens, or session identifiers; use crypto.randomBytes or crypto.randomUUID.";

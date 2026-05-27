@@ -9,13 +9,13 @@ import {
 	csHash01Rule,
 	parseSourceFile,
 	scan,
-} from "@ciphersins/core";
+} from "ciphersins";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
 const hashBadDir = path.join(rootDir, "fixtures/cs-hash-01/bad");
 const hashGoodDir = path.join(rootDir, "fixtures/cs-hash-01/good");
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 const CS_HASH_01_MESSAGE =
 	"Weak hash algorithm (MD5 or SHA1) used where password-related naming suggests password storage; use bcrypt, scrypt, argon2, or PBKDF2.";

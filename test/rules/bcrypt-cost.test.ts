@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
 	isWeakBcryptCostLiteral,
 	MIN_BCRYPT_COST,
-} from "../../packages/core/src/rules/helpers/bcrypt-cost.js";
+} from "../../packages/ciphersins/src/rules/helpers/bcrypt-cost.js";
 
 function numericLiteralNode(text: string): ts.NumericLiteral {
 	const sourceFile = ts.createSourceFile(

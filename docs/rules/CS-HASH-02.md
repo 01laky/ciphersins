@@ -102,7 +102,7 @@ See [False positives and limits](#false-positives-and-limits). Variable costs, s
 
 ## Source
 
-[`packages/core/src/rules/cs-hash-02.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-hash-02.ts)
+[`packages/ciphersins/src/rules/cs-hash-02.ts`](https://github.com/01laky/CipherSins/blob/main/packages/ciphersins/src/rules/cs-hash-02.ts)
 
 ## References
 

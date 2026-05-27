@@ -7,7 +7,7 @@ flowchart TB
 		FILTERS["only / ignore · suppressions"]
 	end
 
-	subgraph RESOLVE["File resolution · @ciphersins/core"]
+	subgraph RESOLVE["File resolution · ciphersins"]
 		direction TB
 		ROOT["resolveDefaultScanRoot()"]
 		RF["resolveFiles() · tinyglobby · realpath dedupe"]
@@ -36,7 +36,7 @@ flowchart TB
 		SUP --> FINDINGS["Finding[]"]
 	end
 
-	subgraph REPORT["Reporting · @ciphersins/core"]
+	subgraph REPORT["Reporting · ciphersins"]
 		direction TB
 		SORT["sortFindings() · locale-independent"]
 		JSON["formatJson() · schemaVersion 2"]

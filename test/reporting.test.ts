@@ -10,8 +10,8 @@ import {
 	formatSarif,
 	scan,
 	type Finding,
-} from "@ciphersins/core";
-import { normalizeSarifForSnapshot } from "../packages/core/src/reporting/normalize-sarif-snapshot.js";
+} from "ciphersins";
+import { normalizeSarifForSnapshot } from "../packages/ciphersins/src/reporting/normalize-sarif-snapshot.js";
 import { jwt03BadFile, rootDir } from "./cli/helpers.js";
 
 describe("CS-REP core reporting exports", () => {

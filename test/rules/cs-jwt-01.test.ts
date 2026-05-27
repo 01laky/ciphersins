@@ -10,13 +10,13 @@ import {
 	csJwt01Rule,
 	parseSourceFile,
 	scan,
-} from "@ciphersins/core";
+} from "ciphersins";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
 const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
 const jwtGoodDir = path.join(rootDir, "fixtures/cs-jwt-01/good");
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 const CS_JWT_01_MESSAGE =
 	"jwt.decode() used without jwt.verify() in the same function scope.";

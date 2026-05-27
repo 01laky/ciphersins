@@ -1,6 +1,6 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { parseSourceFile } from "@ciphersins/core";
+import { parseSourceFile } from "ciphersins";
 import {
 	arrayLiteralContainsNone,
 	getVerifyOptionsArgument,
@@ -11,7 +11,7 @@ import {
 	verifyCallAllowsNoneAlgorithm,
 	verifyCallIgnoresExpiration,
 	verifyCallMissingAlgorithms,
-} from "../../packages/core/src/rules/helpers/jwt-verify-options.js";
+} from "../../packages/ciphersins/src/rules/helpers/jwt-verify-options.js";
 
 function verifyCallFrom(source: string): ts.CallExpression {
 	const sourceFile = parseSourceFile("snippet.ts", source);

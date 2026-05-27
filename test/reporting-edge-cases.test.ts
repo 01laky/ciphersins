@@ -9,8 +9,8 @@ import {
 	scan,
 	sortFindings,
 	type Finding,
-} from "@ciphersins/core";
-import { normalizeSarifForSnapshot } from "../packages/core/src/reporting/normalize-sarif-snapshot.js";
+} from "ciphersins";
+import { normalizeSarifForSnapshot } from "../packages/ciphersins/src/reporting/normalize-sarif-snapshot.js";
 import {
 	jwt03BadDir,
 	jwt03BadFile,

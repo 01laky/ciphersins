@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { formatSarif, type Finding } from "@ciphersins/core";
-import { normalizeSarifForSnapshot } from "../../packages/core/src/reporting/normalize-sarif-snapshot.js";
+import { formatSarif, type Finding } from "ciphersins";
+import { normalizeSarifForSnapshot } from "../../packages/ciphersins/src/reporting/normalize-sarif-snapshot.js";
 import { rootDir } from "../cli/helpers.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));

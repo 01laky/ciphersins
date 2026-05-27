@@ -17,7 +17,7 @@ Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>
 
 **8/8 MVP rules implemented** at v1.0.0.
 
-Each rule doc includes **Suppressing** (inline comments), **Library scope** (which npm modules are tracked), **Limitations** (known false negatives/positives), and **Source** (implementation file under `packages/core/src/rules/`).
+Each rule doc includes **Suppressing** (inline comments), **Library scope** (which npm modules are tracked), **Limitations** (known false negatives/positives), and **Source** (implementation file under `packages/ciphersins/src/rules/`).
 
 ## Adding a rule
 

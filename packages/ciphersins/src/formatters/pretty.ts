@@ -1,10 +1,10 @@
 import {
-	formatRelativePath,
 	SEVERITIES,
 	type Finding,
 	type ScanResult,
 	type Severity,
-} from "@ciphersins/core";
+} from "../types.js";
+import { formatRelativePath } from "../get-line-snippet.js";
 import {
 	ANSI,
 	colorize,

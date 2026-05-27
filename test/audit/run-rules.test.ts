@@ -1,12 +1,7 @@
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-	parseSourceFile,
-	runRules,
-	type Finding,
-	type Rule,
-} from "@ciphersins/core";
-import { RuleExecutionError } from "../../packages/core/src/rule-execution-error.js";
+import { parseSourceFile, runRules, type Finding, type Rule } from "ciphersins";
+import { RuleExecutionError } from "../../packages/ciphersins/src/rule-execution-error.js";
 
 function makeContext(name: string, source = "export {};\n") {
 	const filePath = path.resolve(name);

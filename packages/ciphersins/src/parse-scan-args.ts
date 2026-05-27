@@ -1,9 +1,7 @@
 import { parseArgs } from "node:util";
-import {
-	assertKnownRuleIds,
-	isSeverity,
-	type Severity,
-} from "@ciphersins/core";
+import { assertKnownRuleIds } from "./rule-config.js";
+import { isSeverity } from "./reporting/severity.js";
+import type { Severity } from "./types.js";
 
 export type OutputFormat = "pretty" | "json" | "sarif";
 

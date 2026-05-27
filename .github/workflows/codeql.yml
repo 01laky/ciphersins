@@ -59,7 +59,7 @@ jobs:
       - run: npm run build
       - name: CipherSins self-scan
         run: |
-          node packages/cli/dist/cli.js scan packages test \
+          node packages/ciphersins/dist/cli.js scan packages test \
             --format sarif \
             --output ciphersins.sarif \
             --fail-on none \

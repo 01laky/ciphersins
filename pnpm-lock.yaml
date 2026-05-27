@@ -16,7 +16,7 @@ importers:
         version: 3.2.4(vitest@3.2.4(@types/node@22.19.19))
       ciphersins:
         specifier: workspace:*
-        version: link:packages/cli
+        version: link:packages/ciphersins
       prettier:
         specifier: ^3.5.3
         version: 3.8.3
@@ -30,20 +30,7 @@ importers:
         specifier: ^3.2.1
         version: 3.2.4(@types/node@22.19.19)
 
-  packages/cli:
-    dependencies:
-      '@ciphersins/core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
-      '@types/node':
-        specifier: ^22.15.29
-        version: 22.19.19
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
-
-  packages/core:
+  packages/ciphersins:
     dependencies:
       tinyglobby:
         specifier: ^0.2.14

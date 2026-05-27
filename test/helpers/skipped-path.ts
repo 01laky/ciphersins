@@ -1,4 +1,4 @@
-import type { SkippedPath } from "@ciphersins/core";
+import type { SkippedPath } from "ciphersins";
 
 export function skippedPath(
 	path: string,

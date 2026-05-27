@@ -1,7 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { csJwt01Rule, parseSourceFile } from "@ciphersins/core";
+import { csJwt01Rule, parseSourceFile } from "ciphersins";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");

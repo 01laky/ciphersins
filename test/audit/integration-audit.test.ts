@@ -3,9 +3,9 @@ import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
-import { formatJson, scan } from "@ciphersins/core";
-import { mergeScanOptions } from "../../packages/cli/src/config/merge-scan-options.js";
-import { parseScanArgs } from "../../packages/cli/src/parse-scan-args.js";
+import { formatJson, scan } from "ciphersins";
+import { mergeScanOptions } from "../../packages/ciphersins/src/config/merge-scan-options.js";
+import { parseScanArgs } from "../../packages/ciphersins/src/parse-scan-args.js";
 import { cli, jwt01BadDir, rootDir } from "../cli/helpers.js";
 
 const combinedDir = path.join(rootDir, "test/fixtures/combined");
@@ -85,24 +85,24 @@ describe("CS-INT integration audit", () => {
 		expect(JSON.parse(a).findings).toEqual(JSON.parse(b).findings);
 	});
 
-	it("CS-INT-45 consumer tarball install exposes scan from @ciphersins/core", () => {
+	it("CS-INT-45 consumer tarball install exposes scan from ciphersins", () => {
 		withTempDir("ciphersins-int-consumer-", (tempDir) => {
 			execFileSync("npm", ["pack", "--silent"], {
-				cwd: path.join(rootDir, "packages/core"),
+				cwd: path.join(rootDir, "packages/ciphersins"),
 				encoding: "utf8",
 			});
 			const packed = fs
-				.readdirSync(path.join(rootDir, "packages/core"))
+				.readdirSync(path.join(rootDir, "packages/ciphersins"))
 				.find((name) => name.endsWith(".tgz"));
 			expect(packed).toBeTruthy();
-			const tarball = path.join(rootDir, "packages/core", packed!);
+			const tarball = path.join(rootDir, "packages/ciphersins", packed!);
 			fs.copyFileSync(tarball, path.join(tempDir, packed!));
 			execFileSync("npm", ["init", "-y"], { cwd: tempDir, stdio: "ignore" });
 			execFileSync("npm", ["install", path.join(tempDir, packed!)], {
 				cwd: tempDir,
 				stdio: "ignore",
 			});
-			const probe = `import { scan } from "@ciphersins/core";
+			const probe = `import { scan } from "ciphersins";
 const result = await scan({ paths: [], cwd: process.cwd() });
 if (!Array.isArray(result.findings)) process.exit(2);
 `;

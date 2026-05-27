@@ -1,12 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import {
-	assertKnownRuleIds,
-	expandUserPath,
-	isSeverity,
-	parseRulesConfig,
-	type Severity,
-} from "@ciphersins/core";
+import { assertKnownRuleIds, parseRulesConfig } from "../rule-config.js";
+import { expandUserPath } from "../expand-user-path.js";
+import { isSeverity } from "../reporting/severity.js";
+import type { Severity } from "../types.js";
 
 const KNOWN_CONFIG_KEYS = new Set([
 	"include",

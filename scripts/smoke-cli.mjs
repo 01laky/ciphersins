@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 const fixtureDir = path.join(rootDir, "test/fixtures/scaffold");
 const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
 const jwt02BadDir = path.join(rootDir, "fixtures/cs-jwt-02/bad");

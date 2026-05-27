@@ -6,7 +6,7 @@ import {
 	discoverConfigPath,
 	loadConfig,
 	loadConfigFile,
-} from "../../packages/cli/src/config/load-config.js";
+} from "../../packages/ciphersins/src/config/load-config.js";
 import { cli, jwt01BadDir, jwt03BadDir, rootDir } from "./helpers.js";
 
 function withTempDir(prefix: string, run: (dir: string) => void) {

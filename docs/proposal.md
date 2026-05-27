@@ -102,7 +102,7 @@ ciphersins/
 └── package.json       # workspaces
 ```
 
-### `packages/core`
+### `packages/ciphersins`
 
 - **Input:** list of files / glob (`src/**/*.{ts,tsx,js,jsx}`)
 - **Parser:** TypeScript compiler API or `@typescript-eslint/parser` + AST — prefer one path, consistent positions (line/col)
@@ -129,7 +129,7 @@ ciphersins/
 
 - Aggregation of findings, dedup, severity filter
 
-### `packages/cli`
+### `packages/ciphersins`
 
 - Commander or minimal argv parser
 - Exit codes: `0` = OK or under `--fail-on`, `1` = findings above threshold, `2` = config/parse error
@@ -237,14 +237,14 @@ MVP can be documentation only + link to `crypto.timingSafeEqual`.
 
 ## Tech Stack (Recommended)
 
-| Area     | Choice                                                                                              |
-| -------- | --------------------------------------------------------------------------------------------------- |
-| Language | TypeScript                                                                                          |
-| Build    | tsup or unbuild for core + cli                                                                      |
-| Test     | vitest + fixtures snapshot                                                                          |
-| Publish  | npm packages `ciphersins` and `@ciphersins/core` at **v1.0.0** — see [releasing.md](./releasing.md) |
-| License  | MIT                                                                                                 |
-| Node     | >= 18                                                                                               |
+| Area     | Choice                                                                                        |
+| -------- | --------------------------------------------------------------------------------------------- |
+| Language | TypeScript                                                                                    |
+| Build    | tsup or unbuild for core + cli                                                                |
+| Test     | vitest + fixtures snapshot                                                                    |
+| Publish  | npm packages `ciphersins` and `ciphersins` at **v1.0.0** — see [releasing.md](./releasing.md) |
+| License  | MIT                                                                                           |
+| Node     | >= 18                                                                                         |
 
 ---
 
@@ -341,12 +341,12 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 ### Monorepo layout
 
-| Recommendation                                                                                                                                                                                            |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **pnpm workspaces**: root `package.json` + `packages/core` + `packages/cli`.                                                                                                                              |
-| **`cli` depends on `core`**; published npm package is **`ciphersins`** from `packages/cli` (or root re-export — prefer single publish entry from `packages/cli` with `core` bundled or as workspace dep). |
-| **`fixtures/` at repo root** — shared by core tests and docs examples.                                                                                                                                    |
-| Rationale                                                                                                                                                                                                 | Matches proposal; keeps engine testable without CLI; one binary on npm. |
+| Recommendation                                                                                                                                                                                                          |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **pnpm workspaces**: root `package.json` + `packages/ciphersins` + `packages/ciphersins`.                                                                                                                               |
+| **`cli` depends on `core`**; published npm package is **`ciphersins`** from `packages/ciphersins` (or root re-export — prefer single publish entry from `packages/ciphersins` with `core` bundled or as workspace dep). |
+| **`fixtures/` at repo root** — shared by core tests and docs examples.                                                                                                                                                  |
+| Rationale                                                                                                                                                                                                               | Matches proposal; keeps engine testable without CLI; one binary on npm. |
 
 ### Rule help URLs
 

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
 	getHashBindings,
 	isWeakHashOperation,
-} from "../../packages/core/src/rules/helpers/hash-bindings.js";
+} from "../../packages/ciphersins/src/rules/helpers/hash-bindings.js";
 
 function parseSource(source: string, fileName = "sample.ts"): ts.SourceFile {
 	return ts.createSourceFile(

@@ -15,14 +15,14 @@ import {
 	sortFindings,
 	summarizeFindings,
 	type Finding,
-} from "@ciphersins/core";
+} from "ciphersins";
 import {
 	discoverConfigPath,
 	loadConfig,
-} from "../../packages/cli/src/config/load-config.js";
-import { mergeScanOptions } from "../../packages/cli/src/config/merge-scan-options.js";
-import { formatFailSummary } from "../../packages/cli/src/format-fail-summary.js";
-import { parseScanArgs } from "../../packages/cli/src/parse-scan-args.js";
+} from "../../packages/ciphersins/src/config/load-config.js";
+import { mergeScanOptions } from "../../packages/ciphersins/src/config/merge-scan-options.js";
+import { formatFailSummary } from "../../packages/ciphersins/src/format-fail-summary.js";
+import { parseScanArgs } from "../../packages/ciphersins/src/parse-scan-args.js";
 
 describe("CS-MISC core and CLI helpers", () => {
 	it("CS-MISC-01 sortFindings is stable for identical findings", () => {
@@ -212,7 +212,7 @@ jwt.decode("token");
 	});
 
 	it("CS-MISC-20 every rule helpUrl matches docs/rules pattern", async () => {
-		const { scan } = await import("@ciphersins/core");
+		const { scan } = await import("ciphersins");
 		const { allBadDirs, rootDir } = await import("../cli/helpers.js");
 		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 		const helpUrls = new Set(

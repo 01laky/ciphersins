@@ -9,13 +9,13 @@ import {
 	csHash02Rule,
 	parseSourceFile,
 	scan,
-} from "@ciphersins/core";
+} from "ciphersins";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
 const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");
 const hash02GoodDir = path.join(rootDir, "fixtures/cs-hash-02/good");
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 const CS_HASH_02_MESSAGE =
 	"Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).";

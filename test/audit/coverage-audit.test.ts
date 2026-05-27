@@ -10,27 +10,31 @@ const rootDir = path.resolve(
 );
 
 describe("CS-VC vitest coverage config", () => {
-	it("CS-VC-01 vitest.config.ts defines 90% coverage thresholds for core", () => {
+	it("CS-VC-01 vitest.config.ts defines 90% coverage thresholds for engine", () => {
 		const configSource = readFileSync(
 			path.join(rootDir, "vitest.config.ts"),
 			"utf8",
 		);
 
-		expect(configSource).toMatch(/packages\/core\/src\/\*\*/);
+		expect(configSource).toMatch(
+			/packages\/ciphersins\/src\/\{rules,reporting\}/,
+		);
 		expect(configSource).toMatch(/lines:\s*90/);
 		expect(configSource).toMatch(/functions:\s*90/);
 		expect(configSource).toMatch(/branches:\s*90/);
 		expect(configSource).toMatch(/statements:\s*90/);
 	});
 
-	it("CS-VC-02 coverage includes core and cli source trees", () => {
+	it("CS-VC-02 coverage includes ciphersins source tree", () => {
 		const configSource = readFileSync(
 			path.join(rootDir, "vitest.config.ts"),
 			"utf8",
 		);
 
-		expect(configSource).toContain("packages/core/src/**/*.ts");
-		expect(configSource).toContain("packages/cli/src/**/*.ts");
+		expect(configSource).toContain("packages/ciphersins/src/**/*.ts");
+		expect(configSource).toContain(
+			"packages/ciphersins/src/{commands,config,formatters}/**",
+		);
 	});
 
 	it("CS-VC-03 package.json exposes test:coverage and test:ci scripts", () => {

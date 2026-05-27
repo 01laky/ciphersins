@@ -54,4 +54,4 @@ pnpm diagrams:build
 
 - **AST + bindings** — no regex-only rule detection
 - **Single-file analysis** — CS-JWT-01 uses function-level verify scope; cross-file call graphs deferred
-- **Monorepo** — `@ciphersins/core` engine + `ciphersins` CLI binary
+- **Single npm package** — `packages/ciphersins` ships engine + CLI binary

@@ -9,13 +9,13 @@ import {
 	csCmp01Rule,
 	parseSourceFile,
 	scan,
-} from "@ciphersins/core";
+} from "ciphersins";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
 const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
 const cmpGoodDir = path.join(rootDir, "fixtures/cs-cmp-01/good");
-const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 
 const CS_CMP_01_MESSAGE =
 	"Timing-unsafe equality compare (===, ==, !==, or !=) on auth-related value; use crypto.timingSafeEqual or a constant-time compare.";

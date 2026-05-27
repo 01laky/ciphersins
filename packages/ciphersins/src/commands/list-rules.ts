@@ -1,4 +1,4 @@
-import { allRules } from "@ciphersins/core";
+import { allRules } from "../rules/index.js";
 import { ruleHelpUrl } from "../rule-help-url.js";
 
 export function runListRulesCommand(): number {

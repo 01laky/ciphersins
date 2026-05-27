@@ -27,8 +27,9 @@ import {
 	summarizeFindings,
 	type Rule,
 	type RuleContext,
-} from "@ciphersins/core";
+} from "ciphersins";
 import { skippedPath } from "./helpers/skipped-path.js";
+import { pkgVersion } from "./cli/helpers.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "..");
@@ -100,7 +101,7 @@ describe("CS-S03 scan integration", () => {
 
 describe("CS-S04 CLI smoke", () => {
 	it("CS-S04 runs built ciphersins scan with No findings output", () => {
-		const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+		const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 		expect(fs.existsSync(cliEntry)).toBe(true);
 
 		const result = spawnSync(
@@ -383,7 +384,7 @@ describe("CS-S19 formatRelativePath", () => {
 
 describe("CS-S20 CLI warnings for skipped paths", () => {
 	it("CS-S20 prints stderr warning for missing scan path", () => {
-		const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+		const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 		const missing = path.join(scaffoldDir, "missing-path.ts");
 
 		const result = spawnSync(process.execPath, [cliEntry, "scan", missing], {
@@ -418,7 +419,7 @@ describe("CS-S21 parse failure collection", () => {
 
 describe("CS-S22 CLI help and version", () => {
 	it("CS-S22 prints help for --help", () => {
-		const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+		const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 		const result = spawnSync(process.execPath, [cliEntry, "--help"], {
 			encoding: "utf8",
 			cwd: rootDir,
@@ -429,13 +430,13 @@ describe("CS-S22 CLI help and version", () => {
 	});
 
 	it("CS-S22b prints version for --version", () => {
-		const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+		const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 		const result = spawnSync(process.execPath, [cliEntry, "--version"], {
 			encoding: "utf8",
 			cwd: rootDir,
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("1.0.0");
+		expect(result.stdout.trim()).toBe(pkgVersion);
 	});
 });

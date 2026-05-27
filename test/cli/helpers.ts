@@ -1,10 +1,19 @@
+import { readFileSync } from "node:fs";
 import { spawnSync, type SpawnSyncReturns } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 export const rootDir = path.resolve(testDir, "../..");
-export const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
+export const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
+export const pkgVersion = (
+	JSON.parse(
+		readFileSync(
+			path.join(rootDir, "packages/ciphersins/package.json"),
+			"utf8",
+		),
+	) as { version: string }
+).version;
 
 export const jwt01BadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
 export const jwt01GoodDir = path.join(rootDir, "fixtures/cs-jwt-01/good");

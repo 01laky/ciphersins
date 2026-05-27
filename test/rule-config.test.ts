@@ -6,7 +6,7 @@ import {
 	parseRulesConfig,
 	selectRules,
 	type Finding,
-} from "@ciphersins/core";
+} from "ciphersins";
 
 describe("rule config", () => {
 	it("CS-RULE-CFG-01 parseRuleConfigValue maps warn and error aliases", () => {

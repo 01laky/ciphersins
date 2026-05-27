@@ -1,11 +1,11 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { parseSourceFile } from "@ciphersins/core";
-import { collectCallExpressions } from "../../packages/core/src/rules/helpers/collect-call-expressions.js";
+import { parseSourceFile } from "ciphersins";
+import { collectCallExpressions } from "../../packages/ciphersins/src/rules/helpers/collect-call-expressions.js";
 import {
 	getJsonWebTokenBindings,
 	matchesJsonWebTokenMethodCall,
-} from "../../packages/core/src/rules/helpers/jsonwebtoken-bindings.js";
+} from "../../packages/ciphersins/src/rules/helpers/jsonwebtoken-bindings.js";
 
 function callFrom(source: string): ts.CallExpression {
 	const sourceFile = parseSourceFile("snippet.ts", source);

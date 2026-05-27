@@ -1,6 +1,6 @@
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { isWeakHashAlgorithmLiteral } from "../../packages/core/src/rules/helpers/weak-hash-algorithms.js";
+import { isWeakHashAlgorithmLiteral } from "../../packages/ciphersins/src/rules/helpers/weak-hash-algorithms.js";
 
 function stringLiteralNode(text: string): ts.StringLiteral {
 	const sourceFile = ts.createSourceFile(

@@ -7,7 +7,7 @@ function decodeToken(token: string) {
 }
 
 function verifyToken(token: string) {
-	return jwt.verify(token, secret);
+	return jwt.verify(token, secret, { algorithms: ["HS256"] });
 }
 
 export function readToken(token: string) {

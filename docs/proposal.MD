@@ -1,6 +1,6 @@
 # CipherSins — Implementation Proposal
 
-> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.6.0**) implements the scan pipeline, CLI `scan` command, and **five MVP rules** (CS-JWT-01, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
+> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.7.0**) implements the scan pipeline, CLI `scan` command, and **six MVP rules** (CS-JWT-01, CS-JWT-02, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
 
 ## What It Is (One-Liner)
 
@@ -327,7 +327,7 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 | Artifact  | Recommendation                                                                                                                  |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Git repo  | Pre-release **0.6.0** in-repo (5/8 MVP rules). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
+| Git repo  | Pre-release **0.7.0** in-repo (6/8 MVP rules). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
 | npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.     |
 | Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                 |
 

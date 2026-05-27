@@ -4,5 +4,5 @@ const secret = process.env.JWT_SECRET ?? "dev-secret";
 
 export function readToken(token: string) {
 	const payload = decode(token);
-	return checkToken(token, secret) ?? payload;
+	return checkToken(token, secret, { algorithms: ["HS256"] }) ?? payload;
 }

@@ -14,7 +14,7 @@ pnpm exec ciphersins --version
 | ----------------- | ------------------------------------------------------ |
 | `scan [path]`     | Scan TypeScript/JavaScript files for crypto API misuse |
 | `--help`, `-h`    | Print usage                                            |
-| `--version`, `-v` | Print package version (0.6.0)                          |
+| `--version`, `-v` | Print package version (0.7.0)                          |
 
 When `path` is omitted, the scan root is `./src` if it exists, otherwise `.`.
 
@@ -28,7 +28,7 @@ relative/path.ts:line:column  CS-JWT-01  high
   https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md
 ```
 
-Severity levels in v0.6.0: **high** (JWT, CMP, RNG, HASH-01), **medium** (HASH-02).
+Severity levels in v0.7.0: **high** (JWT, CMP, RNG, HASH-01), **medium** (HASH-02).
 
 - **Path** — relative to the process working directory when possible
 - **Snippet** — available on `Finding` objects from `@ciphersins/core`; not printed in CLI v0.6.x

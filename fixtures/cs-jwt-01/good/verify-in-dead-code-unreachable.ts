@@ -6,7 +6,7 @@ export function readToken(token: string) {
 	const payload = jwt.decode(token);
 
 	if (false) {
-		return jwt.verify(token, secret);
+		return jwt.verify(token, secret, { algorithms: ["HS256"] });
 	}
 
 	return payload;

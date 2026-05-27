@@ -8,6 +8,7 @@ const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
 const fixtureDir = path.join(rootDir, "test/fixtures/scaffold");
 const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
+const jwt02BadDir = path.join(rootDir, "fixtures/cs-jwt-02/bad");
 const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
 const rngBadDir = path.join(rootDir, "fixtures/cs-rng-01/bad");
 const hashBadDir = path.join(rootDir, "fixtures/cs-hash-01/bad");
@@ -38,6 +39,7 @@ assert(
 
 for (const [dir, ruleId] of [
 	[jwtBadDir, "CS-JWT-01"],
+	[jwt02BadDir, "CS-JWT-02"],
 	[cmpBadDir, "CS-CMP-01"],
 	[rngBadDir, "CS-RNG-01"],
 	[hashBadDir, "CS-HASH-01"],
@@ -59,6 +61,7 @@ for (const [dir, ruleId] of [
 
 for (const goodDir of [
 	path.join(rootDir, "fixtures/cs-jwt-01/good"),
+	path.join(rootDir, "fixtures/cs-jwt-02/good"),
 	path.join(rootDir, "fixtures/cs-cmp-01/good"),
 	path.join(rootDir, "fixtures/cs-rng-01/good"),
 	path.join(rootDir, "fixtures/cs-hash-01/good"),

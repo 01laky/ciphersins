@@ -512,4 +512,11 @@ describe("CS-S47 edge fixtures with all rules active", () => {
 		expect(result.findings).toEqual([]);
 		expect(result.scannedFiles.length).toBeGreaterThan(0);
 	});
+
+	it("CS-S47b edge-case harness file count stable with zero findings", async () => {
+		const result = await scan({ paths: [edgeDir], cwd: rootDir });
+
+		expect(result.scannedFiles).toHaveLength(7);
+		expect(result.findings).toEqual([]);
+	});
 });

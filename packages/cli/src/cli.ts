@@ -23,7 +23,7 @@ async function main(): Promise<void> {
 	}
 
 	if (command === "--version" || command === "-v") {
-		process.stdout.write("0.6.0\n");
+		process.stdout.write("0.7.0\n");
 		process.exit(0);
 	}
 

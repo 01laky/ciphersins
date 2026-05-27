@@ -32,6 +32,7 @@ export { createEmptySummary, scan, summarizeFindings } from "./scan.js";
 export {
 	allRules,
 	csJwt01Rule,
+	csJwt02Rule,
 	csCmp01Rule,
 	csRng01Rule,
 	csHash01Rule,

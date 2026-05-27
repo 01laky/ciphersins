@@ -7,7 +7,7 @@ Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>
 | ID                            | Severity | Title                       | Status      |
 | ----------------------------- | -------- | --------------------------- | ----------- |
 | [CS-JWT-01](./CS-JWT-01.md)   | high     | JWT decode without verify   | implemented |
-| CS-JWT-02                     | high     | Verify without algorithms   | planned     |
+| [CS-JWT-02](./CS-JWT-02.md)   | high     | Verify without algorithms   | implemented |
 | CS-JWT-03                     | critical | Algorithm none / bypass     | planned     |
 | CS-JWT-04                     | medium   | Missing exp validation      | planned     |
 | [CS-CMP-01](./CS-CMP-01.md)   | high     | Timing-unsafe compare       | implemented |

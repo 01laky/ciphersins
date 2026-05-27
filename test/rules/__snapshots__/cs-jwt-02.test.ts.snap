@@ -1,0 +1,46 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CS-JWT-02 extended edge cases > CS-JWT-02-91 golden snapshot decode-and-verify-no-algorithms.ts 1`] = `
+[
+  {
+    "column": 19,
+    "file": "decode-and-verify-no-algorithms.ts",
+    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-02.md",
+    "line": 7,
+    "message": "jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.",
+    "ruleId": "CS-JWT-02",
+    "severity": "high",
+    "snippet": "	const verified = jwt.verify(token, secret);",
+  },
+]
+`;
+
+exports[`CS-JWT-02 metadata and snapshots > CS-JWT-02-52 golden snapshot verify-two-args-default.ts 1`] = `
+[
+  {
+    "column": 9,
+    "file": "verify-two-args-default.ts",
+    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-02.md",
+    "line": 6,
+    "message": "jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.",
+    "ruleId": "CS-JWT-02",
+    "severity": "high",
+    "snippet": "	return jwt.verify(token, secret);",
+  },
+]
+`;
+
+exports[`CS-JWT-02 metadata and snapshots > CS-JWT-02-53 golden snapshot verify-with-callback.ts 1`] = `
+[
+  {
+    "column": 9,
+    "file": "verify-with-callback.ts",
+    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-02.md",
+    "line": 6,
+    "message": "jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.",
+    "ruleId": "CS-JWT-02",
+    "severity": "high",
+    "snippet": "	return jwt.verify(token, secret, (err, payload) => {",
+  },
+]
+`;

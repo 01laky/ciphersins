@@ -384,7 +384,7 @@ describe("CS-JWT-01 cross-file scope", () => {
 			);
 			fs.writeFileSync(
 				verifyFile,
-				`import jwt from "jsonwebtoken";\nconst s = "secret";\nexport function check(t: string) { return jwt.verify(t, s); }\n`,
+				`import jwt from "jsonwebtoken";\nconst s = "secret";\nexport function check(t: string) { return jwt.verify(t, s, { algorithms: ["HS256"] }); }\n`,
 			);
 
 			const decodeResult = await scan({ paths: [decodeFile], cwd: rootDir });
@@ -573,5 +573,12 @@ describe("CS-JWT-01 extended edge cases", () => {
 		expect(finding).toBeDefined();
 		expect(finding!.line).toBeGreaterThan(0);
 		expect(finding!.snippet).toMatch(/jwt\?\.decode|decode/i);
+	});
+
+	it("CS-JWT-01-51 entire jwt-01 good directory stays clean with six rules", async () => {
+		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
+
+		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(15);
 	});
 });

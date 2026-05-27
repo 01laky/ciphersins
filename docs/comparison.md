@@ -38,20 +38,23 @@ CipherSins also flags **MD5/SHA1 password hashing** (`createHash`, weak-digest `
 
 General SAST tools can encode similar rules, but CipherSins is **purpose-built** for a curated MVP rule set:
 
-- Consistent rule IDs (`CS-JWT-01`, `CS-CMP-01`, `CS-RNG-01`, `CS-HASH-01`, `CS-HASH-02`, …)
+- Consistent rule IDs (`CS-JWT-01`, `CS-JWT-02`, `CS-CMP-01`, `CS-RNG-01`, `CS-HASH-01`, `CS-HASH-02`, …)
 - Bad/good fixtures per rule
-- Numbered vitest cases per rule (431 tests at v0.6.0)
+- Numbered vitest cases per rule (564 tests at v0.7.0)
 - Linked rule documentation with fix guidance
 
-**Implemented at v0.6.0 (5 rules):**
+**Implemented at v0.7.0 (6 rules):**
 
 | Rule       | What it catches                             |
 | ---------- | ------------------------------------------- |
 | CS-JWT-01  | JWT decode without verify (same file)       |
+| CS-JWT-02  | JWT verify without explicit `algorithms`    |
 | CS-CMP-01  | Timing-unsafe `===`/`==` on auth material   |
 | CS-RNG-01  | `Math.random()` in auth-named context       |
 | CS-HASH-01 | MD5/SHA1 password hashing                   |
 | CS-HASH-02 | Weak bcrypt cost (< 10) in password context |
+
+CipherSins flags **`jwt.verify()` without explicit `algorithms`** — ESLint security plugins and generic SAST tools rarely enforce JWT algorithm allowlists on Auth0/jsonwebtoken call sites.
 
 You might still use Semgrep or ESLint alongside CipherSins for broader coverage.
 

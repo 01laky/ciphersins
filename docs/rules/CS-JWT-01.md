@@ -10,7 +10,7 @@
 
 `jwt.decode()` from [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) **parses** a JWT payload but does **not** validate the signature, issuer, audience, or expiration. Treating decode output as trusted authentication data allows attackers to forge tokens by changing the payload and re-encoding.
 
-Always use `jwt.verify()` (with explicit algorithms — see future **CS-JWT-02**) before trusting token contents.
+Always use `jwt.verify()` with an explicit `{ algorithms: [...] }` allowlist (see **[CS-JWT-02](./CS-JWT-02.md)**) before trusting token contents.
 
 ## Bad example
 
@@ -39,7 +39,7 @@ import jwt from "jsonwebtoken";
 const secret = process.env.JWT_SECRET!;
 
 export function getUserId(token: string) {
-	const payload = jwt.verify(token, secret);
+	const payload = jwt.verify(token, secret, { algorithms: ["HS256"] });
 	return typeof payload === "object" && payload !== null
 		? (payload as { sub?: string }).sub
 		: undefined;
@@ -69,6 +69,7 @@ If you decode for debugging, ensure `jwt.verify()` is also called on the same to
 | Optional chaining (`jwt?.decode(t)`)                   | **Flagged** — treated as property access on bound import                |
 | Verify import without call                             | **Does not suppress** — only verify `CallExpression` sites count        |
 | Verify mentioned only in comments                      | **Does not suppress** decode findings                                   |
+| Two-arg `jwt.verify(token, secret)` without algorithms | **Not flagged by JWT-01** — covered by **[CS-JWT-02](./CS-JWT-02.md)**  |
 | Local wrapper calling `jwt.decode` inside              | **Flagged** on inner decode call                                        |
 
 ## Fix
@@ -79,7 +80,7 @@ Replace decode-only auth paths with verified reads:
 const payload = jwt.verify(token, secret, { algorithms: ["HS256"] });
 ```
 
-Future rule **CS-JWT-02** will flag `verify()` calls without an explicit `algorithms` option.
+See **[CS-JWT-02](./CS-JWT-02.md)** for verify calls that omit `algorithms`.
 
 ## References
 

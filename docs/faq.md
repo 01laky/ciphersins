@@ -24,7 +24,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## How many rules are implemented?
 
-**5 of 8** MVP rules at **0.6.0**: CS-JWT-01, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
+**6 of 8** MVP rules at **0.7.0**: CS-JWT-01, CS-JWT-02, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
 
 ## Why same-file scope for CS-JWT-01?
 
@@ -65,7 +65,7 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-CRYPTO-01–09**  | Crypto-auth-import helper |
 | **CS-INT-01–17**     | Cross-rule integration    |
 
-Run `pnpm test` or `npm test` for the full suite (431 tests at v0.6.0).
+Run `pnpm test` or `npm test` for the full suite (564 tests at v0.7.0).
 
 ## Who maintains this?
 

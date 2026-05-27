@@ -70,13 +70,14 @@ describe("CS-HASH-02 rule registry", () => {
 		expect(csHash02Rule.severity).toBe("medium");
 	});
 
-	it("CS-HASH-02-03 csHash02Rule is registered at index 4 after CS-HASH-01", () => {
+	it("CS-HASH-02-03 csHash02Rule is registered at index 5 after CS-HASH-01", () => {
 		const fromRegistry = allRules.find((rule) => rule.id === "CS-HASH-02");
 		expect(fromRegistry).toBeDefined();
 		expect(fromRegistry).toBe(csHash02Rule);
-		expect(allRules[4]).toBe(csHash02Rule);
+		expect(allRules[5]).toBe(csHash02Rule);
 		expect(allRules.map((rule) => rule.id)).toEqual([
 			"CS-JWT-01",
+			"CS-JWT-02",
 			"CS-CMP-01",
 			"CS-RNG-01",
 			"CS-HASH-01",

@@ -489,7 +489,7 @@ describe("CS-CMP-01 extended edge cases", () => {
 		expect(result.findings[0]?.snippet).toMatch(/==/);
 	});
 
-	it("CS-CMP-01-44 bcrypt-import-token-compare.ts stays clean with all five rules", async () => {
+	it("CS-CMP-01-44 bcrypt-import-token-compare.ts stays clean with all six rules", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "bcrypt-import-token-compare.ts")],
 			cwd: rootDir,
@@ -505,5 +505,35 @@ describe("CS-CMP-01 extended edge cases", () => {
 
 		expect(finding).toBeDefined();
 		expect(finding!.snippet).toMatch(/===|==/);
+	});
+
+	it("CS-CMP-01-46 summary.high equals CS-CMP-01 finding count for bad directory", async () => {
+		const result = await scan({ paths: [cmpBadDir], cwd: rootDir });
+		const cmpFindings = filterByRule(result.findings, "CS-CMP-01");
+
+		expect(result.summary.high).toBe(cmpFindings.length);
+		expect(result.summary.high).toBe(12);
+	});
+
+	it("CS-CMP-01-47 csCmp01Rule.run parity for token-strict-equal.ts", async () => {
+		const file = fixturePath("bad", "token-strict-equal.ts");
+		const scanResult = await scan({ paths: [file], cwd: rootDir });
+		const isolatedFindings = csCmp01Rule.run(createRuleContext(file));
+
+		expect(isolatedFindings.map(findingSignature).sort()).toEqual(
+			filterByRule(scanResult.findings, "CS-CMP-01")
+				.map(findingSignature)
+				.sort(),
+		);
+	});
+
+	it("CS-CMP-01-48 token-strict-equal.ts finding column points at compare", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "token-strict-equal.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings[0]?.column).toBeGreaterThan(0);
+		expect(result.findings[0]?.snippet).toMatch(/===/);
 	});
 });

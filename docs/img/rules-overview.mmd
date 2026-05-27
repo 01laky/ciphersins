@@ -2,6 +2,7 @@ flowchart TB
 	subgraph RULES["Registered rules · packages/core/src/rules"]
 		direction TB
 		JWT["CS-JWT-01 · jsonwebtoken bindings"]
+		JWT2["CS-JWT-02 · verify algorithms"]
 		CMP["CS-CMP-01 · auth === / == + import gate"]
 		RNG["CS-RNG-01 · Math.random auth context"]
 		HASH["CS-HASH-01 · weak hash + password context"]
@@ -16,6 +17,15 @@ flowchart TB
 		BIND --> WALK --> VERIFY
 		VERIFY -->|yes| JCLEAN["return []"]
 		VERIFY -->|no| DECODE --> JFIND["createFinding()"]
+	end
+
+	subgraph JWT2_FLOW["CS-JWT-02"]
+		BIND2["getJsonWebTokenBindings()"]
+		WALK2["collectCallExpressions()"]
+		VMATCH["tracked jwt.verify()"]
+		VALG{"verifyCallMissingAlgorithms()?"}
+		BIND2 --> WALK2 --> VMATCH --> VALG
+		VALG -->|yes| J2FIND["createFinding()"]
 	end
 
 	subgraph CMP_FLOW["CS-CMP-01"]
@@ -62,11 +72,13 @@ flowchart TB
 	end
 
 	JWT --> JWT_FLOW
+	JWT2 --> JWT2_FLOW
 	CMP --> CMP_FLOW
 	RNG --> RNG_FLOW
 	HASH --> HASH_FLOW
 	HASH2 --> HASH2_FLOW
 	JFIND --> REPORT
+	J2FIND --> REPORT
 	CFIND --> REPORT
 	RFIND --> REPORT
 	HFIND --> REPORT
@@ -77,7 +89,7 @@ flowchart TB
 	classDef clean fill:#134e4a,stroke:#5eead4,stroke-width:2px,color:#f0fdfa
 	classDef report fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
 
-	class JWT,CMP,RNG,HASH,HASH2 rule
-	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2 decision
+	class JWT,JWT2,CMP,RNG,HASH,HASH2 rule
+	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG decision
 	class JCLEAN,CCLEAN,CSKIP clean
 	class LOC,MSG,DOC report

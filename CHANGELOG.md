@@ -3,6 +3,23 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.7.0]
+
+### Added
+
+- **CS-JWT-02** — flags `jwt.verify()` without explicit `{ algorithms: [...] }` on tracked `jsonwebtoken` bindings.
+- Shared helper: `jwt-verify-options`.
+- Fixtures `fixtures/cs-jwt-02/{bad,good}/` (23 bad / 19 good); migrated `cs-jwt-01/good` and `cmp/good` verify samples to include algorithms.
+- Tests: CS-JWT-02-01–82, CS-JWT-OPT-01–15, CS-INT-01–21; extended edge cases for all six rules.
+- **`docs/rules/CS-JWT-02.md`**; smoke-cli JWT-02 regression.
+
+### Changed
+
+- `allRules` registry: CS-JWT-01, **CS-JWT-02**, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02 (stable order).
+- CS-INT-08 combined bad total **119** findings (JWT-02 **25**); six good dirs **87** files.
+- CS-JWT-01 docs and good example updated; rules index and diagram updated.
+- CLI `--version` output updated to `0.7.0`.
+
 ## [0.6.0]
 
 ### Added

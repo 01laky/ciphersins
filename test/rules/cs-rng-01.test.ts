@@ -66,7 +66,7 @@ describe("CS-RNG-01 rule registry", () => {
 		expect(csRng01Rule.title).toBe("Math.random in auth context");
 		expect(csRng01Rule.severity).toBe("high");
 		expect(fromRegistry).toBe(csRng01Rule);
-		expect(allRules[2]).toBe(csRng01Rule);
+		expect(allRules[3]).toBe(csRng01Rule);
 	});
 });
 
@@ -412,12 +412,34 @@ describe("CS-RNG-01 extended edge cases", () => {
 		expect(result.findings[0]?.snippet).toMatch(/Math(\?\.|\.)random/i);
 	});
 
-	it("CS-RNG-01-37 shadowed-math-auth-context.ts stays clean with all five rules", async () => {
+	it("CS-RNG-01-37 shadowed-math-auth-context.ts stays clean with all six rules", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "shadowed-math-auth-context.ts")],
 			cwd: rootDir,
 		});
 
 		expect(result.findings).toEqual([]);
+	});
+
+	it("CS-RNG-01-38 summary.high equals CS-RNG-01 finding count for bad directory", async () => {
+		const result = await scan({ paths: [rngBadDir], cwd: rootDir });
+		const rngFindings = result.findings.filter((f) => f.ruleId === "CS-RNG-01");
+
+		expect(result.summary.high).toBe(rngFindings.length);
+		expect(result.summary.high).toBe(12);
+	});
+
+	it("CS-RNG-01-39 csRng01Rule.run parity over bad directory", async () => {
+		const scanResult = await scan({ paths: [rngBadDir], cwd: rootDir });
+		const rngFindings = scanResult.findings.filter(
+			(f) => f.ruleId === "CS-RNG-01",
+		);
+		const isolatedFindings = scanResult.scannedFiles.flatMap((file) =>
+			csRng01Rule.run(createRuleContext(file)),
+		);
+
+		expect(isolatedFindings.map(findingSignature).sort()).toEqual(
+			rngFindings.map(findingSignature).sort(),
+		);
 	});
 });

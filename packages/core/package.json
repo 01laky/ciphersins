@@ -1,6 +1,6 @@
 {
 	"name": "@ciphersins/core",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"private": true,
 	"description": "CipherSins scan engine — AST rules for crypto API misuse in TypeScript/JavaScript",
 	"license": "MIT",

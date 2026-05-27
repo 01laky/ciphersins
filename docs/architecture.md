@@ -2,7 +2,7 @@
 
 How CipherSins scans TypeScript/JavaScript application code for crypto API misuse.
 
-Product overview: [`about.md`](./about.md) · Full spec: [`proposal.MD`](./proposal.MD).
+Product overview: [`about.md`](./about.md) · Full spec: [`proposal.md`](./proposal.md).
 
 ## Scan pipeline
 
@@ -17,7 +17,7 @@ Source paths and globs resolve to scannable files, each file is parsed with the 
 | Rules   | `runRules`, `allRules`                   | Per-file `Rule.run(context)`                         |
 | Output  | `scan`, CLI                              | Severity summary; CLI prints relative path + message |
 
-## Rule registry (v0.9.1)
+## Rule registry (v1.0.0)
 
 Eight MVP rules run in stable order on every scanned file:
 
@@ -36,7 +36,7 @@ Each rule resolves import/require bindings, walks relevant AST nodes, applies ca
 
 ## Rule detection (CS-JWT-01 example)
 
-CS-JWT-01 suppresses all decode findings when any `jwt.verify()` exists in the same file. **CS-JWT-02** independently flags tracked `verify()` calls missing explicit `{ algorithms: [...] }`. **CS-JWT-03** flags verify/sign options that allow or use **`none`**. **CS-JWT-04** flags `ignoreExpiration: true`. Other rules use their own gates (e.g. CS-CMP-01 requires a crypto/auth import; CS-HASH-02 has no import gate).
+CS-JWT-01 suppresses a decode finding when a tracked `jwt.verify()` exists in the **same function scope** (including nested inner functions). **CS-JWT-02** independently flags tracked `verify()` calls missing explicit `{ algorithms: [...] }`. **CS-JWT-03** flags verify/sign options that allow or use **`none`**. **CS-JWT-04** flags `ignoreExpiration: true`. Other rules use their own gates (e.g. CS-CMP-01 requires a crypto/auth import; CS-HASH-02 has no import gate).
 
 ![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/rules-overview.svg)
 
@@ -53,5 +53,5 @@ pnpm diagrams:build
 ## Design constraints (v1)
 
 - **AST + bindings** — no regex-only rule detection
-- **Same-file scope** — cross-file call graphs deferred
+- **Single-file analysis** — CS-JWT-01 uses function-level verify scope; cross-file call graphs deferred
 - **Monorepo** — `@ciphersins/core` engine + `ciphersins` CLI binary

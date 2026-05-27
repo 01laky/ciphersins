@@ -128,6 +128,27 @@ const token = jwt.sign(payload, secret, { algorithm: "HS256" });
 
 Use asymmetric algorithms (for example `RS256`) when your deployment model requires public-key verification.
 
+## Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-JWT-03
+return jwt.verify(token, secret, { algorithms: ["none"] });
+```
+
+Critical rule — requires `--allow-critical-ignore`. See [cli.md](../cli.md#inline-suppressions).
+
+## Library scope
+
+- **`jsonwebtoken`** — tracked `jwt.verify()` and `jwt.sign()` bindings (same as CS-JWT-01/02).
+
+## Limitations
+
+See [False positives and limits](#false-positives-and-limits). Template-literal algorithm arrays, spread options, and indirect calls are not flagged in v1.0.
+
+## Source
+
+[`packages/core/src/rules/cs-jwt-03.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-03.ts)
+
 ## References
 
 - [jsonwebtoken README](https://github.com/auth0/node-jsonwebtoken)

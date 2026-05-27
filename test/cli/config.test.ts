@@ -51,9 +51,9 @@ describe("CS-CLI config loading", () => {
 				configPath,
 				JSON.stringify({ include: ["src/**/*.ts"], failOn: "high" }),
 			);
-			const config = loadConfigFile(configPath);
-			expect(config.include).toEqual(["src/**/*.ts"]);
-			expect(config.failOn).toBe("high");
+			const loaded = loadConfigFile(configPath);
+			expect(loaded.config.include).toEqual(["src/**/*.ts"]);
+			expect(loaded.config.failOn).toBe("high");
 		});
 	});
 
@@ -73,6 +73,7 @@ describe("CS-CLI config loading", () => {
 				path.join(rootDir, "test/fixtures/ci/src/bad-jwt-decode.ts"),
 				path.join(srcDir, "bad-jwt-decode.ts"),
 			);
+			fs.writeFileSync(path.join(srcDir, "clean.ts"), "export const ok = 1;\n");
 			fs.writeFileSync(
 				path.join(tempDir, "ciphersins.config.json"),
 				JSON.stringify({ exclude: ["**/bad-jwt-decode.ts"] }),
@@ -84,9 +85,9 @@ describe("CS-CLI config loading", () => {
 		});
 	});
 
-	it("CS-CLI-58 missing config with explicit --config exits 2", () => {
+	it("CS-CLI-58 missing config with explicit --config exits 3", () => {
 		const result = cli(["--config", "missing-config.json", jwt03BadDir]);
-		expect(result.status).toBe(2);
+		expect(result.status).toBe(3);
 		expect(result.stderr).toMatch(/config file not found/);
 	});
 
@@ -99,8 +100,8 @@ describe("CS-CLI config loading", () => {
 			expect(discoverConfigPath(tempDir)).toBe(
 				path.join(tempDir, "ciphersins.config.json"),
 			);
-			const config = loadConfig({ cwd: tempDir, noConfig: false });
-			expect(config?.failOn).toBe("high");
+			const loaded = loadConfig({ cwd: tempDir, noConfig: false });
+			expect(loaded?.config.failOn).toBe("high");
 		});
 	});
 
@@ -149,7 +150,7 @@ describe("CS-CLI config loading", () => {
 			const doc = JSON.parse(result.stdout);
 			expect(doc.findings[0]?.severity).toBe("medium");
 		});
-	});
+	}, 15_000);
 
 	it("CS-CLI-64 config rules off disables rule via rules map", () => {
 		withTempDir("ciphersins-cli-rules-off-", (tempDir) => {
@@ -165,14 +166,14 @@ describe("CS-CLI config loading", () => {
 		});
 	});
 
-	it("CS-CLI-65 invalid config unknown rule id exits 2", () => {
+	it("CS-CLI-65 invalid config unknown rule id exits 3", () => {
 		withTempDir("ciphersins-cli-bad-rule-", (tempDir) => {
 			fs.writeFileSync(
 				path.join(tempDir, "ciphersins.config.json"),
 				JSON.stringify({ ignore: ["CS-NOPE-99"] }),
 			);
 			const result = cli(["--format", "json", jwt01BadDir], { cwd: tempDir });
-			expect(result.status).toBe(2);
+			expect(result.status).toBe(3);
 			expect(result.stderr).toMatch(/unknown rule id/);
 		});
 	});

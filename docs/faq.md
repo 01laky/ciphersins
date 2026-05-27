@@ -12,7 +12,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## Is it on npm?
 
-**Not yet on npm.** npm publish is planned for **v1.0.0**. Install from source until then — see [README](../README.md#install). CLI supports JSON/SARIF, `--fail-on`, full config, and suppressions since **v0.9.1** — see [cli.md](./cli.md).
+**Yes** — `npm install -g ciphersins` or `npx ciphersins scan ./src`. Library: `@ciphersins/core`. Requires Node **20+**. See [README](../README.md#install) and [cli.md](./cli.md).
 
 ## Does it find secrets or API keys?
 
@@ -24,17 +24,17 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## How many rules are implemented?
 
-**8/8 MVP rules** at **0.9.1**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
+**8/8 MVP rules** at **1.0.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
 
 ## Why same-file scope for CS-JWT-01?
 
-v1.0 flags decode when **no `jwt.verify()` exists anywhere in the same file**. Cross-file helpers (decode in one module, verify in another) are a known limitation documented in [CS-JWT-01](./rules/CS-JWT-01.md).
+v1.0 flags decode when **no `jwt.verify()` exists in the same function scope** as the decode call (including nested inner functions). Verify in a sibling helper does not suppress decode. Cross-file helpers remain a known limitation — see [CS-JWT-01](./rules/CS-JWT-01.md).
 
 Unreachable `if (false) { jwt.verify(...) }` still suppresses findings — v1 does not perform control-flow analysis.
 
 ## Does bcrypt import open CS-CMP-01?
 
-**No.** `bcrypt` / `bcryptjs` alone do not satisfy CS-CMP-01’s crypto-auth import gate — use CS-HASH-02 for weak bcrypt cost. See [CS-CMP-01](./rules/CS-CMP-01.md) and [CS-HASH-02](./rules/CS-HASH-02.md).
+**Yes** — `bcrypt` / `bcryptjs` imports satisfy CS-CMP-01’s crypto-auth import gate (timing-unsafe `===`/`==`/`!==`/`!=` on auth material). Use CS-HASH-02 for weak bcrypt cost. See [CS-CMP-01](./rules/CS-CMP-01.md) and [CS-HASH-02](./rules/CS-HASH-02.md).
 
 ## What file types are scanned?
 
@@ -50,10 +50,10 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | -------------------- | ------------------------- |
 | **CS-S01–S22**       | Scaffold / integration    |
 | **CS-S23–S49**       | Edge cases                |
-| **CS-JWT-01-01–50**  | CS-JWT-01 rule            |
-| **CS-JWT-02-01–82**  | CS-JWT-02 rule            |
-| **CS-JWT-03-01–82**  | CS-JWT-03 rule            |
-| **CS-JWT-04-01–91**  | CS-JWT-04 rule            |
+| **CS-JWT-01-01–88**  | CS-JWT-01 rule            |
+| **CS-JWT-02-01–118** | CS-JWT-02 rule            |
+| **CS-JWT-03-01–103** | CS-JWT-03 rule            |
+| **CS-JWT-04-01–108** | CS-JWT-04 rule            |
 | **CS-JWT-OPT-01–15** | jwt-verify-options helper |
 | **CS-CMP-01-01–45**  | CS-CMP-01 rule            |
 | **CS-RNG-01-01–37**  | CS-RNG-01 rule            |
@@ -67,9 +67,32 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-BCBIND-01–18**  | Bcrypt-bindings helper    |
 | **CS-AUTH-01–10**    | Auth-material helper      |
 | **CS-CRYPTO-01–09**  | Crypto-auth-import helper |
-| **CS-INT-01–33**     | Cross-rule integration    |
+| **CS-INT-01–45**     | Cross-rule integration    |
+| **CS-FS-01–13**      | File resolution audit     |
+| **CS-CLI-69–96**     | CLI audit                 |
+| **CS-VC-01–04**      | Coverage / CI audit       |
+| **CS-SUP-07–22**     | Suppression audit         |
+| **CS-REP-EXT-21–38** | JSON/SARIF audit          |
 
-Run `pnpm test` or `npm test` for the full suite (946 tests at v0.9.1).
+Run `pnpm test` or `npm test` for the full suite (**1164** tests at v1.0.0). CI uses `npm run test:ci` (coverage + JUnit).
+
+## How do I run CipherSins in CI?
+
+Install from npm or build from source, then scan with `--fail-on` for gating:
+
+```yaml
+- run: npx ciphersins@1.0.0 scan ./src --fail-on high --format sarif --output ciphersins.sarif
+```
+
+Monorepo checkout: `npm run build` then `node packages/cli/dist/cli.js scan ./src --no-config --fail-on high`. See [cli.md](./cli.md).
+
+## How do inline suppressions work?
+
+Use `// ciphersins-ignore-next-line [RULE-ID]` or `// ciphersins-ignore [RULE-ID]` on the same line. Omit rule IDs to suppress all rules on that line. **Critical** findings (CS-JWT-03) require `--allow-critical-ignore`. See [cli.md — Inline suppressions](./cli.md#inline-suppressions).
+
+## Can I add custom rules?
+
+**Not in v1.0.0.** Rules live in `@ciphersins/core` and are registered in `packages/core/src/rules/index.ts`. Use `--only` / `--ignore` and config `rules` to tune severity. Custom rule plugins are planned post-1.0 — see [development.md](./development.md#adding-a-rule) for contributing a built-in rule.
 
 ## Who maintains this?
 

@@ -7,17 +7,21 @@ const CRYPTO_AUTH_MODULES = new Set([
 	"argon2",
 	"@node-rs/argon2",
 	"scrypt",
+	"bcrypt",
+	"bcryptjs",
 ]);
 
 export interface CryptoAuthImports {
 	hasCryptoAuthImport: boolean;
 	timingSafeEqualIdentifiers: Set<string>;
+	cryptoMemberObjects: Set<string>;
 }
 
 export function createEmptyCryptoAuthImports(): CryptoAuthImports {
 	return {
 		hasCryptoAuthImport: false,
 		timingSafeEqualIdentifiers: new Set<string>(),
+		cryptoMemberObjects: new Set<string>(),
 	};
 }
 
@@ -52,7 +56,7 @@ function trackTimingSafeEqualFromRequire(
 	}
 
 	if (ts.isIdentifier(name)) {
-		imports.timingSafeEqualIdentifiers.add("timingSafeEqual");
+		imports.cryptoMemberObjects.add(name.text);
 		return;
 	}
 
@@ -94,6 +98,17 @@ function handleImportDeclaration(
 	}
 
 	imports.hasCryptoAuthImport = true;
+
+	if (importClause.name) {
+		imports.cryptoMemberObjects.add(importClause.name.text);
+	}
+
+	if (
+		importClause.namedBindings &&
+		ts.isNamespaceImport(importClause.namedBindings)
+	) {
+		imports.cryptoMemberObjects.add(importClause.namedBindings.name.text);
+	}
 
 	if (
 		importClause.namedBindings &&
@@ -162,6 +177,13 @@ export function isTimingSafeEqualCall(
 	if (ts.isPropertyAccessExpression(callee)) {
 		if (callee.name.text !== "timingSafeEqual") {
 			return false;
+		}
+
+		if (
+			ts.isIdentifier(callee.expression) &&
+			imports.cryptoMemberObjects.has(callee.expression.text)
+		) {
+			return true;
 		}
 
 		if (

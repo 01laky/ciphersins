@@ -72,6 +72,28 @@ export function hashPassword(password: string, salt: Buffer) {
 
 Replace MD5/SHA1 password storage with `bcrypt` (cost ≥ 12), `argon2`, `scrypt`, or `pbkdf2Sync` with **`sha256`** (or stronger) and adequate iteration count.
 
+## Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-HASH-01
+return crypto.createHash("md5").update(password).digest("hex");
+```
+
+See [cli.md](../cli.md#inline-suppressions).
+
+## Library scope
+
+- **Node `crypto`:** `createHash`, `createHmac`, `pbkdf2`, `pbkdf2Sync` with weak digest literals.
+- **Packages:** tracked `md5`, `sha1` npm imports when used as call expressions.
+
+## Limitations
+
+See [False positives and limits](#false-positives-and-limits). Non-literal digests and `CryptoJS` are not tracked in v1.0.
+
+## Source
+
+[`packages/core/src/rules/cs-hash-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-hash-01.ts)
+
 ## References
 
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)

@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`CS-JWT-02 extended edge cases > CS-JWT-02-91 golden snapshot decode-and-verify-no-algorithms.ts 1`] = `
+exports[`CS-JWT-02 extended edge cases > CS-JWT-02-112 golden snapshot decode-and-verify-no-algorithms.ts 1`] = `
 [
   {
     "column": 19,

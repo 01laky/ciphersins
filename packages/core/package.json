@@ -1,7 +1,6 @@
 {
 	"name": "@ciphersins/core",
-	"version": "0.9.1",
-	"private": true,
+	"version": "1.0.0",
 	"description": "CipherSins scan engine — AST rules for crypto API misuse in TypeScript/JavaScript",
 	"license": "MIT",
 	"author": "Ladislav Kostolny <01laky@gmail.com>",
@@ -16,8 +15,20 @@
 	],
 	"sideEffects": false,
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/01laky/CipherSins.git",
+		"directory": "packages/core"
+	},
+	"bugs": {
+		"url": "https://github.com/01laky/CipherSins/issues"
+	},
+	"homepage": "https://github.com/01laky/CipherSins#readme",
 	"files": [
 		"dist"
 	],
@@ -33,7 +44,8 @@
 	},
 	"scripts": {
 		"build": "tsup",
-		"typecheck": "tsc --noEmit -p tsconfig.json"
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"prepublishOnly": "node ../../scripts/sync-version.mjs && npm run build"
 	},
 	"dependencies": {
 		"tinyglobby": "^0.2.14",

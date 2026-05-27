@@ -1,5 +1,10 @@
 export type Severity = "low" | "medium" | "high" | "critical";
 
+export type { SkippedPath, SkippedPathReason } from "./skipped-path.js";
+import type { SkippedPath } from "./skipped-path.js";
+
+export const DEFAULT_MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
 export interface Finding {
 	ruleId: string;
 	message: string;
@@ -38,18 +43,27 @@ export interface ScanOptions {
 	ruleSeverities?: Record<string, Severity>;
 	/** Allow inline suppressions for critical findings. Defaults to false. */
 	allowCriticalIgnore?: boolean;
+	/** Stop collecting findings after this many (sorted order). */
+	maxFindings?: number;
+	/** Skip files larger than this many bytes. Defaults to 5 MiB. */
+	maxFileSizeBytes?: number;
+	/** When true, skip resolved files whose realpath is outside scan roots. */
+	restrictToRoot?: boolean;
 }
 
 export interface ScanResult {
 	findings: Finding[];
 	summary: Record<Severity, number>;
 	scannedFiles: string[];
-	skippedPaths: string[];
+	skippedPaths: SkippedPath[];
+	parseErrors: import("./parse-source-file.js").ParseSourceFileError[];
+	ruleErrors: import("./rule-execution-error.js").RuleExecutionError[];
+	warnings: string[];
 }
 
 export const DEFAULT_INCLUDE = [
-	"**/*.{ts,tsx,js,jsx}",
-	"**/*.{TS,TSX,JS,JSX}",
+	"**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}",
+	"**/*.{TS,TSX,JS,JSX,MJS,CJS,MTS,CTS}",
 ] as const;
 
 export const DEFAULT_EXCLUDE = [

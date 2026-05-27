@@ -6,7 +6,7 @@ Mermaid — always commit updated **`.svg`** files alongside **`.mmd`** edits.
 | File                 | Purpose                                                         |
 | -------------------- | --------------------------------------------------------------- |
 | `pipeline.mmd`       | End-to-end scan pipeline — resolve → parse → rules → CLI output |
-| `rules-overview.mmd` | Worked example — CS-JWT-01 bindings, AST walk, finding shape    |
+| `rules-overview.mmd` | All 8 MVP rules — detection flows and shared finding output     |
 
 Regenerate after editing sources:
 

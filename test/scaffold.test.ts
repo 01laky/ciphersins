@@ -28,6 +28,7 @@ import {
 	type Rule,
 	type RuleContext,
 } from "@ciphersins/core";
+import { skippedPath } from "./helpers/skipped-path.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "..");
@@ -320,7 +321,9 @@ describe("CS-S16 missing paths", () => {
 		const result = await scan({ paths: [missing], cwd: rootDir });
 
 		expect(result.scannedFiles).toEqual([]);
-		expect(result.skippedPaths).toEqual([path.resolve(missing)]);
+		expect(result.skippedPaths).toEqual([
+			skippedPath(path.resolve(missing), "missing"),
+		]);
 	});
 });
 
@@ -388,14 +391,13 @@ describe("CS-S20 CLI warnings for skipped paths", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.status).toBe(0);
-		expect(result.stdout).toContain("No findings.");
-		expect(result.stderr).toContain("warning: skipped missing path");
+		expect(result.status).toBe(2);
+		expect(result.stderr).toContain("error: no files scanned");
 	});
 });
 
-describe("CS-S21 parse failure aggregation", () => {
-	it("CS-S21 throws AggregateError when a resolved file cannot be read", async () => {
+describe("CS-S21 parse failure collection", () => {
+	it("CS-S21 collects parse errors when a resolved file cannot be read", async () => {
 		const tempDir = fs.mkdtempSync(
 			path.join(os.tmpdir(), "ciphersins-parse-fail-"),
 		);
@@ -404,9 +406,9 @@ describe("CS-S21 parse failure aggregation", () => {
 		fs.chmodSync(unreadable, 0o000);
 
 		try {
-			await expect(scan({ paths: [unreadable], cwd: rootDir })).rejects.toThrow(
-				/Failed to parse 1 file/,
-			);
+			const result = await scan({ paths: [unreadable], cwd: rootDir });
+			expect(result.parseErrors).toHaveLength(1);
+			expect(result.findings).toEqual([]);
 		} finally {
 			fs.chmodSync(unreadable, 0o644);
 			fs.rmSync(tempDir, { recursive: true, force: true });
@@ -434,6 +436,6 @@ describe("CS-S22 CLI help and version", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("0.9.1");
+		expect(result.stdout.trim()).toBe("1.0.0");
 	});
 });

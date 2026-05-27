@@ -1,12 +1,19 @@
 import { pathToFileURL } from "node:url";
 import { formatRelativePath } from "../get-line-snippet.js";
 import { allRules } from "../rules/index.js";
-import type { Finding, ScanResult } from "../types.js";
+import type { Finding, ScanResult, Severity } from "../types.js";
 import { findingPrimaryLocationLineHash } from "./sarif-fingerprint.js";
 import { severityToSarifLevel } from "./severity.js";
 import { sortFindings } from "./sort-findings.js";
 
 const REPO_BASE = "https://github.com/01laky/CipherSins/blob/main/docs/rules";
+
+const SECURITY_SEVERITY: Record<Severity, string> = {
+	critical: "9.5",
+	high: "7.5",
+	medium: "5.5",
+	low: "3.0",
+};
 
 export interface FormatSarifOptions {
 	cwd: string;
@@ -22,10 +29,10 @@ function ruleHelpText(ruleId: string, title: string): string {
 	return `See [${ruleId}](${helpUrl}) — ${title}.`;
 }
 
-function buildDriverRules(toolVersion: string) {
+function buildDriverRules() {
 	return allRules.map((rule) => ({
 		id: rule.id,
-		name: rule.title,
+		name: rule.id.replace(/-/g, ""),
 		shortDescription: { text: rule.title },
 		fullDescription: { text: rule.title },
 		helpUri: ruleHelpUrl(rule.id),
@@ -35,6 +42,10 @@ function buildDriverRules(toolVersion: string) {
 		defaultConfiguration: {
 			level: severityToSarifLevel(rule.severity),
 		},
+		properties: {
+			tags: ["security", rule.severity],
+			"security-severity": SECURITY_SEVERITY[rule.severity],
+		},
 	}));
 }
 
@@ -43,6 +54,14 @@ function findingToSarifResult(finding: Finding, cwd: string) {
 		/\\/g,
 		"/",
 	);
+
+	const region: Record<string, unknown> = {
+		startLine: finding.line,
+		startColumn: finding.column,
+	};
+	if (finding.snippet !== undefined) {
+		region.snippet = { text: finding.snippet };
+	}
 
 	return {
 		ruleId: finding.ruleId,
@@ -58,11 +77,7 @@ function findingToSarifResult(finding: Finding, cwd: string) {
 						uri: relativeFile,
 						uriBaseId: "%WORKINGDIR%",
 					},
-					region: {
-						startLine: finding.line,
-						startColumn: finding.column,
-						snippet: { text: finding.snippet ?? "" },
-					},
+					region,
 				},
 			},
 		],
@@ -76,14 +91,8 @@ function workingDirectoryUri(cwd: string): string {
 
 export function formatSarif(
 	result: ScanResult,
-	options: FormatSarifOptions | string,
-	toolVersion?: string,
+	options: FormatSarifOptions,
 ): string {
-	const opts: FormatSarifOptions =
-		typeof options === "string"
-			? { cwd: options, toolVersion: toolVersion ?? "0.9.1" }
-			: options;
-
 	return `${JSON.stringify(
 		{
 			$schema: "https://json.schemastore.org/sarif-2.1.0.json",
@@ -93,18 +102,21 @@ export function formatSarif(
 					tool: {
 						driver: {
 							name: "CipherSins",
-							version: opts.toolVersion,
+							version: options.toolVersion,
 							informationUri: "https://github.com/01laky/CipherSins",
-							rules: buildDriverRules(opts.toolVersion),
+							rules: buildDriverRules(),
 						},
 					},
+					automationDetails: {
+						id: "ciphersins",
+					},
 					results: sortFindings(result.findings).map((finding) =>
-						findingToSarifResult(finding, opts.cwd),
+						findingToSarifResult(finding, options.cwd),
 					),
 					columnKind: "utf16CodeUnits",
 					originalUriBaseIds: {
 						"%WORKINGDIR%": {
-							uri: workingDirectoryUri(opts.cwd),
+							uri: workingDirectoryUri(options.cwd),
 						},
 					},
 				},

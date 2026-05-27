@@ -9,14 +9,8 @@ export interface FormatJsonOptions {
 
 export function formatJson(
 	result: ScanResult,
-	options: FormatJsonOptions | string,
-	toolVersion?: string,
+	options: FormatJsonOptions,
 ): string {
-	const opts: FormatJsonOptions =
-		typeof options === "string"
-			? { cwd: options, toolVersion: toolVersion ?? "0.9.1" }
-			: options;
-
 	const summaryTotal = Object.values(result.summary).reduce(
 		(total, count) => total + count,
 		0,
@@ -24,22 +18,25 @@ export function formatJson(
 
 	return `${JSON.stringify(
 		{
-			schemaVersion: 1,
-			version: opts.toolVersion,
+			schemaVersion: 2,
+			version: options.toolVersion,
 			tool: "ciphersins",
 			summary: {
 				...result.summary,
 				total: summaryTotal,
 			},
 			scannedFiles: result.scannedFiles.map((file) =>
-				formatRelativePath(file, opts.cwd),
+				formatRelativePath(file, options.cwd),
 			),
-			skippedPaths: result.skippedPaths,
+			skippedPaths: result.skippedPaths.map((entry) => ({
+				path: formatRelativePath(entry.path, options.cwd),
+				reason: entry.reason,
+			})),
 			findings: sortFindings(result.findings).map((finding) => ({
 				ruleId: finding.ruleId,
 				message: finding.message,
 				severity: finding.severity,
-				file: formatRelativePath(finding.file, opts.cwd),
+				file: formatRelativePath(finding.file, options.cwd),
 				line: finding.line,
 				column: finding.column,
 				...(finding.snippet !== undefined ? { snippet: finding.snippet } : {}),

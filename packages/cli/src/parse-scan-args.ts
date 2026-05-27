@@ -20,6 +20,16 @@ export interface ParsedScanArgsSuccess {
 	only?: string[];
 	ignore?: string[];
 	allowCriticalIgnore: boolean;
+	cwd?: string;
+	include?: string[];
+	exclude?: string[];
+	maxFindings?: number;
+	verbose: boolean;
+	listRules: boolean;
+	printConfig: boolean;
+	color?: boolean;
+	noColor: boolean;
+	strictConfig: boolean;
 }
 
 export interface ParsedScanArgsFailure {
@@ -44,6 +54,10 @@ function normalizeArgs(args: string[]): string[] {
 			normalized.push(`--fail-on=${token.slice("--failOn=".length)}`);
 			continue;
 		}
+		if (token === "--debug") {
+			normalized.push("--verbose");
+			continue;
+		}
 		normalized.push(token);
 	}
 	return normalized;
@@ -61,8 +75,41 @@ function parseRuleIdList(value: string, label: string): string[] {
 	return ruleIds;
 }
 
+function findOnlyIgnoreOverlap(
+	only: string[] | undefined,
+	ignore: string[] | undefined,
+): string[] {
+	if (!only || !ignore) {
+		return [];
+	}
+	const ignored = new Set(ignore);
+	return only.filter((ruleId) => ignored.has(ruleId));
+}
+
+function parsePositiveInteger(value: string, label: string): number {
+	const parsed = Number.parseInt(value, 10);
+	if (!Number.isFinite(parsed) || parsed < 0 || String(parsed) !== value) {
+		throw new Error(`invalid ${label}: expected a non-negative integer`);
+	}
+	return parsed;
+}
+
 export function parseScanArgs(args: string[]): ParsedScanArgs {
 	const normalized = normalizeArgs(args);
+
+	if (normalized.includes("--config") && normalized.includes("--no-config")) {
+		return {
+			ok: false,
+			message: "cannot use --config together with --no-config",
+		};
+	}
+
+	if (normalized.includes("--color") && normalized.includes("--no-color")) {
+		return {
+			ok: false,
+			message: "cannot use --color together with --no-color",
+		};
+	}
 
 	try {
 		const { values, positionals } = parseArgs({
@@ -77,6 +124,16 @@ export function parseScanArgs(args: string[]): ParsedScanArgs {
 				only: { type: "string" },
 				ignore: { type: "string" },
 				"allow-critical-ignore": { type: "boolean", default: false },
+				cwd: { type: "string" },
+				include: { type: "string", multiple: true },
+				exclude: { type: "string", multiple: true },
+				"max-findings": { type: "string" },
+				verbose: { type: "boolean", default: false },
+				"list-rules": { type: "boolean", default: false },
+				"print-config": { type: "boolean", default: false },
+				color: { type: "boolean" },
+				"no-color": { type: "boolean", default: false },
+				"strict-config": { type: "boolean", default: false },
 			},
 			allowPositionals: true,
 			strict: true,
@@ -94,10 +151,11 @@ export function parseScanArgs(args: string[]): ParsedScanArgs {
 		let failOn: Severity | undefined;
 
 		if (values["fail-on"] !== undefined) {
-			if (values["fail-on"] === "none") {
+			const normalizedFailOn = values["fail-on"].toLowerCase();
+			if (normalizedFailOn === "none") {
 				failOnDisabled = true;
-			} else if (isSeverity(values["fail-on"])) {
-				failOn = values["fail-on"];
+			} else if (isSeverity(normalizedFailOn)) {
+				failOn = normalizedFailOn;
 			} else {
 				return {
 					ok: false,
@@ -108,6 +166,7 @@ export function parseScanArgs(args: string[]): ParsedScanArgs {
 
 		let only: string[] | undefined;
 		let ignore: string[] | undefined;
+		let maxFindings: number | undefined;
 
 		try {
 			if (values.only !== undefined) {
@@ -116,10 +175,27 @@ export function parseScanArgs(args: string[]): ParsedScanArgs {
 			if (values.ignore !== undefined) {
 				ignore = parseRuleIdList(values.ignore, "--ignore");
 			}
+			if (values["max-findings"] !== undefined) {
+				maxFindings = parsePositiveInteger(
+					values["max-findings"],
+					"--max-findings",
+				);
+			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
 			return { ok: false, message };
 		}
+
+		const overlap = findOnlyIgnoreOverlap(only, ignore);
+		if (overlap.length > 0) {
+			return {
+				ok: false,
+				message: `rule(s) present in both --only and --ignore: ${overlap.join(", ")}`,
+			};
+		}
+
+		const include = values.include?.filter(Boolean);
+		const exclude = values.exclude?.filter(Boolean);
 
 		return {
 			ok: true,
@@ -134,9 +210,23 @@ export function parseScanArgs(args: string[]): ParsedScanArgs {
 			only,
 			ignore,
 			allowCriticalIgnore: values["allow-critical-ignore"] ?? false,
+			cwd: values.cwd,
+			include: include && include.length > 0 ? include : undefined,
+			exclude: exclude && exclude.length > 0 ? exclude : undefined,
+			maxFindings,
+			verbose: values.verbose ?? false,
+			listRules: values["list-rules"] ?? false,
+			printConfig: values["print-config"] ?? false,
+			color: values.color,
+			noColor: values["no-color"] ?? false,
+			strictConfig: values["strict-config"] ?? false,
 		};
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		return { ok: false, message };
 	}
+}
+
+export function isVersionFlag(args: string[]): boolean {
+	return args.some((token) => token === "--version" || token === "-v");
 }

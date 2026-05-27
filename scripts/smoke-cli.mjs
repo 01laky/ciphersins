@@ -74,15 +74,18 @@ for (const [dir, ruleId] of [
 	);
 }
 
-for (const goodDir of [
-	path.join(rootDir, "fixtures/cs-jwt-01/good"),
-	path.join(rootDir, "fixtures/cs-jwt-02/good"),
-	path.join(rootDir, "fixtures/cs-jwt-03/good"),
-	path.join(rootDir, "fixtures/cs-jwt-04/good"),
-	path.join(rootDir, "fixtures/cs-cmp-01/good"),
-	path.join(rootDir, "fixtures/cs-rng-01/good"),
-	path.join(rootDir, "fixtures/cs-hash-01/good"),
-	path.join(rootDir, "fixtures/cs-hash-02/good"),
+for (const [goodDir, expected] of [
+	[path.join(rootDir, "fixtures/cs-jwt-01/good"), "No findings."],
+	[path.join(rootDir, "fixtures/cs-jwt-02/good"), "No findings."],
+	[path.join(rootDir, "fixtures/cs-jwt-03/good"), "No findings."],
+	[path.join(rootDir, "fixtures/cs-jwt-04/good"), "No findings."],
+	[path.join(rootDir, "fixtures/cs-cmp-01/good"), "No findings."],
+	[path.join(rootDir, "fixtures/cs-rng-01/good"), "No findings."],
+	[path.join(rootDir, "fixtures/cs-hash-01/good"), "No findings."],
+	[
+		path.join(rootDir, "fixtures/cs-hash-02/good"),
+		"fixtures/cs-hash-02/good/node-rs-bcrypt-untracked.ts",
+	],
 ]) {
 	const goodScan = spawnSync(
 		process.execPath,
@@ -97,8 +100,8 @@ for (const goodDir of [
 		`good scan exit ${goodScan.status} for ${goodDir}\n${goodScan.stderr}`,
 	);
 	assert(
-		goodScan.stdout.includes("No findings."),
-		`expected No findings. for ${goodDir}:\n${goodScan.stdout}`,
+		goodScan.stdout.includes(expected),
+		`expected ${expected} for ${goodDir}:\n${goodScan.stdout}`,
 	);
 }
 
@@ -135,7 +138,7 @@ assert(
 	`json smoke exit ${jsonSmoke.status}\n${jsonSmoke.stderr}`,
 );
 const jsonDoc = JSON.parse(jsonSmoke.stdout);
-assert(jsonDoc.schemaVersion === 1, "json smoke missing schemaVersion");
+assert(jsonDoc.schemaVersion === 2, "json smoke missing schemaVersion");
 assert(jsonDoc.findings.length > 0, "json smoke expected findings");
 
 const tempDir = fs.mkdtempSync(

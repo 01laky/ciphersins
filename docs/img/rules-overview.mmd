@@ -5,7 +5,7 @@ flowchart TB
 		JWT2["CS-JWT-02 · verify algorithms"]
 		JWT3["CS-JWT-03 · none algorithm critical"]
 		JWT4["CS-JWT-04 · ignoreExpiration medium"]
-		CMP["CS-CMP-01 · auth === / == + import gate"]
+		CMP["CS-CMP-01 · auth === / != + import gate"]
 		RNG["CS-RNG-01 · Math.random auth context"]
 		HASH["CS-HASH-01 · weak hash + password context"]
 		HASH2["CS-HASH-02 · weak bcrypt cost"]
@@ -14,11 +14,11 @@ flowchart TB
 	subgraph JWT_FLOW["CS-JWT-01"]
 		BIND["getJsonWebTokenBindings()"]
 		WALK["collectCallExpressions()"]
-		VERIFY{"any jwt.verify() in file?"}
+		VERIFY{"verify in same function scope?"}
 		DECODE["decode call sites"]
-		BIND --> WALK --> VERIFY
-		VERIFY -->|yes| JCLEAN["return []"]
-		VERIFY -->|no| DECODE --> JFIND["createFinding()"]
+		BIND --> WALK --> DECODE --> VERIFY
+		VERIFY -->|yes| JCLEAN["skip decode finding"]
+		VERIFY -->|no| JFIND["createFinding()"]
 	end
 
 	subgraph JWT2_FLOW["CS-JWT-02"]

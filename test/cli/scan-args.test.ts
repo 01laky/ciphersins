@@ -61,9 +61,12 @@ describe("CS-CLI scan args and severity helpers", () => {
 		}
 	});
 
-	it("CS-CLI-08 unknown flag --verbose returns error", () => {
+	it("CS-CLI-08 --verbose flag is accepted", () => {
 		const parsed = parseScanArgs(["--verbose"]);
-		expect(parsed.ok).toBe(false);
+		expect(parsed.ok).toBe(true);
+		if (parsed.ok) {
+			expect(parsed.verbose).toBe(true);
+		}
 	});
 
 	it("CS-CLI-09 --quiet sets quiet true", () => {
@@ -136,10 +139,10 @@ describe("CS-CLI scan args and severity helpers", () => {
 	it("CS-CLI-18 formatFailSummary counts only severities at or above threshold", () => {
 		const summary = { low: 1, medium: 2, high: 3, critical: 4 };
 		expect(formatFailSummary(summary, "high")).toBe(
-			"error: 7 finding(s) at or above high (high: 3, critical: 4)",
+			"error: 7 findings at or above high (critical: 4, high: 3)",
 		);
 		expect(formatFailSummary(summary, "critical")).toBe(
-			"error: 4 finding(s) at or above critical (critical: 4)",
+			"error: 4 findings at or above critical (critical: 4)",
 		);
 		expect(SEVERITIES).toHaveLength(4);
 	});
@@ -162,6 +165,31 @@ describe("CS-CLI scan args and severity helpers", () => {
 		expect(parsed.ok).toBe(true);
 		if (parsed.ok) {
 			expect(parsed.allowCriticalIgnore).toBe(true);
+		}
+	});
+
+	it("CS-CLI-97 parseScanArgs --list-rules and --cwd flags", () => {
+		const parsed = parseScanArgs(["--list-rules", "--cwd", "./app"]);
+		expect(parsed.ok).toBe(true);
+		if (parsed.ok) {
+			expect(parsed.listRules).toBe(true);
+			expect(parsed.cwd).toBe("./app");
+		}
+	});
+
+	it("CS-CLI-98 parseScanArgs repeatable include and max-findings", () => {
+		const parsed = parseScanArgs([
+			"--include",
+			"src/**/*.ts",
+			"--include",
+			"lib/**/*.ts",
+			"--max-findings",
+			"10",
+		]);
+		expect(parsed.ok).toBe(true);
+		if (parsed.ok) {
+			expect(parsed.include).toEqual(["src/**/*.ts", "lib/**/*.ts"]);
+			expect(parsed.maxFindings).toBe(10);
 		}
 	});
 });

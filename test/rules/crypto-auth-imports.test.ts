@@ -102,15 +102,15 @@ describe("crypto-auth import helpers", () => {
 		const imports = getCryptoAuthImports(sourceFile);
 
 		expect(fileHasCryptoAuthImport(sourceFile)).toBe(true);
-		expect(isTimingSafeEqualCall(call, imports)).toBe(false);
+		expect(isTimingSafeEqualCall(call, imports)).toBe(true);
 	});
 
-	it("CS-CRYPTO-08 import bcrypt alone does not open CMP auth import gate", () => {
+	it("CS-CRYPTO-08 import bcrypt opens CMP auth import gate", () => {
 		const sourceFile = parseSource(
 			'import bcrypt from "bcrypt";\nexport const x = 1;\n',
 		);
 
-		expect(fileHasCryptoAuthImport(sourceFile)).toBe(false);
+		expect(fileHasCryptoAuthImport(sourceFile)).toBe(true);
 	});
 
 	it("CS-CRYPTO-09 import argon2 opens CMP auth import gate", () => {

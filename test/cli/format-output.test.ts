@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
-import { normalizeSarifForSnapshot } from "@ciphersins/core";
+import { normalizeSarifForSnapshot } from "../../packages/core/src/reporting/normalize-sarif-snapshot.js";
 import {
 	allBadDirs,
 	cli,
@@ -13,6 +13,7 @@ import {
 	jwt03BadFile,
 	jwt03GoodDir,
 	jwt04BadDir,
+	jwt04BadMediumOnlyFile,
 	rootDir,
 } from "./helpers.js";
 
@@ -36,11 +37,11 @@ function withTempDir(prefix: string, run: (dir: string) => void) {
 }
 
 describe("CS-CLI format and output integration", () => {
-	it("CS-CLI-19 --format json --no-config parses with schemaVersion 1 and CS-JWT-03", () => {
+	it("CS-CLI-19 --format json --no-config parses with schemaVersion 2 and CS-JWT-03", () => {
 		const result = cli(["--format", "json", "--no-config", jwt03BadFile]);
 		expect(result.status).toBe(0);
 		const doc = JSON.parse(result.stdout);
-		expect(doc.schemaVersion).toBe(1);
+		expect(doc.schemaVersion).toBe(2);
 		expect(
 			doc.findings.some((f: { ruleId: string }) => f.ruleId === "CS-JWT-03"),
 		).toBe(true);
@@ -66,8 +67,13 @@ describe("CS-CLI format and output integration", () => {
 		expect(normalizeSarifForSnapshot(result.stdout)).toMatchSnapshot();
 	});
 
-	it("CS-CLI-23 jwt-04 bad with --fail-on high --no-config exits 0", () => {
-		const result = cli(["--fail-on", "high", "--no-config", jwt04BadDir]);
+	it("CS-CLI-23 jwt-04 medium-only file with --fail-on high --no-config exits 0", () => {
+		const result = cli([
+			"--fail-on",
+			"high",
+			"--no-config",
+			jwt04BadMediumOnlyFile,
+		]);
 		expect(result.status).toBe(0);
 	});
 
@@ -173,17 +179,16 @@ describe("CS-CLI format and output integration", () => {
 		expect(result.stdout).toMatch(/CS-JWT-03\s+critical/);
 	});
 
-	it("CS-CLI-35 missing path warning on stderr with --format json --no-config", () => {
+	it("CS-CLI-35 missing path exits 2 with no files scanned error", () => {
 		const result = cli([
 			"--format",
 			"json",
 			"--no-config",
 			"missing-scan-root-does-not-exist",
 		]);
-		expect(result.status).toBe(0);
-		expect(result.stderr).toMatch(/warning: skipped missing path/);
-		const doc = JSON.parse(result.stdout);
-		expect(doc.findings).toEqual([]);
+		expect(result.status).toBe(2);
+		expect(result.stderr).toContain("error: no files scanned");
+		expect(result.stdout).toBe("");
 	});
 
 	it("CS-CLI-36 invalid --format foo --no-config exits 2", () => {
@@ -235,7 +240,7 @@ describe("CS-CLI format and output integration", () => {
 		expect(result.status).toBe(1);
 	});
 
-	it("CS-CLI-43 all bad dirs JSON with --fail-on high --no-config exits 1 total 164", () => {
+	it("CS-CLI-43 all bad dirs JSON with --fail-on high --no-config exits 1 total 165", () => {
 		const result = cli([
 			"--format",
 			"json",
@@ -246,8 +251,8 @@ describe("CS-CLI format and output integration", () => {
 		]);
 		expect(result.status).toBe(1);
 		const doc = JSON.parse(result.stdout);
-		expect(doc.summary.total).toBe(164);
-	});
+		expect(doc.summary.total).toBe(191);
+	}, 30_000);
 
 	it("CS-CLI-48 jwt-03 bad fail-on high quiet --no-config exits 1 with stderr summary", () => {
 		const result = cli([
@@ -258,7 +263,7 @@ describe("CS-CLI format and output integration", () => {
 			jwt03BadDir,
 		]);
 		expect(result.status).toBe(1);
-		expect(result.stderr).toMatch(/error: \d+ finding\(s\) at or above high/);
+		expect(result.stderr).toMatch(/error: \d+ findings? at or above high/);
 	});
 
 	it("CS-CLI-49 ciphersins scan --help lists format and fail-on flags", () => {

@@ -6,28 +6,30 @@ export type {
 	ScanResult,
 	Severity,
 } from "./types.js";
-export { DEFAULT_EXCLUDE, DEFAULT_INCLUDE, SEVERITIES } from "./types.js";
-
-export { ParseSourceFileError, parseSourceFile } from "./parse-source-file.js";
 export {
-	createRuleContext,
-	isDirectory,
-	isFile,
-	pathExists,
-} from "./create-rule-context.js";
+	DEFAULT_EXCLUDE,
+	DEFAULT_INCLUDE,
+	DEFAULT_MAX_FILE_SIZE_BYTES,
+	SEVERITIES,
+} from "./types.js";
+export type { SkippedPath, SkippedPathReason } from "./types.js";
+export { VERSION } from "./version.js";
+
+export {
+	ParseSourceFileError,
+	parseSourceFile,
+	stripUtf8Bom,
+} from "./parse-source-file.js";
+export { createRuleContext } from "./create-rule-context.js";
 export {
 	getLineSnippet,
 	getPositionForLineColumn,
 	formatRelativePath,
 } from "./get-line-snippet.js";
-export {
-	isScannableExtension,
-	listDirectoryEntries,
-	readPathKind,
-	resolveDefaultScanRoot,
-	resolveFiles,
-} from "./resolve-files.js";
+export { expandUserPath } from "./expand-user-path.js";
+export { resolveDefaultScanRoot, resolveFiles } from "./resolve-files.js";
 export { runRules } from "./run-rules.js";
+export { RuleExecutionError } from "./rule-execution-error.js";
 export { createEmptySummary, scan, summarizeFindings } from "./scan.js";
 export {
 	RULE_IDS,
@@ -45,6 +47,7 @@ export {
 	applySuppressions,
 	parseSuppressions,
 	type Suppression,
+	type SuppressionParseResult,
 } from "./suppressions.js";
 export { formatJson, type FormatJsonOptions } from "./reporting/format-json.js";
 export {
@@ -52,7 +55,6 @@ export {
 	type FormatSarifOptions,
 } from "./reporting/format-sarif.js";
 export { findingPrimaryLocationLineHash } from "./reporting/sarif-fingerprint.js";
-export { normalizeSarifForSnapshot } from "./reporting/normalize-sarif-snapshot.js";
 export {
 	isSeverity,
 	severityRank,
@@ -71,14 +73,3 @@ export {
 	csHash01Rule,
 	csHash02Rule,
 } from "./rules/index.js";
-export {
-	verifyCallAllowsNoneAlgorithm,
-	signCallUsesNoneAlgorithm,
-	verifyCallIgnoresExpiration,
-	arrayLiteralContainsNone,
-	isNoneAlgorithmStringLiteral,
-	objectLiteralVerifyAllowsNone,
-	objectLiteralIgnoresExpiration,
-	getSignOptionsArgument,
-	getVerifyOptionsArgument,
-} from "./rules/helpers/jwt-verify-options.js";

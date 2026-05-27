@@ -109,6 +109,58 @@ export function getSignOptionsArgument(
 	return getJsonWebTokenMethodOptionsArgument(call);
 }
 
+function initializerIsMissingAlgorithmsValue(node: ts.Expression): boolean {
+	return (
+		node.kind === ts.SyntaxKind.NullKeyword ||
+		node.kind === ts.SyntaxKind.UndefinedKeyword ||
+		(ts.isIdentifier(node) && node.text === "undefined")
+	);
+}
+
+function optionsExpressionIsMissingAlgorithms(
+	expression: ts.Expression,
+): boolean {
+	if (initializerIsMissingAlgorithmsValue(expression)) {
+		return true;
+	}
+
+	if (!ts.isObjectLiteralExpression(expression)) {
+		return false;
+	}
+
+	if (objectLiteralHasShorthandAlgorithmsProperty(expression)) {
+		return false;
+	}
+
+	for (const prop of expression.properties) {
+		if (!ts.isPropertyAssignment(prop)) {
+			continue;
+		}
+		if (!isAlgorithmsPropertyName(prop.name)) {
+			continue;
+		}
+		const { initializer } = prop;
+		if (!initializer) {
+			return true;
+		}
+		if (initializerIsMissingAlgorithmsValue(initializer)) {
+			return true;
+		}
+		if (
+			ts.isArrayLiteralExpression(initializer) &&
+			initializer.elements.length > 0
+		) {
+			return false;
+		}
+		if (objectLiteralHasNonLiteralAlgorithmsProperty(expression)) {
+			return false;
+		}
+		return true;
+	}
+
+	return !objectLiteralHasExplicitAlgorithms(expression);
+}
+
 export function verifyCallMissingAlgorithms(call: ts.CallExpression): boolean {
 	const optionsArg = getVerifyOptionsArgument(call);
 	if (optionsArg === undefined) {
@@ -118,16 +170,8 @@ export function verifyCallMissingAlgorithms(call: ts.CallExpression): boolean {
 		const third = call.arguments[2];
 		return third !== undefined && isCallbackArgument(third);
 	}
-	if (!ts.isObjectLiteralExpression(optionsArg)) {
-		return false;
-	}
-	if (objectLiteralHasShorthandAlgorithmsProperty(optionsArg)) {
-		return false;
-	}
-	if (objectLiteralHasNonLiteralAlgorithmsProperty(optionsArg)) {
-		return false;
-	}
-	return !objectLiteralHasExplicitAlgorithms(optionsArg);
+
+	return optionsExpressionIsMissingAlgorithms(optionsArg);
 }
 
 export function isNoneAlgorithmStringLiteral(node: ts.Expression): boolean {
@@ -203,6 +247,16 @@ export function signCallUsesNoneAlgorithm(call: ts.CallExpression): boolean {
 	return objectLiteralSignUsesNone(optionsArg);
 }
 
+function isTruthyIgnoreExpirationValue(node: ts.Expression): boolean {
+	if (node.kind === ts.SyntaxKind.TrueKeyword) {
+		return true;
+	}
+	if (ts.isNumericLiteral(node)) {
+		return Number(node.text) > 0;
+	}
+	return false;
+}
+
 export function objectLiteralIgnoresExpiration(
 	node: ts.ObjectLiteralExpression,
 ): boolean {
@@ -215,8 +269,7 @@ export function objectLiteralIgnoresExpiration(
 		}
 		const { initializer } = prop;
 		return (
-			initializer !== undefined &&
-			initializer.kind === ts.SyntaxKind.TrueKeyword
+			initializer !== undefined && isTruthyIgnoreExpirationValue(initializer)
 		);
 	}
 	return false;

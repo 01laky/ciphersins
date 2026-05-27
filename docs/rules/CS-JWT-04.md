@@ -71,20 +71,48 @@ Manual expiry enforcement in the same function (for example comparing `payload.e
 ## What CipherSins checks
 
 - **Tracked `jwt.verify()`** from **`jsonwebtoken`** — same bindings as [CS-JWT-01](./CS-JWT-01.md).
-- Inline options object with **`ignoreExpiration: true`** (boolean literal only).
+- Inline options object with **`ignoreExpiration: true`** or other **truthy** literals (e.g. `ignoreExpiration: 1`).
 - **Optional chaining** `jwt?.verify(...)` when the import is tracked.
 - **Same-file scope only (v1).**
 - **No crypto-auth-import gate.**
 
-### Deferred v1.1 heuristics
+### Known limitations (v1.0)
 
-v1.0 **does not** flag:
+See also **[Limitations](#limitations)** below.
 
-- Verify calls with no `ignoreExpiration` but also no evidence of manual `exp` handling
 - `ignoreExpiration` loaded from a variable or spread from another object
-- Comment-based suppressions or `@ciphersins-ignore` directives
+- Verify calls with no `ignoreExpiration` but also no evidence of manual `exp` handling
 
-These are documented trade-offs for a future **v1.1** pass after fixture feedback. See [`proposal.MD`](../proposal.MD) CS-JWT-04 section.
+### Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-JWT-04
+jwt.verify(token, secret, { ignoreExpiration: true });
+```
+
+Requires `--allow-critical-ignore` only for **critical** rules (CS-JWT-03), not CS-JWT-04. See [cli.md](../cli.md#inline-suppressions).
+
+See [proposal.md](../proposal.md) for roadmap items deferred to v1.1.
+
+## Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-JWT-04
+return jwt.verify(token, secret, {
+	algorithms: ["HS256"],
+	ignoreExpiration: true,
+});
+```
+
+See [cli.md](../cli.md#inline-suppressions).
+
+## Library scope
+
+- **`jsonwebtoken`** — tracked `jwt.verify()` bindings (same as CS-JWT-01).
+
+## Source
+
+[`packages/core/src/rules/cs-jwt-04.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-04.ts)
 
 ## Cross-rule with CS-JWT-02
 
@@ -117,6 +145,10 @@ Example: `verify-algorithms-and-ignore-expiration.ts` (jwt-04 bad) has explicit 
 | Dynamic `import('jsonwebtoken')`                    | **Not flagged in v1**                                             |
 | `jose`, `passport-jwt`                              | **Out of scope**                                                  |
 | Verify in `*.test.ts` / `*.spec.ts`                 | **Excluded by default scan globs**                                |
+
+## Limitations
+
+See [False positives and limits](#false-positives-and-limits) and [Known limitations (v1.0)](#known-limitations-v10). Variable/spread options and manual `exp` checks elsewhere in the file are not analyzed in v1.0.
 
 ## Fix
 

@@ -43,7 +43,7 @@ describe("inline suppressions", () => {
 	it("CS-SUP-06 parseSuppressions reads next-line directive", () => {
 		const file = path.join(fixturesDir, "ignore-next-line-jwt01.ts");
 		const sourceFile = parseSourceFile(file);
-		const suppressions = parseSuppressions(sourceFile);
-		expect(suppressions).toEqual([{ line: 5, ruleIds: ["CS-JWT-01"] }]);
+		const parsed = parseSuppressions(sourceFile);
+		expect(parsed.suppressions).toEqual([{ line: 5, ruleIds: ["CS-JWT-01"] }]);
 	});
 });

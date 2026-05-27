@@ -3,6 +3,8 @@ import ts from "typescript";
 const EQUALITY_OPERATORS = new Set([
 	ts.SyntaxKind.EqualsEqualsEqualsToken,
 	ts.SyntaxKind.EqualsEqualsToken,
+	ts.SyntaxKind.ExclamationEqualsEqualsToken,
+	ts.SyntaxKind.ExclamationEqualsToken,
 ]);
 
 export function collectEqualityBinaryExpressions(

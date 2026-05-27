@@ -56,6 +56,27 @@ crypto.randomBytes(32);
 crypto.randomUUID();
 ```
 
+## Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-RNG-01
+return Math.random().toString(36);
+```
+
+See [cli.md](../cli.md#inline-suppressions).
+
+## Library scope
+
+- **Global `Math.random()`** direct call expressions only (not shadowed `Math`, not `window.Math`).
+
+## Limitations
+
+See [False positives and limits](#false-positives-and-limits). Indirect calls and non-auth naming contexts are skipped.
+
+## Source
+
+[`packages/core/src/rules/cs-rng-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-rng-01.ts)
+
 ## References
 
 - [Node.js crypto.randomBytes](https://nodejs.org/api/crypto.html#cryptorandombytessize-callback)

@@ -2,4 +2,9 @@
 prompts/
 node_modules/
 dist/
+coverage/
+junit.xml
+test-results/
 .DS_Store
+*.tgz
+*.log

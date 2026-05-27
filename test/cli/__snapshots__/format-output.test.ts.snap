@@ -2,8 +2,8 @@
 
 exports[`CS-CLI format and output integration > CS-CLI-20 JSON golden snapshot for jwt-03 bad file 1`] = `
 "{
-  "schemaVersion": 1,
-  "version": "0.9.1",
+  "schemaVersion": 2,
+  "version": "1.0.0",
   "tool": "ciphersins",
   "summary": {
     "low": 0,
@@ -37,6 +37,9 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
   "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
   "runs": [
     {
+      "automationDetails": {
+        "id": "ciphersins",
+      },
       "columnKind": "utf16CodeUnits",
       "originalUriBaseIds": {
         "%WORKINGDIR%": {
@@ -89,7 +92,14 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md",
               "id": "CS-JWT-01",
-              "name": "JWT decode without verify",
+              "name": "CSJWT01",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                ],
+              },
               "shortDescription": {
                 "text": "JWT decode without verify",
               },
@@ -106,7 +116,14 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-02.md",
               "id": "CS-JWT-02",
-              "name": "JWT verify without algorithms",
+              "name": "CSJWT02",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                ],
+              },
               "shortDescription": {
                 "text": "JWT verify without algorithms",
               },
@@ -123,7 +140,14 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-03.md",
               "id": "CS-JWT-03",
-              "name": "JWT algorithm none / bypass",
+              "name": "CSJWT03",
+              "properties": {
+                "security-severity": "9.5",
+                "tags": [
+                  "security",
+                  "critical",
+                ],
+              },
               "shortDescription": {
                 "text": "JWT algorithm none / bypass",
               },
@@ -140,7 +164,14 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-04.md",
               "id": "CS-JWT-04",
-              "name": "JWT verify ignores expiration",
+              "name": "CSJWT04",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                ],
+              },
               "shortDescription": {
                 "text": "JWT verify ignores expiration",
               },
@@ -157,7 +188,14 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-CMP-01.md",
               "id": "CS-CMP-01",
-              "name": "Timing-unsafe compare on auth material",
+              "name": "CSCMP01",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                ],
+              },
               "shortDescription": {
                 "text": "Timing-unsafe compare on auth material",
               },
@@ -174,7 +212,14 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-RNG-01.md",
               "id": "CS-RNG-01",
-              "name": "Math.random in auth context",
+              "name": "CSRNG01",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                ],
+              },
               "shortDescription": {
                 "text": "Math.random in auth context",
               },
@@ -191,7 +236,14 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-01.md",
               "id": "CS-HASH-01",
-              "name": "MD5 / SHA1 for password hashing",
+              "name": "CSHASH01",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                ],
+              },
               "shortDescription": {
                 "text": "MD5 / SHA1 for password hashing",
               },
@@ -208,13 +260,20 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
               },
               "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-02.md",
               "id": "CS-HASH-02",
-              "name": "Weak bcrypt cost",
+              "name": "CSHASH02",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                ],
+              },
               "shortDescription": {
                 "text": "Weak bcrypt cost",
               },
             },
           ],
-          "version": "0.9.1",
+          "version": "1.0.0",
         },
       },
     },

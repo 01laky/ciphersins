@@ -71,13 +71,34 @@ export function readToken(token: string) {
 
 ## Cross-rule with CS-JWT-01
 
-| File pattern                | CS-JWT-01                            | CS-JWT-02             |
-| --------------------------- | ------------------------------------ | --------------------- |
-| `decode` only               | Flags decode                         | Clean                 |
-| `verify` without algorithms | Clean                                | Flags verify          |
-| `decode` + weak `verify`    | **Clean** (verify suppresses decode) | **Flags verify only** |
+| File pattern                | CS-JWT-01                                               | CS-JWT-02             |
+| --------------------------- | ------------------------------------------------------- | --------------------- |
+| `decode` only               | Flags decode                                            | Clean                 |
+| `verify` without algorithms | Clean                                                   | Flags verify          |
+| `decode` + weak `verify`    | **Flags decode** when verify is in a different function | **Flags verify only** |
 
-Example: a file with both `jwt.decode(token)` and `jwt.verify(token, secret)` yields **0× CS-JWT-01** and **1× CS-JWT-02** on the verify call.
+Example: a file with `jwt.decode(token)` in one function and `jwt.verify(token, secret)` in another yields **1× CS-JWT-01** on decode and **1× CS-JWT-02** on verify when algorithms are missing.
+
+## Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-JWT-02
+return jwt.verify(token, secret);
+```
+
+See [cli.md](../cli.md#inline-suppressions).
+
+## Library scope
+
+- **`jsonwebtoken`** — same bindings as [CS-JWT-01](./CS-JWT-01.md).
+
+## Limitations
+
+See [False positives and limits](#false-positives-and-limits). Variable options objects, string third arguments, and non-`jsonwebtoken` libraries are not tracked in v1.0.
+
+## Source
+
+[`packages/core/src/rules/cs-jwt-02.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-02.ts)
 
 ## False positives and limits
 

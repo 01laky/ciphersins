@@ -1,6 +1,6 @@
 {
 	"name": "ciphersins",
-	"version": "0.9.1",
+	"version": "1.0.0",
 	"description": "Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS app code.",
 	"license": "MIT",
 	"author": "Ladislav Kostolny <01laky@gmail.com>",
@@ -15,8 +15,20 @@
 		"cli"
 	],
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/01laky/CipherSins.git",
+		"directory": "packages/cli"
+	},
+	"bugs": {
+		"url": "https://github.com/01laky/CipherSins/issues"
+	},
+	"homepage": "https://github.com/01laky/CipherSins#readme",
 	"bin": {
 		"ciphersins": "./dist/cli.js"
 	},
@@ -25,10 +37,11 @@
 	],
 	"scripts": {
 		"build": "tsup",
-		"typecheck": "tsc --noEmit -p tsconfig.json"
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"prepublishOnly": "node ../../scripts/sync-version.mjs && npm run build"
 	},
 	"dependencies": {
-		"@ciphersins/core": "workspace:*"
+		"@ciphersins/core": "1.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^22.15.29",

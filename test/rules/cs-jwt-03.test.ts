@@ -121,8 +121,8 @@ describe("CS-JWT-03 directory scans", () => {
 		const result = await scan({ paths: [jwt03BadDir], cwd: rootDir });
 		const jwtFindings = filterByRule(result.findings, "CS-JWT-03");
 
-		expect(jwtFindings).toHaveLength(25);
-		expect(result.scannedFiles).toHaveLength(23);
+		expect(jwtFindings).toHaveLength(27);
+		expect(result.scannedFiles).toHaveLength(27);
 		expect(jwtFindings.every((f) => f.severity === "critical")).toBe(true);
 		expect(jwtFindings.every((f) => f.message === CS_JWT_03_MESSAGE)).toBe(
 			true,
@@ -536,7 +536,7 @@ describe("CS-JWT-03 metadata and snapshots", () => {
 	it("CS-JWT-03-54 summary.critical equals JWT-03 finding count on bad directory", async () => {
 		const result = await scan({ paths: [jwt03BadDir], cwd: rootDir });
 
-		expect(result.summary.critical).toBe(25);
+		expect(result.summary.critical).toBe(27);
 		expect(result.summary.high).toBe(0);
 	});
 
@@ -549,7 +549,7 @@ describe("CS-JWT-03 metadata and snapshots", () => {
 		const ruleIds = new Set(result.findings.map((f) => f.ruleId));
 		expect(ruleIds.has("CS-JWT-03")).toBe(true);
 		expect(ruleIds.has("CS-JWT-02")).toBe(false);
-		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(25);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(27);
 	});
 
 	it("CS-JWT-03-56 csJwt03Rule.run parity over bad directory", async () => {
@@ -622,8 +622,8 @@ describe("CS-JWT-03 metadata and snapshots", () => {
 	it("CS-JWT-03-61 exact bad directory JWT-03 finding and file counts", async () => {
 		const result = await scan({ paths: [jwt03BadDir], cwd: rootDir });
 
-		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(25);
-		expect(result.scannedFiles).toHaveLength(23);
+		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(27);
+		expect(result.scannedFiles).toHaveLength(27);
 	});
 
 	it("CS-JWT-03-62 CLI bad scan matches verify-algorithms-none-literal.ts path format", () => {
@@ -704,8 +704,8 @@ describe("CS-JWT-03 extended edge cases", () => {
 		const jwtFindings = filterByRule(result.findings, "CS-JWT-03");
 		const signatures = jwtFindings.map(findingSignature);
 
-		expect(jwtFindings).toHaveLength(25);
-		expect(new Set(signatures).size).toBe(25);
+		expect(jwtFindings).toHaveLength(27);
+		expect(new Set(signatures).size).toBe(27);
 	});
 
 	it("CS-JWT-03-70 good directory scans exactly 15 files", async () => {
@@ -728,10 +728,10 @@ describe("CS-JWT-03 extended edge cases", () => {
 	it("CS-JWT-03-72 combined eight bad dirs summary critical high medium and total counts", async () => {
 		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 
-		expect(result.summary.critical).toBe(25);
-		expect(result.summary.high).toBe(93);
-		expect(result.summary.medium).toBe(46);
-		expect(result.findings).toHaveLength(164);
+		expect(result.summary.critical).toBe(27);
+		expect(result.summary.high).toBe(115);
+		expect(result.summary.medium).toBe(49);
+		expect(result.findings).toHaveLength(191);
 	});
 
 	it("CS-JWT-03-73 verify-algorithms-none-and-hs256.ts yields exactly one finding", async () => {
@@ -956,7 +956,8 @@ jwt.sign({ sub: "u" }, secret, { algorithm: "HS256" });
 	it("CS-JWT-03-93 all eight good fixture directories scan clean together", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
 	});
 
 	it("CS-JWT-03-94 CLI bad scan matches verify-named-import-none.ts path format", () => {
@@ -1009,5 +1010,73 @@ jwt.sign({ sub: "u" }, secret, { algorithm: "HS256" });
 		expect(isolatedFindings.map(findingSignature).sort()).toEqual(
 			scanFindings.map(findingSignature).sort(),
 		);
+	});
+});
+
+describe("CS-JWT-03 audit section 9.3", () => {
+	it("CS-JWT-03-98 sign-algorithm-none-uppercase.ts flags NONE algorithm", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "sign-algorithm-none-uppercase.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(1);
+	});
+
+	it("CS-JWT-03-99 sign-algorithm-none-mixed-case.ts flags mixed-case none", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "sign-algorithm-none-mixed-case.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-JWT-03")).toHaveLength(1);
+	});
+
+	it("CS-JWT-03-100 signCallUsesNoneAlgorithm treats NONE uppercase as dangerous", () => {
+		const source = `import jwt from "jsonwebtoken";
+jwt.sign({}, "s", { algorithm: "NONE" });
+`;
+		const sourceFile = parseSourceFile("snippet.ts", source);
+		const bindings = getJsonWebTokenBindings(sourceFile);
+		const signCalls = collectCallExpressions(sourceFile).filter((call) =>
+			matchesJsonWebTokenMethodCall(call, bindings, "sign"),
+		);
+
+		expect(
+			signCalls.filter((call) => signCallUsesNoneAlgorithm(call)),
+		).toHaveLength(1);
+	});
+
+	it("CS-JWT-03-101 verifyCallAllowsNoneAlgorithm ignores template-literal none", () => {
+		const source = `import jwt from "jsonwebtoken";
+jwt.verify("t", "s", { algorithms: [\`none\`] });
+`;
+		const sourceFile = parseSourceFile("snippet.ts", source);
+		const bindings = getJsonWebTokenBindings(sourceFile);
+		const verifyCalls = collectCallExpressions(sourceFile).filter((call) =>
+			matchesJsonWebTokenMethodCall(call, bindings, "verify"),
+		);
+
+		expect(
+			verifyCalls.filter((call) => verifyCallAllowsNoneAlgorithm(call)),
+		).toHaveLength(0);
+	});
+
+	it("CS-JWT-03-102 verify-none-via-variable-options.ts is not flagged (variable options)", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "verify-none-via-variable-options.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
+	});
+
+	it("CS-JWT-03-103 sign-none-algorithm-via-variable.ts is not flagged (variable options)", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "sign-none-algorithm-via-variable.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
 	});
 });

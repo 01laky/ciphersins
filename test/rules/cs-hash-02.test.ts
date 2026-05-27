@@ -93,18 +93,19 @@ describe("CS-HASH-02 directory scans", () => {
 		const result = await scan({ paths: [hash02BadDir], cwd: rootDir });
 		const hashFindings = filterByRule(result.findings, "CS-HASH-02");
 
-		expect(hashFindings).toHaveLength(26);
-		expect(result.scannedFiles).toHaveLength(25);
+		expect(hashFindings).toHaveLength(28);
+		expect(result.scannedFiles).toHaveLength(28);
 		expect(hashFindings.every((f) => f.severity === "medium")).toBe(true);
 		expect(hashFindings.every((f) => f.message === CS_HASH_02_MESSAGE)).toBe(
 			true,
 		);
 	});
 
-	it("CS-HASH-02-05 reports no findings for good fixtures", async () => {
+	it("CS-HASH-02-05 reports one node-rs-bcrypt-untracked finding for good fixtures", async () => {
 		const result = await scan({ paths: [hash02GoodDir], cwd: rootDir });
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-HASH-02")).toHaveLength(1);
 	});
 });
 
@@ -514,7 +515,7 @@ describe("CS-HASH-02 finding shape", () => {
 		const hashFindings = filterByRule(result.findings, "CS-HASH-02");
 
 		expect(result.summary.medium).toBe(hashFindings.length);
-		expect(result.summary.medium).toBe(26);
+		expect(result.summary.medium).toBe(28);
 		expect(result.summary.high).toBe(1);
 		expect(result.summary.low).toBe(0);
 		expect(result.summary.critical).toBe(0);
@@ -589,7 +590,7 @@ describe("CS-HASH-02 CLI", () => {
 		);
 
 		expect(result.status).toBe(0);
-		expect(result.stdout).toContain("No findings.");
+		expect(result.stdout).toContain("CS-HASH-02");
 	});
 });
 
@@ -609,8 +610,8 @@ describe("CS-HASH-02 extended edge cases", () => {
 		const result = await scan({ paths: [hash02BadDir], cwd: rootDir });
 		const hashFindings = filterByRule(result.findings, "CS-HASH-02");
 
-		expect(hashFindings).toHaveLength(26);
-		expect(result.scannedFiles).toHaveLength(25);
+		expect(hashFindings).toHaveLength(28);
+		expect(result.scannedFiles).toHaveLength(28);
 	});
 
 	it("CS-HASH-02-56 CLI bad scan output matches medium severity line format", () => {
@@ -691,13 +692,13 @@ describe("CS-HASH-02 extended edge cases", () => {
 		expect(result.findings[0]?.snippet).toMatch(/genSalt/i);
 	});
 
-	it("CS-HASH-02-63 node-rs-bcrypt-untracked.ts yields no findings", async () => {
+	it("CS-HASH-02-63 node-rs-bcrypt-untracked.ts yields one finding", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "node-rs-bcrypt-untracked.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(filterByRule(result.findings, "CS-HASH-02")).toHaveLength(1);
 	});
 
 	it("CS-HASH-02-64 multiple-weak-bcrypt.ts yields two findings on distinct lines", async () => {
@@ -711,22 +712,22 @@ describe("CS-HASH-02 extended edge cases", () => {
 		expect(lines).toEqual([4, 5]);
 	});
 
-	it("CS-HASH-02-65 good directory scans exactly 17 files with zero findings", async () => {
+	it("CS-HASH-02-65 good directory scans exactly 19 files with one finding", async () => {
 		const result = await scan({ paths: [hash02GoodDir], cwd: rootDir });
 
-		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(17);
+		expect(result.findings).toHaveLength(1);
+		expect(result.scannedFiles).toHaveLength(19);
 	});
 
-	it("CS-HASH-02-66 hash-01 bad directory HASH-01 count unchanged at 27", async () => {
+	it("CS-HASH-02-66 hash-01 bad directory HASH-01 count unchanged at 32", async () => {
 		const hashBadDir = path.join(rootDir, "fixtures/cs-hash-01/bad");
 		const result = await scan({ paths: [hashBadDir], cwd: rootDir });
 		const hashFindings = result.findings.filter(
 			(f) => f.ruleId === "CS-HASH-01",
 		);
 
-		expect(hashFindings).toHaveLength(27);
-		expect(result.summary.high).toBe(27);
+		expect(hashFindings).toHaveLength(32);
+		expect(result.summary.high).toBe(32);
 	});
 
 	it("CS-HASH-02-67 golden snapshot for hash-async-callback-weak.ts", async () => {
@@ -760,6 +761,53 @@ describe("CS-HASH-02 extended edge cases", () => {
 		const signatures = hashFindings.map(findingSignature);
 
 		expect(new Set(signatures).size).toBe(signatures.length);
-		expect(signatures).toHaveLength(26);
+		expect(signatures).toHaveLength(28);
+	});
+});
+
+describe("CS-HASH-02 audit section 9.8", () => {
+	it("CS-HASH-02-70 bcrypt-hash-cost-9.ts flags boundary weak cost 9", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "bcrypt-hash-cost-9.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-02")).toHaveLength(1);
+	});
+
+	it("CS-HASH-02-71 node-rs-bcrypt-weak-cost.ts flags weak bcrypt cost", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "node-rs-bcrypt-weak-cost.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-02")).toHaveLength(1);
+	});
+
+	it("CS-HASH-02-72 hash-no-cost-uses-default.ts yields no findings", async () => {
+		const result = await scan({
+			paths: [fixturePath("good", "hash-no-cost-uses-default.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-02")).toEqual([]);
+	});
+
+	it("CS-HASH-02-73 hash-const-rounds-8.ts is not flagged (non-literal cost)", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "hash-const-rounds-8.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-02")).toEqual([]);
+	});
+
+	it("CS-HASH-02-74 gen-salt-cost-9-not-password-context.ts yields no findings", async () => {
+		const result = await scan({
+			paths: [fixturePath("good", "gen-salt-cost-9-not-password-context.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-02")).toEqual([]);
 	});
 });

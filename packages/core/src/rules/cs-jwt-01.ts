@@ -8,9 +8,11 @@ import {
 	isJsonWebTokenRequireCall,
 	matchesJsonWebTokenMethodCall,
 } from "./helpers/jsonwebtoken-bindings.js";
+import { verifyCallSuppressesDecode } from "./helpers/jsonwebtoken-verify-scope.js";
 
 const RULE_ID = "CS-JWT-01";
-const MESSAGE = "jwt.decode() used without jwt.verify() in the same file.";
+const MESSAGE =
+	"jwt.decode() used without jwt.verify() in the same function scope.";
 const HELP_URL =
 	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md";
 
@@ -38,16 +40,22 @@ export const csJwt01Rule: Rule = {
 			return [];
 		}
 
-		for (const call of calls) {
-			if (matchesJsonWebTokenMethodCall(call, bindings, "verify")) {
-				return [];
-			}
-		}
+		const verifyCalls = calls.filter((call) =>
+			matchesJsonWebTokenMethodCall(call, bindings, "verify"),
+		);
 
 		const findings: Finding[] = [];
 
 		for (const call of calls) {
 			if (!matchesJsonWebTokenMethodCall(call, bindings, "decode")) {
+				continue;
+			}
+
+			if (
+				verifyCalls.some((verifyCall) =>
+					verifyCallSuppressesDecode(call, verifyCall),
+				)
+			) {
 				continue;
 			}
 

@@ -2,10 +2,20 @@ import fs from "node:fs";
 import path from "node:path";
 import {
 	assertKnownRuleIds,
+	expandUserPath,
 	isSeverity,
 	parseRulesConfig,
 	type Severity,
 } from "@ciphersins/core";
+
+const KNOWN_CONFIG_KEYS = new Set([
+	"include",
+	"exclude",
+	"failOn",
+	"only",
+	"ignore",
+	"rules",
+]);
 
 export interface CipherSinsConfig {
 	include?: string[];
@@ -16,22 +26,34 @@ export interface CipherSinsConfig {
 	rules?: Record<string, string>;
 }
 
-export function loadConfigFile(configPath: string): CipherSinsConfig {
+export interface LoadedConfig {
+	config: CipherSinsConfig;
+	warnings: string[];
+}
+
+export function loadConfigFile(configPath: string): LoadedConfig {
 	const raw = fs.readFileSync(configPath, "utf8");
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(raw);
 	} catch (error) {
 		const detail = error instanceof Error ? error.message : String(error);
-		throw new Error(`invalid config: ${detail}`);
+		throw new Error(`invalid config (${configPath}): ${detail}`);
 	}
 
 	if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
-		throw new Error("invalid config: expected a JSON object");
+		throw new Error(`invalid config (${configPath}): expected a JSON object`);
 	}
 
 	const record = parsed as Record<string, unknown>;
 	const config: CipherSinsConfig = {};
+	const warnings: string[] = [];
+
+	for (const key of Object.keys(record)) {
+		if (!KNOWN_CONFIG_KEYS.has(key)) {
+			warnings.push(`unknown config key ignored: ${key}`);
+		}
+	}
 
 	if (record.include !== undefined) {
 		if (!Array.isArray(record.include) || !record.include.every(isString)) {
@@ -48,10 +70,14 @@ export function loadConfigFile(configPath: string): CipherSinsConfig {
 	}
 
 	if (record.failOn !== undefined) {
-		if (typeof record.failOn !== "string" || !isSeverity(record.failOn)) {
+		if (typeof record.failOn !== "string") {
 			throw new Error(`invalid config: invalid failOn value: ${record.failOn}`);
 		}
-		config.failOn = record.failOn;
+		const normalizedFailOn = record.failOn.toLowerCase();
+		if (!isSeverity(normalizedFailOn)) {
+			throw new Error(`invalid config: invalid failOn value: ${record.failOn}`);
+		}
+		config.failOn = normalizedFailOn;
 	}
 
 	if (record.only !== undefined) {
@@ -91,7 +117,7 @@ export function loadConfigFile(configPath: string): CipherSinsConfig {
 		config.rules = rules;
 	}
 
-	return config;
+	return { config, warnings };
 }
 
 function isString(value: unknown): value is string {
@@ -99,8 +125,20 @@ function isString(value: unknown): value is string {
 }
 
 export function discoverConfigPath(cwd: string): string | undefined {
-	const defaultPath = path.join(cwd, "ciphersins.config.json");
-	return fs.existsSync(defaultPath) ? defaultPath : undefined;
+	let current = path.resolve(cwd);
+
+	while (true) {
+		const candidate = path.join(current, "ciphersins.config.json");
+		if (fs.existsSync(candidate)) {
+			return candidate;
+		}
+
+		const parent = path.dirname(current);
+		if (parent === current) {
+			return undefined;
+		}
+		current = parent;
+	}
 }
 
 export function resolveConfigPath(options: {
@@ -112,7 +150,7 @@ export function resolveConfigPath(options: {
 		return undefined;
 	}
 	if (options.config) {
-		return path.resolve(options.cwd, options.config);
+		return path.resolve(options.cwd, expandUserPath(options.config));
 	}
 	return discoverConfigPath(options.cwd);
 }
@@ -121,7 +159,7 @@ export function loadConfig(options: {
 	cwd: string;
 	config?: string;
 	noConfig: boolean;
-}): CipherSinsConfig | undefined {
+}): LoadedConfig | undefined {
 	const configPath = resolveConfigPath(options);
 	if (!configPath) {
 		return undefined;

@@ -52,25 +52,25 @@ If you decode for debugging, ensure `jwt.verify()` is also called on the same to
 
 ![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/rules-overview.svg)
 
-- **Same file scope (v1.0):** flags decode call sites when no `jsonwebtoken` verify call exists **anywhere in the file**.
+- **Function-level scope (v1.0):** flags a decode call site when no tracked `jwt.verify()` exists in the **same function scope** (including nested inner functions). Verify in a **sibling** function does not suppress decode in another helper.
 - Supports default import, namespace import, named import (including aliases), CommonJS `require`, destructured require, and inline `require('jsonwebtoken').decode(...)`.
 - TSX/JSX files are scanned the same way.
 
 ## False positives and limits
 
-| Scenario                                               | Behavior                                                                |
-| ------------------------------------------------------ | ----------------------------------------------------------------------- |
-| Verify in a different function than decode             | **Not flagged** — any verify in the file suppresses all decode findings |
-| Verify inside nested block or unreachable `if (false)` | **Not flagged** — v1 does not perform control-flow analysis             |
-| Verify in another file (helper module)                 | **Still flagged** — cross-file tracking is not implemented              |
-| `jose`, `passport-jwt`, custom `decode()`              | **Not covered** — only `jsonwebtoken` module                            |
-| Dynamic `import('jsonwebtoken')`                       | **Ignored** in v1                                                       |
-| Indirect call (`const d = jwt.decode; d(t)`)           | **Not flagged** — only direct decode call expressions                   |
-| Optional chaining (`jwt?.decode(t)`)                   | **Flagged** — treated as property access on bound import                |
-| Verify import without call                             | **Does not suppress** — only verify `CallExpression` sites count        |
-| Verify mentioned only in comments                      | **Does not suppress** decode findings                                   |
-| Two-arg `jwt.verify(token, secret)` without algorithms | **Not flagged by JWT-01** — covered by **[CS-JWT-02](./CS-JWT-02.md)**  |
-| Local wrapper calling `jwt.decode` inside              | **Flagged** on inner decode call                                        |
+| Scenario                                               | Behavior                                                                    |
+| ------------------------------------------------------ | --------------------------------------------------------------------------- |
+| Verify in a different function than decode             | **Flagged** — verify must share decode's function scope (or nest inside it) |
+| Verify inside nested block or unreachable `if (false)` | **Not flagged** — v1 does not perform control-flow analysis                 |
+| Verify in another file (helper module)                 | **Still flagged** — cross-file tracking is not implemented                  |
+| `jose`, `passport-jwt`, custom `decode()`              | **Not covered** — only `jsonwebtoken` module                                |
+| Dynamic `import('jsonwebtoken')`                       | **Ignored** in v1                                                           |
+| Indirect call (`const d = jwt.decode; d(t)`)           | **Not flagged** — only direct decode call expressions                       |
+| Optional chaining (`jwt?.decode(t)`)                   | **Flagged** — treated as property access on bound import                    |
+| Verify import without call                             | **Does not suppress** — only verify `CallExpression` sites count            |
+| Verify mentioned only in comments                      | **Does not suppress** decode findings                                       |
+| Two-arg `jwt.verify(token, secret)` without algorithms | **Not flagged by JWT-01** — covered by **[CS-JWT-02](./CS-JWT-02.md)**      |
+| Local wrapper calling `jwt.decode` inside              | **Flagged** on inner decode call                                            |
 
 ## Relationship to CS-JWT-02 / CS-JWT-03 / CS-JWT-04
 
@@ -84,7 +84,29 @@ If you decode for debugging, ensure `jwt.verify()` is also called on the same to
 | `decode` + weak `verify` (no algorithms)                | Clean     | Flags     | Clean     | Clean     |
 | `decode` + `{ algorithms: ['HS256'] }` verify           | Clean     | Clean     | Clean     | Clean     |
 
-Any **`jwt.verify()`** call site in the file suppresses **CS-JWT-01** decode findings, even when that verify is itself flagged by JWT-02, JWT-03, or JWT-04.
+Any **`jwt.verify()`** call site in the **same function scope** as a decode suppresses that decode finding, even when verify is itself flagged by JWT-02, JWT-03, or JWT-04.
+
+## Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-JWT-01
+const payload = jwt.decode(token);
+```
+
+Requires `--allow-critical-ignore` only for **critical** rules (CS-JWT-03), not CS-JWT-01. See [cli.md](../cli.md#inline-suppressions).
+
+## Library scope
+
+- **`jsonwebtoken`** only — default/named/namespace import, CommonJS `require`, destructured require, inline `require('jsonwebtoken').decode(...)`.
+- Not tracked: `jose`, `passport-jwt`, custom `decode()` helpers, dynamic `import('jsonwebtoken')`.
+
+## Limitations
+
+See [False positives and limits](#false-positives-and-limits) above. Cross-file verify helpers and indirect decode calls remain out of scope for v1.0.
+
+## Source
+
+[`packages/core/src/rules/cs-jwt-01.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-jwt-01.ts) — scope helper: [`jsonwebtoken-verify-scope.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/helpers/jsonwebtoken-verify-scope.ts).
 
 ## Fix
 

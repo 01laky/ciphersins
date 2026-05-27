@@ -1,0 +1,10 @@
+import jwt from "jsonwebtoken";
+
+const secret = "secret";
+
+export function check(token: string) {
+	return jwt.verify(token, secret, {
+		algorithms: ["HS256"],
+		ignoreExpiration: 1,
+	});
+}

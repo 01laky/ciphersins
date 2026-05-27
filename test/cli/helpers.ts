@@ -15,6 +15,10 @@ export const jwt03BadFile = path.join(
 	"fixtures/cs-jwt-03/bad/verify-algorithms-none-literal.ts",
 );
 export const jwt04BadDir = path.join(rootDir, "fixtures/cs-jwt-04/bad");
+export const jwt04BadMediumOnlyFile = path.join(
+	rootDir,
+	"fixtures/cs-jwt-04/bad/verify-ignore-expiration-only.ts",
+);
 export const jwt03GoodDir = path.join(rootDir, "fixtures/cs-jwt-03/good");
 export const jwt02GoodDir = path.join(rootDir, "fixtures/cs-jwt-02/good");
 export const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");

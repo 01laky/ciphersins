@@ -12,18 +12,18 @@ _Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS a
 
 Like **gitleaks for dangerous crypto call patterns** — not secrets buried in strings, but **how your application calls crypto libraries**: decode-only JWT auth, verify without algorithm allowlists, **`none` algorithm bypass**, disabled expiration checks, timing-unsafe token compares, predictable RNG in auth paths, legacy password digests, and weak bcrypt work factors.
 
-## What it finds (v0.9.1)
+## What it finds (v1.0.0)
 
-| Area             | Example mistake                             | Rule       |
-| ---------------- | ------------------------------------------- | ---------- |
-| JWT integrity    | `jwt.decode()` without `jwt.verify()`       | CS-JWT-01  |
-| JWT algorithms   | `jwt.verify(token, secret)` no `algorithms` | CS-JWT-02  |
-| JWT none bypass  | `{ algorithms: ['none'] }` on verify        | CS-JWT-03  |
-| JWT expiration   | `{ ignoreExpiration: true }` on verify      | CS-JWT-04  |
-| Timing compares  | `token === expected` with crypto import     | CS-CMP-01  |
-| Weak entropy     | `Math.random()` in auth-named code          | CS-RNG-01  |
-| Password storage | MD5/SHA1 `createHash` in password flow      | CS-HASH-01 |
-| bcrypt cost      | `hashSync(password, 8)`                     | CS-HASH-02 |
+| Area             | Example mistake                                | Rule       |
+| ---------------- | ---------------------------------------------- | ---------- |
+| JWT integrity    | `jwt.decode()` without `jwt.verify()`          | CS-JWT-01  |
+| JWT algorithms   | `jwt.verify(token, secret)` no `algorithms`    | CS-JWT-02  |
+| JWT none bypass  | `{ algorithms: ['none'] }` on verify           | CS-JWT-03  |
+| JWT expiration   | `{ ignoreExpiration: true }` on verify         | CS-JWT-04  |
+| Timing compares  | `token === expected` with crypto/bcrypt import | CS-CMP-01  |
+| Weak entropy     | `Math.random()` in auth-named code             | CS-RNG-01  |
+| Password storage | MD5/SHA1 `createHash` in password flow         | CS-HASH-01 |
+| bcrypt cost      | `hashSync(password, 8)`                        | CS-HASH-02 |
 
 **8/8 MVP rules implemented.** See [rules index](./rules/README.md).
 
@@ -37,13 +37,13 @@ Full comparison: [comparison.md](./comparison.md).
 
 ## How it works
 
-Import-aware **AST rules** (TypeScript compiler API) resolve `import` / `require` bindings, walk call expressions, and emit findings with severity, line/column, snippet, and linked fix docs. v1 uses **same-file scope** per rule.
+Import-aware **AST rules** (TypeScript compiler API) resolve `import` / `require` bindings, walk call expressions, and emit findings with severity, line/column, snippet, and linked fix docs. Most rules operate within a single file; **CS-JWT-01** uses **function-level scope** (verify must share the decode call’s function scope).
 
 Architecture: [architecture.md](./architecture.md) · CLI: [cli.md](./cli.md)
 
 ## Install & status
 
-**Pre-release 0.9.1** — all eight MVP rules, full CLI/config/suppressions; install from source until **npm publish at v1.0.0**. See [README](../README.md#install).
+**v1.0.0** — stable release on npm (`ciphersins`, `@ciphersins/core`). See [README](../README.md#install) and [releasing.md](./releasing.md) for publish workflow.
 
 ## Maintainer
 

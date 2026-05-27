@@ -106,18 +106,28 @@ export function isMathRandomCall(
 	void sourceFile;
 
 	const callee = call.expression;
-	if (!ts.isPropertyAccessExpression(callee)) {
-		return false;
-	}
-
-	if (callee.name.text !== "random") {
-		return false;
-	}
-
-	if (
-		!ts.isIdentifier(callee.expression) ||
-		callee.expression.text !== "Math"
-	) {
+	if (ts.isPropertyAccessExpression(callee)) {
+		if (callee.name.text !== "random") {
+			return false;
+		}
+		if (
+			!ts.isIdentifier(callee.expression) ||
+			callee.expression.text !== "Math"
+		) {
+			return false;
+		}
+	} else if (ts.isElementAccessExpression(callee)) {
+		if (
+			!ts.isIdentifier(callee.expression) ||
+			callee.expression.text !== "Math"
+		) {
+			return false;
+		}
+		const argument = callee.argumentExpression;
+		if (!ts.isStringLiteral(argument) || argument.text !== "random") {
+			return false;
+		}
+	} else {
 		return false;
 	}
 

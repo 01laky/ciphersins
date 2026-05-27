@@ -83,6 +83,27 @@ Use bcrypt cost **10** minimum; prefer **12+** where latency allows:
 return bcrypt.hash(password, 12);
 ```
 
+## Suppressing
+
+```typescript
+// ciphersins-ignore-next-line CS-HASH-02
+return bcrypt.hashSync(password, 8);
+```
+
+See [cli.md](../cli.md#inline-suppressions).
+
+## Library scope
+
+- **`bcrypt`**, **`bcryptjs`**, **`@node-rs/bcrypt`** — `hash`, `hashSync`, `genSalt`, `genSaltSync` with inline numeric cost literals.
+
+## Limitations
+
+See [False positives and limits](#false-positives-and-limits). Variable costs, string salts, and `compare`/`compareSync` are not flagged.
+
+## Source
+
+[`packages/core/src/rules/cs-hash-02.ts`](https://github.com/01laky/CipherSins/blob/main/packages/core/src/rules/cs-hash-02.ts)
+
 ## References
 
 - [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)

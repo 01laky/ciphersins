@@ -5,6 +5,11 @@ import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 
+execFileSync("node", ["scripts/sync-version.mjs"], {
+	cwd: rootDir,
+	stdio: "inherit",
+});
+
 for (const pkg of ["packages/core", "packages/cli"]) {
 	const cwd = path.join(rootDir, pkg);
 	process.stdout.write(`build-packages: ${pkg}\n`);

@@ -7,41 +7,63 @@ import {
 	type Severity,
 } from "@ciphersins/core";
 import type { ParsedScanArgsSuccess } from "../parse-scan-args.js";
+import { resolveCliPath } from "../expand-path.js";
 import type { CipherSinsConfig } from "./load-config.js";
 
 export interface MergedScanCommandOptions {
-	scanOptions: ScanOptions;
+	scanOptions: import("@ciphersins/core").ScanOptions;
 	failOn?: Severity;
 	failOnDisabled: boolean;
 	format: ParsedScanArgsSuccess["format"];
 	output?: string;
 	quiet: boolean;
+	configWarnings: string[];
+	color?: boolean;
+	noColor: boolean;
+	verbose: boolean;
 }
 
 export function mergeScanOptions(
 	parsed: ParsedScanArgsSuccess,
 	config: CipherSinsConfig | undefined,
 	cwd: string,
+	configWarnings: string[] = [],
 ): MergedScanCommandOptions {
 	const scanPaths =
-		parsed.paths.length > 0 ? parsed.paths : [resolveDefaultScanRoot(cwd)];
+		parsed.paths.length > 0
+			? parsed.paths.map((entry) => resolveCliPath(cwd, entry))
+			: [resolveDefaultScanRoot(cwd)];
+
 	const scanOptions: ScanOptions = {
 		paths: scanPaths,
 		cwd,
 	};
 
-	if (config?.include) {
+	if (parsed.include) {
+		scanOptions.include = parsed.include;
+	} else if (config?.include) {
 		scanOptions.include = config.include;
 	}
-	if (config?.exclude) {
+
+	if (parsed.exclude) {
+		scanOptions.exclude = parsed.exclude;
+	} else if (config?.exclude) {
 		scanOptions.exclude = config.exclude;
 	}
 
 	const parsedRules = parseRulesConfig(config?.rules);
+	let disabledFromRules = parsedRules.disabledRuleIds;
+	if (parsed.only) {
+		const onlySet = new Set(parsed.only);
+		disabledFromRules = disabledFromRules.filter(
+			(ruleId) => !onlySet.has(ruleId),
+		);
+	}
+
 	const only = parsed.only ?? config?.only;
 	const ignore = mergeDisabledRuleIds(
 		config?.ignore,
-		parsedRules.disabledRuleIds,
+		disabledFromRules,
 		parsed.ignore,
 	);
 
@@ -59,6 +81,9 @@ export function mergeScanOptions(
 	if (parsed.allowCriticalIgnore) {
 		scanOptions.allowCriticalIgnore = true;
 	}
+	if (parsed.maxFindings !== undefined) {
+		scanOptions.maxFindings = parsed.maxFindings;
+	}
 
 	let failOn = parsed.failOn;
 	let failOnDisabled = parsed.failOnDisabled;
@@ -74,5 +99,9 @@ export function mergeScanOptions(
 		format: parsed.format,
 		output: parsed.output,
 		quiet: parsed.quiet,
+		configWarnings,
+		color: parsed.color,
+		noColor: parsed.noColor,
+		verbose: parsed.verbose,
 	};
 }

@@ -13,6 +13,10 @@ export class ParseSourceFileError extends Error {
 	}
 }
 
+export function stripUtf8Bom(text: string): string {
+	return text.charCodeAt(0) === 0xfeff ? text.slice(1) : text;
+}
+
 export function parseSourceFile(
 	filePath: string,
 	sourceText?: string,
@@ -22,10 +26,12 @@ export function parseSourceFile(
 
 	if (text === undefined) {
 		try {
-			text = fs.readFileSync(absolutePath, "utf8");
+			text = stripUtf8Bom(fs.readFileSync(absolutePath, "utf8"));
 		} catch (error) {
 			throw new ParseSourceFileError(absolutePath, error);
 		}
+	} else {
+		text = stripUtf8Bom(text);
 	}
 
 	const scriptKind = scriptKindForExtension(path.extname(absolutePath));
@@ -44,12 +50,16 @@ export function parseSourceFile(
 }
 
 function scriptKindForExtension(ext: string): ts.ScriptKind {
-	switch (ext) {
+	switch (ext.toLowerCase()) {
 		case ".ts":
+		case ".mts":
+		case ".cts":
 			return ts.ScriptKind.TS;
 		case ".tsx":
 			return ts.ScriptKind.TSX;
 		case ".js":
+		case ".mjs":
+		case ".cjs":
 			return ts.ScriptKind.JS;
 		case ".jsx":
 			return ts.ScriptKind.JSX;

@@ -7,6 +7,11 @@ const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const coreDir = path.join(rootDir, "packages/core");
 const cliDir = path.join(rootDir, "packages/cli");
 
+execFileSync("node", ["scripts/sync-version.mjs"], {
+	cwd: rootDir,
+	stdio: "inherit",
+});
+
 process.stdout.write("typecheck-packages: packages/core\n");
 execFileSync("npm", ["run", "typecheck"], { cwd: coreDir, stdio: "inherit" });
 

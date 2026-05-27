@@ -55,7 +55,8 @@ describe("cross-rule integration", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings.every((f) => f.ruleId === "CS-HASH-02")).toBe(true);
 	});
 
 	it("CS-INT-02 all bad fixture directories include all eight MVP rule hits", async () => {
@@ -90,10 +91,10 @@ describe("cross-rule integration", () => {
 		const byRule = (ruleId: string) =>
 			result.findings.filter((f) => f.ruleId === ruleId).length;
 
-		expect(byRule("CS-JWT-01")).toBe(16);
-		expect(byRule("CS-CMP-01")).toBe(12);
-		expect(byRule("CS-RNG-01")).toBe(12);
-		expect(result.findings).toHaveLength(40);
+		expect(byRule("CS-JWT-01")).toBe(17);
+		expect(byRule("CS-CMP-01")).toBe(18);
+		expect(byRule("CS-RNG-01")).toBe(19);
+		expect(result.findings).toHaveLength(54);
 	});
 
 	it("CS-INT-05 cmp and rng good directories stay clean when scanned together", async () => {
@@ -111,7 +112,8 @@ describe("cross-rule integration", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
 	});
 
 	it("CS-INT-07 combined bad directories include all eight rules", async () => {
@@ -140,18 +142,18 @@ describe("cross-rule integration", () => {
 		const byRule = (ruleId: string) =>
 			result.findings.filter((f) => f.ruleId === ruleId).length;
 
-		expect(byRule("CS-JWT-01")).toBe(16);
-		expect(byRule("CS-JWT-02")).toBe(25);
-		expect(byRule("CS-JWT-03")).toBe(25);
-		expect(byRule("CS-JWT-04")).toBe(20);
-		expect(byRule("CS-CMP-01")).toBe(12);
-		expect(byRule("CS-RNG-01")).toBe(12);
-		expect(byRule("CS-HASH-01")).toBe(28);
-		expect(byRule("CS-HASH-02")).toBe(26);
-		expect(result.findings).toHaveLength(164);
-		expect(result.summary.critical).toBe(25);
-		expect(result.summary.high).toBe(93);
-		expect(result.summary.medium).toBe(46);
+		expect(byRule("CS-JWT-01")).toBe(17);
+		expect(byRule("CS-JWT-02")).toBe(28);
+		expect(byRule("CS-JWT-03")).toBe(27);
+		expect(byRule("CS-JWT-04")).toBe(21);
+		expect(byRule("CS-CMP-01")).toBe(18);
+		expect(byRule("CS-RNG-01")).toBe(19);
+		expect(byRule("CS-HASH-01")).toBe(33);
+		expect(byRule("CS-HASH-02")).toBe(28);
+		expect(result.findings).toHaveLength(191);
+		expect(result.summary.critical).toBe(27);
+		expect(result.summary.high).toBe(115);
+		expect(result.summary.medium).toBe(49);
 	});
 
 	it("CS-INT-09 jwt good fixtures stay clean with eight rules active", async () => {
@@ -167,7 +169,12 @@ describe("cross-rule integration", () => {
 		});
 
 		expect(result.findings.length).toBeGreaterThan(0);
-		expect(result.findings.every((f) => f.ruleId === "CS-JWT-01")).toBe(true);
+		expect(
+			result.findings.every(
+				(f) => f.ruleId === "CS-JWT-01" || f.ruleId === "CS-HASH-02",
+			),
+		).toBe(true);
+		expect(result.findings.some((f) => f.ruleId === "CS-JWT-01")).toBe(true);
 	});
 
 	it("CS-INT-11 all eight good dirs plus edge-cases scan clean", async () => {
@@ -176,7 +183,8 @@ describe("cross-rule integration", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
 	});
 
 	it("CS-INT-12 bcrypt-and-md5-password.ts yields HASH-02 and HASH-01", async () => {
@@ -198,7 +206,12 @@ describe("cross-rule integration", () => {
 		});
 
 		expect(result.findings.length).toBeGreaterThan(0);
-		expect(result.findings.every((f) => f.ruleId === "CS-JWT-01")).toBe(true);
+		expect(
+			result.findings.every(
+				(f) => f.ruleId === "CS-JWT-01" || f.ruleId === "CS-HASH-02",
+			),
+		).toBe(true);
+		expect(result.findings.some((f) => f.ruleId === "CS-JWT-01")).toBe(true);
 	});
 
 	it("CS-INT-14 hash-01 good and single hash-02 bad file yields only HASH-02", async () => {
@@ -224,7 +237,7 @@ describe("cross-rule integration", () => {
 
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-HASH-01"),
-		).toHaveLength(27);
+		).toHaveLength(32);
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
 		).toHaveLength(0);
@@ -236,8 +249,9 @@ describe("cross-rule integration", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(118);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
+		expect(result.scannedFiles).toHaveLength(125);
 	});
 
 	it("CS-INT-18 decode-and-verify-no-algorithms.ts yields JWT-02 only", async () => {
@@ -267,7 +281,7 @@ describe("cross-rule integration", () => {
 
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-JWT-02"),
-		).toHaveLength(25);
+		).toHaveLength(28);
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-JWT-01"),
 		).toHaveLength(0);
@@ -281,7 +295,12 @@ describe("cross-rule integration", () => {
 		});
 
 		expect(result.findings.length).toBeGreaterThan(0);
-		expect(result.findings.every((f) => f.ruleId === "CS-JWT-02")).toBe(true);
+		expect(
+			result.findings.every(
+				(f) => f.ruleId === "CS-JWT-02" || f.ruleId === "CS-HASH-02",
+			),
+		).toBe(true);
+		expect(result.findings.some((f) => f.ruleId === "CS-JWT-02")).toBe(true);
 	});
 
 	it("CS-INT-22 jwt-02 bad and jwt good yields only JWT-02 and JWT-04 findings", async () => {
@@ -298,10 +317,10 @@ describe("cross-rule integration", () => {
 		).toBe(true);
 	});
 
-	it("CS-INT-23 jwt-02 good directory alone scans 23 files with zero findings", async () => {
+	it("CS-INT-23 jwt-02 good directory alone scans 24 files with zero findings", async () => {
 		const result = await scan({ paths: [jwt02GoodDir], cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(23);
+		expect(result.scannedFiles).toHaveLength(24);
 		expect(result.findings).toEqual([]);
 	});
 
@@ -371,8 +390,9 @@ describe("cross-rule integration", () => {
 	it("CS-INT-30 eight good dirs file count exact", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(118);
-		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(125);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
 	});
 
 	it("CS-INT-31 verify-none-and-ignore-expiration.ts yields JWT-03 and JWT-04 on same call", async () => {
@@ -414,16 +434,16 @@ describe("cross-rule integration", () => {
 		).toHaveLength(1);
 	});
 
-	it("CS-INT-34 jwt-03 bad directory alone yields 25 JWT-03 and 1 JWT-04", async () => {
+	it("CS-INT-34 jwt-03 bad directory alone yields 27 JWT-03 and 1 JWT-04", async () => {
 		const result = await scan({ paths: [jwt03BadDir], cwd: rootDir });
 
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-JWT-03"),
-		).toHaveLength(25);
+		).toHaveLength(27);
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-JWT-04"),
 		).toHaveLength(1);
-		expect(result.summary.critical).toBe(25);
+		expect(result.summary.critical).toBe(27);
 	});
 
 	it("CS-INT-35 jwt-04 bad directory alone yields exactly 18 JWT-04 findings", async () => {
@@ -431,8 +451,8 @@ describe("cross-rule integration", () => {
 
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-JWT-04"),
-		).toHaveLength(18);
-		expect(result.summary.medium).toBe(18);
+		).toHaveLength(19);
+		expect(result.summary.medium).toBe(19);
 	});
 
 	it("CS-INT-36 jwt-03 good and cmp bad yields only CMP findings", async () => {

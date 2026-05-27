@@ -8,13 +8,13 @@ import {
 	csJwt04Rule,
 	parseSourceFile,
 	scan,
-	verifyCallIgnoresExpiration,
 } from "@ciphersins/core";
 import { collectCallExpressions } from "../../packages/core/src/rules/helpers/collect-call-expressions.js";
 import {
 	getJsonWebTokenBindings,
 	matchesJsonWebTokenMethodCall,
 } from "../../packages/core/src/rules/helpers/jsonwebtoken-bindings.js";
+import { verifyCallIgnoresExpiration } from "../../packages/core/src/rules/helpers/jwt-verify-options.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
@@ -119,8 +119,8 @@ describe("CS-JWT-04 directory scans", () => {
 		const result = await scan({ paths: [jwt04BadDir], cwd: rootDir });
 		const jwtFindings = filterByRule(result.findings, "CS-JWT-04");
 
-		expect(jwtFindings).toHaveLength(18);
-		expect(result.scannedFiles).toHaveLength(16);
+		expect(jwtFindings).toHaveLength(19);
+		expect(result.scannedFiles).toHaveLength(18);
 		expect(jwtFindings.every((f) => f.severity === "medium")).toBe(true);
 		expect(jwtFindings.every((f) => f.message === CS_JWT_04_MESSAGE)).toBe(
 			true,
@@ -452,8 +452,8 @@ describe("CS-JWT-04 metadata and snapshots", () => {
 	it("CS-JWT-04-54 summary.medium equals JWT-04 finding count on bad directory", async () => {
 		const result = await scan({ paths: [jwt04BadDir], cwd: rootDir });
 
-		expect(result.summary.medium).toBe(18);
-		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(18);
+		expect(result.summary.medium).toBe(19);
+		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(19);
 	});
 
 	it("CS-JWT-04-55 combined jwt-03 and jwt-04 bad dirs include both rule hits", async () => {
@@ -631,7 +631,7 @@ describe("CS-JWT-04 extended edge cases", () => {
 	it("CS-JWT-04-70 good directory scans exactly 12 files with zero JWT-04", async () => {
 		const result = await scan({ paths: [jwt04GoodDir], cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(12);
+		expect(result.scannedFiles).toHaveLength(13);
 		expect(filterByRule(result.findings, "CS-JWT-04")).toEqual([]);
 	});
 
@@ -845,13 +845,13 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 		).toMatchSnapshot();
 	});
 
-	it("CS-JWT-04-90 bad directory JWT-04 finding signatures are unique with count 18", async () => {
+	it("CS-JWT-04-90 bad directory JWT-04 finding signatures are unique with count 19", async () => {
 		const result = await scan({ paths: [jwt04BadDir], cwd: rootDir });
 		const jwtFindings = filterByRule(result.findings, "CS-JWT-04");
 		const signatures = jwtFindings.map(findingSignature);
 
-		expect(jwtFindings).toHaveLength(18);
-		expect(new Set(signatures).size).toBe(18);
+		expect(jwtFindings).toHaveLength(19);
+		expect(new Set(signatures).size).toBe(19);
 	});
 
 	it("CS-JWT-04-91 csJwt04Rule.run parity for verify-in-two-functions-ignore.ts", async () => {
@@ -906,8 +906,8 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 	it("CS-JWT-04-95 exact bad directory JWT-04 finding and file counts", async () => {
 		const result = await scan({ paths: [jwt04BadDir], cwd: rootDir });
 
-		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(18);
-		expect(result.scannedFiles).toHaveLength(16);
+		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(19);
+		expect(result.scannedFiles).toHaveLength(18);
 	});
 
 	it("CS-JWT-04-96 verify-algorithms-and-ignore-expiration.ts yields no duplicate JWT-04 findings", async () => {
@@ -923,13 +923,13 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 	it("CS-JWT-04-97 combined eight bad dirs yield exactly 20 JWT-04 findings", async () => {
 		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 
-		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(20);
+		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(21);
 	});
 
 	it("CS-JWT-04-98 entire jwt-04 good directory stays clean with all eight rules", async () => {
 		const result = await scan({ paths: [jwt04GoodDir], cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(12);
+		expect(result.scannedFiles).toHaveLength(13);
 		expect(result.findings).toEqual([]);
 	});
 
@@ -969,7 +969,8 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 	it("CS-JWT-04-102 all eight good fixture directories scan clean together", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-HASH-02");
 	});
 
 	it("CS-JWT-04-103 verify-in-dead-code-ignore-expiration.ts still flags unreachable verify", async () => {
@@ -980,5 +981,68 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 
 		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(1);
 		expect(result.findings[0]?.line).toBe(7);
+	});
+});
+
+describe("CS-JWT-04 audit section 9.4", () => {
+	it("CS-JWT-04-104 verify-ignore-expiration-truthy-number.ts flags truthy ignoreExpiration", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "verify-ignore-expiration-truthy-number.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(1);
+	});
+
+	it("CS-JWT-04-105 verify-ignore-expiration-double-negation.ts is not flagged", async () => {
+		const result = await scan({
+			paths: [
+				fixturePath("bad", "verify-ignore-expiration-double-negation.ts"),
+			],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-JWT-04")).toEqual([]);
+	});
+
+	it("CS-JWT-04-106 verifyCallIgnoresExpiration returns false for ignoreExpiration false", () => {
+		const source = `import jwt from "jsonwebtoken";
+jwt.verify("t", "s", { ignoreExpiration: false });
+`;
+		const sourceFile = parseSourceFile("snippet.ts", source);
+		const bindings = getJsonWebTokenBindings(sourceFile);
+		const verifyCalls = collectCallExpressions(sourceFile).filter((call) =>
+			matchesJsonWebTokenMethodCall(call, bindings, "verify"),
+		);
+
+		expect(
+			verifyCalls.filter((call) => verifyCallIgnoresExpiration(call)),
+		).toHaveLength(0);
+	});
+
+	it("CS-JWT-04-107 verifyCallIgnoresExpiration returns true for ignoreExpiration 1", () => {
+		const source = `import jwt from "jsonwebtoken";
+jwt.verify("t", "s", { ignoreExpiration: 1 });
+`;
+		const sourceFile = parseSourceFile("snippet.ts", source);
+		const bindings = getJsonWebTokenBindings(sourceFile);
+		const verifyCalls = collectCallExpressions(sourceFile).filter((call) =>
+			matchesJsonWebTokenMethodCall(call, bindings, "verify"),
+		);
+
+		expect(
+			verifyCalls.filter((call) => verifyCallIgnoresExpiration(call)),
+		).toHaveLength(1);
+	});
+
+	it("CS-JWT-04-108 verify-const-options-ignore-expiration-false.ts yields no findings", async () => {
+		const result = await scan({
+			paths: [
+				fixturePath("good", "verify-const-options-ignore-expiration-false.ts"),
+			],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-JWT-04")).toEqual([]);
 	});
 });

@@ -1,41 +1,45 @@
 flowchart TB
 	subgraph INPUT["Scan input"]
 		direction LR
-		PATHS["paths · cwd"]
+		PATHS["paths · cwd · ~/ expansion"]
 		GLOBS["include / exclude globs"]
 		CONFIG["ciphersins.config.json · optional"]
+		FILTERS["only / ignore · suppressions"]
 	end
 
 	subgraph RESOLVE["File resolution · @ciphersins/core"]
 		direction TB
 		ROOT["resolveDefaultScanRoot()"]
-		RF["resolveFiles() · tinyglobby"]
-		META["scannedFiles · skippedPaths"]
+		RF["resolveFiles() · tinyglobby · realpath dedupe"]
+		META["scannedFiles · skippedPaths with reason"]
 		ROOT --> RF --> META
 	end
 
 	subgraph PARSE["TypeScript compiler API"]
 		direction TB
-		PSF["parseSourceFile()"]
+		PSF["parseSourceFile() · BOM strip · size limit"]
 		SF["SourceFile AST"]
+		ERR["parseErrors collected · scan continues"]
 		PSF --> SF
+		PSF --> ERR
 	end
 
 	subgraph RULES["Rule engine"]
 		direction TB
-		REG["allRules registry"]
-		CTX["createRuleContext()"]
-		RUN["runRules() · per file"]
-		RULE["Rule.run(context) → Finding[]"]
+		REG["allRules · 8 MVP rules"]
+		CTX["createRuleContext() · frozen"]
+		RUN["runRules() · per file · try/catch"]
+		SUP["applySuppressions()"]
 		REG --> RUN
 		CTX --> RUN
-		RUN --> RULE
+		RUN --> SUP
+		SUP --> FINDINGS["Finding[]"]
 	end
 
 	subgraph REPORT["Reporting · @ciphersins/core"]
 		direction TB
-		SORT["sortFindings()"]
-		JSON["formatJson() · schemaVersion 1"]
+		SORT["sortFindings() · locale-independent"]
+		JSON["formatJson() · schemaVersion 2"]
 		SARIF["formatSarif() · SARIF 2.1.0"]
 		SORT --> JSON
 		SORT --> SARIF
@@ -43,21 +47,20 @@ flowchart TB
 
 	subgraph OUTPUT["CLI output"]
 		direction LR
-		FIND["findings · snippet · helpUrl"]
 		SUM["summary by severity"]
-		PRETTY["pretty · stdout"]
+		PRETTY["pretty · snippet frame · colors"]
 		JOUT["json · stdout / --output"]
 		SOUT["sarif · stdout / --output"]
-		FAIL["--fail-on · exit 0 / 1 / 2"]
+		FAIL["--fail-on · exit 0 / 1 / 2 / 3 / 4"]
 	end
 
 	PATHS --> ROOT
 	GLOBS --> RF
 	CONFIG --> FAIL
+	FILTERS --> RUN
 	META --> PSF
 	SF --> CTX
-	RULE --> FIND
-	FIND --> SUM
+	FINDINGS --> SUM
 	SUM --> SORT
 	JSON --> JOUT
 	SARIF --> SOUT
@@ -71,9 +74,9 @@ flowchart TB
 	classDef report fill:#312e81,stroke:#a78bfa,stroke-width:2px,color:#ede9fe
 	classDef output fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
 
-	class PATHS,GLOBS,CONFIG input
+	class PATHS,GLOBS,CONFIG,FILTERS input
 	class ROOT,RF,META resolve
-	class PSF,SF parse
-	class REG,CTX,RUN,RULE rules
+	class PSF,SF,ERR parse
+	class REG,CTX,RUN,SUP,FINDINGS rules
 	class SORT,JSON,SARIF report
-	class FIND,SUM,PRETTY,JOUT,SOUT,FAIL output
+	class SUM,PRETTY,JOUT,SOUT,FAIL output

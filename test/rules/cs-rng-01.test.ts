@@ -74,8 +74,8 @@ describe("CS-RNG-01 directory scans", () => {
 	it("CS-RNG-01-02 flags bad fixtures with high severity (exact counts)", async () => {
 		const result = await scan({ paths: [rngBadDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(12);
-		expect(result.scannedFiles).toHaveLength(10);
+		expect(result.findings).toHaveLength(19);
+		expect(result.scannedFiles).toHaveLength(17);
 		expect(result.findings.every((f) => f.ruleId === "CS-RNG-01")).toBe(true);
 		expect(result.findings.every((f) => f.severity === "high")).toBe(true);
 		expect(result.findings.every((f) => f.message === CS_RNG_01_MESSAGE)).toBe(
@@ -93,8 +93,8 @@ describe("CS-RNG-01 directory scans", () => {
 		const result = await scan({ paths: [rngBadDir], cwd: rootDir });
 		const rng = result.findings.filter((f) => f.ruleId === "CS-RNG-01");
 
-		expect(rng).toHaveLength(12);
-		expect(result.scannedFiles).toHaveLength(10);
+		expect(rng).toHaveLength(19);
+		expect(result.scannedFiles).toHaveLength(17);
 	});
 });
 
@@ -351,7 +351,7 @@ describe("CS-RNG-01 extended edge cases", () => {
 		const result = await scan({ paths: [rngGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(8);
+		expect(result.scannedFiles).toHaveLength(9);
 	});
 
 	it("CS-RNG-01-32 bad directory finding signatures are unique", async () => {
@@ -359,7 +359,7 @@ describe("CS-RNG-01 extended edge cases", () => {
 		const signatures = result.findings.map(findingSignature);
 
 		expect(new Set(signatures).size).toBe(signatures.length);
-		expect(signatures).toHaveLength(12);
+		expect(signatures).toHaveLength(19);
 	});
 
 	it("CS-RNG-01-33 otp-loop-random.ts yields three findings on distinct lines", async () => {
@@ -426,7 +426,7 @@ describe("CS-RNG-01 extended edge cases", () => {
 		const rngFindings = result.findings.filter((f) => f.ruleId === "CS-RNG-01");
 
 		expect(result.summary.high).toBe(rngFindings.length);
-		expect(result.summary.high).toBe(12);
+		expect(result.summary.high).toBe(19);
 	});
 
 	it("CS-RNG-01-39 csRng01Rule.run parity over bad directory", async () => {
@@ -441,5 +441,79 @@ describe("CS-RNG-01 extended edge cases", () => {
 		expect(isolatedFindings.map(findingSignature).sort()).toEqual(
 			rngFindings.map(findingSignature).sort(),
 		);
+	});
+});
+
+describe("CS-RNG-01 audit section 9.6", () => {
+	it("CS-RNG-01-40 math-random-module-scope.ts flags module-scope token", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "math-random-module-scope.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.some((f) => f.ruleId === "CS-RNG-01")).toBe(true);
+	});
+
+	it("CS-RNG-01-41 math-random-class-field.ts flags class field initializer", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "math-random-class-field.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.some((f) => f.ruleId === "CS-RNG-01")).toBe(true);
+	});
+
+	it("CS-RNG-01-42 math-random-default-param.ts flags default param Math.random", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "math-random-default-param.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.some((f) => f.ruleId === "CS-RNG-01")).toBe(true);
+	});
+
+	it("CS-RNG-01-43 math-random-in-try-catch.ts flags Math.random in try", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "math-random-in-try-catch.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.some((f) => f.ruleId === "CS-RNG-01")).toBe(true);
+	});
+
+	it("CS-RNG-01-44 math-random-chained.ts flags chained Math.random call", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "math-random-chained.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.some((f) => f.ruleId === "CS-RNG-01")).toBe(true);
+	});
+
+	it("CS-RNG-01-45 element-access-math-random-token.ts flags bracket Math.random", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "element-access-math-random-token.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.some((f) => f.ruleId === "CS-RNG-01")).toBe(true);
+	});
+
+	it("CS-RNG-01-46 module-level-math-shadow.ts yields no findings", async () => {
+		const result = await scan({
+			paths: [fixturePath("good", "module-level-math-shadow.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings).toEqual([]);
+	});
+
+	it("CS-RNG-01-47 class-name-auth-context-math-random.ts flags class name auth context", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "class-name-auth-context-math-random.ts")],
+			cwd: rootDir,
+		});
+
+		expect(result.findings.some((f) => f.ruleId === "CS-RNG-01")).toBe(true);
 	});
 });

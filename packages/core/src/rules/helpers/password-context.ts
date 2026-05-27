@@ -6,6 +6,9 @@ const PASSWORD_CONTEXT_SEGMENTS = new Set([
 	"passwd",
 	"pwd",
 	"passphrase",
+	"credential",
+	"credentials",
+	"cred",
 ]);
 
 export function isPasswordContextName(name: string): boolean {
@@ -109,6 +112,16 @@ export function callHasPasswordContext(call: ts.CallExpression): boolean {
 	while (current) {
 		if (isEnclosingFunctionLike(current)) {
 			if (scopeHasPasswordContextNaming(current)) {
+				return true;
+			}
+		}
+
+		if (ts.isClassDeclaration(current) || ts.isClassExpression(current)) {
+			const className =
+				current.name && ts.isIdentifier(current.name)
+					? current.name.text
+					: undefined;
+			if (className && isPasswordContextName(className)) {
 				return true;
 			}
 		}

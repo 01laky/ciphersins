@@ -1,6 +1,6 @@
 # CipherSins rules index
 
-Static analysis rules for crypto API misuse. Overview: [about.md](../about.md) · Product spec: [`proposal.MD`](../proposal.MD) · Landing page: [README](../README.md).
+Static analysis rules for crypto API misuse. Overview: [about.md](../about.md) · Product spec: [`proposal.md`](../proposal.md) · Landing page: [README](../README.md).
 
 Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>/{bad,good}/` and numbered vitest coverage.
 
@@ -15,7 +15,9 @@ Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>
 | [CS-HASH-01](./CS-HASH-01.md) | high     | MD5/SHA1 for password       | implemented |
 | [CS-HASH-02](./CS-HASH-02.md) | medium   | Weak bcrypt cost            | implemented |
 
-**8/8 MVP rules implemented** at v0.9.1.
+**8/8 MVP rules implemented** at v1.0.0.
+
+Each rule doc includes **Suppressing** (inline comments), **Library scope** (which npm modules are tracked), **Limitations** (known false negatives/positives), and **Source** (implementation file under `packages/core/src/rules/`).
 
 ## Adding a rule
 

@@ -21,7 +21,7 @@ export function getLineSnippet(
 			? (lineStarts[endLine + 1] ?? sourceFile.end)
 			: sourceFile.end;
 
-	return sourceFile.text.slice(start, end).replace(/\n$/, "");
+	return sourceFile.text.slice(start, end).replace(/\r?\n$/, "");
 }
 
 export function getPositionForLineColumn(
@@ -36,7 +36,14 @@ export function getPositionForLineColumn(
 		return 0;
 	}
 
-	return (lineStarts[lineIndex] ?? 0) + Math.max(0, column - 1);
+	const lineStart = lineStarts[lineIndex] ?? 0;
+	const nextLineStart =
+		lineIndex + 1 < lineStarts.length
+			? (lineStarts[lineIndex + 1] ?? sourceFile.end)
+			: sourceFile.end;
+	const lineLength = Math.max(0, nextLineStart - lineStart - 1);
+	const columnOffset = Math.min(Math.max(0, column - 1), lineLength);
+	return lineStart + columnOffset;
 }
 
 export function formatRelativePath(

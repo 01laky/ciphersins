@@ -29,7 +29,6 @@ const AUTH_MATERIAL_WORDS = new Set([
 	"checksum",
 	"csrf",
 	"authorization",
-	"auth",
 	"credential",
 	"bearer",
 ]);

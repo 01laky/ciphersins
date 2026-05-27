@@ -1,7 +1,7 @@
 import ts from "typescript";
 import { isWeakBcryptCostLiteral } from "./bcrypt-cost.js";
 
-const BCRYPT_MODULES = new Set(["bcrypt", "bcryptjs"]);
+const BCRYPT_MODULES = new Set(["bcrypt", "bcryptjs", "@node-rs/bcrypt"]);
 
 const BCRYPT_NAMED_IMPORTS = new Set([
 	"hash",

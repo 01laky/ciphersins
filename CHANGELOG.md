@@ -3,6 +3,46 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.0.0]
+
+### Added
+
+- **CS-JWT-01 function-level scope** — verify must share decode's function scope (nested inner functions count); sibling helpers no longer suppress decode.
+- **Vitest coverage (CS-VC-01–04)** — `@vitest/coverage-v8`, 90% thresholds on core/cli, `test:coverage` / `test:ci` scripts, JUnit reporter, CI artifact upload.
+- **Per-rule doc sections** — all 8 rules document **Suppressing**, **Library scope**, **Limitations**, and **Source**.
+- **npm publish `--provenance`** — release workflow signs packages with Sigstore provenance.
+- **Version SSOT** — `scripts/sync-version.mjs` generates `packages/core/src/version.ts` and `packages/cli/src/version.ts` from root `package.json`.
+- **`ScanResult` diagnostics** — `parseErrors`, `ruleErrors`, and `warnings` arrays; scan no longer throws `AggregateError` on parse failures.
+- **`RuleExecutionError`** — per-rule execution failures collected instead of aborting the scan.
+- **`SkippedPath` reasons** — `skippedPaths: { path, reason }[]` with `missing`, `non-scannable-extension`, `too-large`, `outside-scan-root`.
+- **JSON `schemaVersion: 2`** — structured `skippedPaths` in machine output.
+- **CLI flags** — `--list-rules`, `--print-config`, `--cwd`, `--include`/`--exclude`, `--max-findings`, `--verbose`/`--debug`, `--color`/`--no-color`, `--strict-config`; exit codes **3** (config) and **4** (internal); `scan --version`; config discovery walks parent directories; `~/` path expansion.
+- **`SECURITY.md`**, **`release.yml`**, **`dependabot.yml`**, **CodeQL** workflow, issue/PR templates, **macOS CI** matrix.
+- **npm publish prep** — `@ciphersins/core` publishable; `prepublishOnly` scripts; [docs/releasing.md](./docs/releasing.md); `npm run pack:check`.
+
+### Changed
+
+- **CS-JWT-01** — function-level verify scope replaces file-wide suppression; message updated to _same function scope_.
+- **CS-JWT-04** — flags truthy `ignoreExpiration` (e.g. `1`), not only boolean `true`.
+- **CS-CMP-01** — flags `!==`/`!=`; treats `bcrypt`/`bcryptjs` imports as crypto-auth gate; skips `null`/`undefined` compares; `timingSafeEqual` via `require('crypto')` default binding.
+- **CS-RNG-01** — flags `Math['random']()` and class-name auth context.
+- **CS-HASH-01** — adds **md4**, **md2**, **ripemd160** weak algorithms; **credential** password context; `require('md5'/'sha1')` package tracking.
+- **CS-HASH-02** — tracks **`@node-rs/bcrypt`**.
+- **Core engine** — UTF-8 BOM strip; `.mjs`/`.cjs`/`.mts`/`.cts` scannable; **5 MiB** default `maxFileSizeBytes`; `realpath` dedupe; locale-independent `sortFindings`; frozen `RuleContext`; `followSymbolicLinks: false`.
+- **Suppressions** — anchored comment pattern; space-separated rule IDs; uppercase normalization; unknown-rule warnings.
+- **CLI** — pretty output with snippets/code frame and ANSI colors; fail summary plural/order polish.
+- **Reporting** — SARIF `security-severity`, `automationDetails.id`, camelCase driver rule names.
+- **Public API trim** — removed fs/jwt helpers and `normalizeSarifForSnapshot` from `@ciphersins/core` exports.
+- **Engines** — Node **≥ 20** (CI: ubuntu + macOS × Node 20/22/24).
+- **Docs** — `docs/proposal.md` (renamed, de-personalized); CLI reference for all new flags and exit codes; JSON schema and SARIF field mapping; FAQ test ID ranges and CI/suppression/custom-rule entries; expanded `CONTRIBUTING.md`; architecture diagrams updated (schemaVersion 2, function-level JWT-01, all 8 rules overview).
+- **Audit test suite (§9)** — **1164** total tests including CS-VC-01–04, CS-JWT-01-86–88, CS-CLI-92–98, CS-REP-EXT-28, rule FN coverage, and integration audits.
+- **CodeQL self-scan** — weekly workflow uploads CipherSins SARIF for `packages/` and `test/`.
+- **Repo hygiene** — `.gitignore` for `coverage/`, `junit.xml`, `test-results/`; `npm run clean`; SVG diagrams excluded from Prettier.
+
+### Fixed
+
+- **CLI workspace dep** — `packages/cli` uses `workspace:*` for `@ciphersins/core` (pnpm publish resolves to semver).
+
 ## [0.9.1]
 
 ### Added

@@ -1,6 +1,6 @@
 # CipherSins — Implementation Proposal
 
-> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.9.1**) implements the scan pipeline, CLI `scan` command with **JSON/SARIF output**, **`--fail-on` CI gating**, **full `ciphersins.config.json`**, **inline suppressions**, and **all eight MVP rules** (CS-JWT-01 through CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). npm publish remains **planned** for v1.0.0 — see [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
+> **Note:** This document describes the **v1.0 target** and roadmap. **v1.0.0** implements the scan pipeline, CLI `scan` command with **JSON/SARIF output**, **`--fail-on` CI gating**, **full `ciphersins.config.json`**, **inline suppressions**, and **all eight MVP rules** (CS-JWT-01 through CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Published on npm — see [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
 
 ## What It Is (One-Liner)
 
@@ -237,14 +237,14 @@ MVP can be documentation only + link to `crypto.timingSafeEqual`.
 
 ## Tech Stack (Recommended)
 
-| Area     | Choice                                                                              |
-| -------- | ----------------------------------------------------------------------------------- |
-| Language | TypeScript                                                                          |
-| Build    | tsup or unbuild for core + cli                                                      |
-| Test     | vitest + fixtures snapshot                                                          |
-| Publish  | npm package `ciphersins` at **v1.0.0 only** — no npm publish before MVP is complete |
-| License  | MIT                                                                                 |
-| Node     | >= 18                                                                               |
+| Area     | Choice                                                                                              |
+| -------- | --------------------------------------------------------------------------------------------------- |
+| Language | TypeScript                                                                                          |
+| Build    | tsup or unbuild for core + cli                                                                      |
+| Test     | vitest + fixtures snapshot                                                                          |
+| Publish  | npm packages `ciphersins` and `@ciphersins/core` at **v1.0.0** — see [releasing.md](./releasing.md) |
+| License  | MIT                                                                                                 |
+| Node     | >= 18                                                                                               |
 
 ---
 
@@ -325,11 +325,11 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 ### Versioning — repo vs npm
 
-| Artifact  | Recommendation                                                                                                                                                   |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Git repo  | Pre-release **0.9.0** in-repo (**8/8 MVP rules** + CLI JSON/SARIF/`--fail-on`). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
-| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.                                      |
-| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                                                  |
+| Artifact  | Recommendation                                                                                                              |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Git repo  | **v1.0.0** released — **8/8 MVP rules**, full CLI, npm publish via tag workflow. See [releasing.md](./releasing.md).        |
+| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met. |
+| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.             |
 
 ### npm publish policy
 
@@ -397,12 +397,9 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 ## Decision Context
 
-- User wanted an original name — generic `cryptoguard-cli` was rejected / `crypto-guard-cli` is taken (Web3).
-- Chosen **CipherSins** = cipher + sins (crypto sins in code).
-- Workspace scaffolded at **0.1.0** (docs, hooks, proposal); rule implementation from **0.3.0** (CS-JWT-01).
-- **No npm publish until v1.0.0** — MVP complete in git first.
-- Minimal scope: no extra abstractions, no tests for the sake of tests, no commits unless requested.
-- User communication: Slovak; code/comments/README: English.
+- Project name **CipherSins** = cipher + sins (crypto misuse patterns in application code).
+- Workspace scaffolded at **0.1.0**; MVP rules landed across **0.3.x–0.9.x**; **1.0.0** is the first npm release.
+- Scope stays minimal: no call-graph analysis, no auto-fix, no custom rule API in v1.0 (see [CHANGELOG](../CHANGELOG.md)).
 
 ---
 

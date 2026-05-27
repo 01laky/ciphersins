@@ -1,6 +1,14 @@
 import ts from "typescript";
 
-const WEAK_HASH_ALGORITHMS = new Set(["md5", "sha1", "sha-1"]);
+const WEAK_HASH_ALGORITHMS = new Set([
+	"md2",
+	"md4",
+	"md5",
+	"sha1",
+	"sha-1",
+	"ripemd160",
+	"ripemd-160",
+]);
 
 export function normalizeHashAlgorithmLiteral(value: string): string {
 	return value.trim().toLowerCase();

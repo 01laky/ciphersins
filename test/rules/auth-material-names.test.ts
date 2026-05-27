@@ -59,7 +59,7 @@ describe("auth-material naming helpers", () => {
 		expect(isAuthMaterialName("author")).toBe(false);
 	});
 
-	it("CS-AUTH-10 isAuthMaterialName('AuthService') is true (segment auth)", () => {
-		expect(isAuthMaterialName("AuthService")).toBe(true);
+	it("CS-AUTH-10 isAuthMaterialName('AuthService') is false (auth segment removed)", () => {
+		expect(isAuthMaterialName("AuthService")).toBe(false);
 	});
 });

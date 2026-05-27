@@ -8,7 +8,7 @@ export function formatFailSummary(
 	let total = 0;
 	const parts: string[] = [];
 
-	for (const severity of SEVERITIES) {
+	for (const severity of [...SEVERITIES].reverse()) {
 		if (
 			severityRank(severity) >= severityRank(failOn) &&
 			summary[severity] > 0
@@ -18,5 +18,6 @@ export function formatFailSummary(
 		}
 	}
 
-	return `error: ${total} finding(s) at or above ${failOn} (${parts.join(", ")})`;
+	const noun = total === 1 ? "finding" : "findings";
+	return `error: ${total} ${noun} at or above ${failOn} (${parts.join(", ")})`;
 }

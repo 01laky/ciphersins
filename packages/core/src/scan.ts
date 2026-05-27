@@ -1,10 +1,16 @@
 import { ParseSourceFileError } from "./parse-source-file.js";
 import { createRuleContext } from "./create-rule-context.js";
+import { RuleExecutionError } from "./rule-execution-error.js";
 import { resolveFiles } from "./resolve-files.js";
 import { runRules } from "./run-rules.js";
 import { applyRuleSeverityOverrides, selectRules } from "./rule-config.js";
 import { allRules } from "./rules/index.js";
-import { applySuppressions, parseSuppressions } from "./suppressions.js";
+import {
+	applySuppressions,
+	parseSuppressions,
+	type SuppressionParseResult,
+} from "./suppressions.js";
+import { sortFindings } from "./reporting/sort-findings.js";
 import {
 	type Finding,
 	type ScanOptions,
@@ -39,20 +45,21 @@ export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
 	const findings: Finding[] = [];
 	const scannedFiles: string[] = [];
 	const parseErrors: ParseSourceFileError[] = [];
+	const ruleErrors: RuleExecutionError[] = [];
+	const warnings: string[] = [];
 	const suppressionsByFile = new Map<
 		string,
-		ReturnType<typeof parseSuppressions>
+		SuppressionParseResult["suppressions"]
 	>();
 
 	for (const filePath of files) {
 		try {
 			const context = createRuleContext(filePath);
 			scannedFiles.push(filePath);
-			suppressionsByFile.set(
-				context.filePath,
-				parseSuppressions(context.sourceFile),
-			);
-			findings.push(...runRules(rules, context));
+			const parsedSuppressions = parseSuppressions(context.sourceFile);
+			suppressionsByFile.set(context.filePath, parsedSuppressions.suppressions);
+			warnings.push(...parsedSuppressions.warnings);
+			findings.push(...runRules(rules, context, ruleErrors));
 		} catch (error) {
 			if (error instanceof ParseSourceFileError) {
 				parseErrors.push(error);
@@ -61,14 +68,6 @@ export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
 
 			throw error;
 		}
-	}
-
-	if (parseErrors.length > 0) {
-		const combined = parseErrors.map((error) => error.message).join("; ");
-		throw new AggregateError(
-			parseErrors,
-			`Failed to parse ${parseErrors.length} file(s): ${combined}`,
-		);
 	}
 
 	const adjustedFindings = applyRuleSeverityOverrides(
@@ -81,10 +80,18 @@ export async function scan(options: ScanOptions = {}): Promise<ScanResult> {
 		options.allowCriticalIgnore ?? false,
 	);
 
+	let sortedFindings = sortFindings(filteredFindings);
+	if (options.maxFindings !== undefined) {
+		sortedFindings = sortedFindings.slice(0, Math.max(0, options.maxFindings));
+	}
+
 	return {
-		findings: filteredFindings,
-		summary: summarizeFindings(filteredFindings),
+		findings: sortedFindings,
+		summary: summarizeFindings(sortedFindings),
 		scannedFiles,
 		skippedPaths,
+		parseErrors,
+		ruleErrors,
+		warnings,
 	};
 }

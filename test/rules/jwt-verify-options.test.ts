@@ -399,11 +399,11 @@ describe("jwt expiration helpers", () => {
 		expect(verifyCallIgnoresExpiration(call)).toBe(false);
 	});
 
-	it("CS-JWT-EXP-08 non-boolean ignoreExpiration is not detected", () => {
+	it("CS-JWT-EXP-08 truthy non-boolean ignoreExpiration is detected", () => {
 		const call = verifyCallFrom(
 			"import jwt from 'jsonwebtoken';\njwt.verify(token, secret, { ignoreExpiration: 1 });\n",
 		);
-		expect(verifyCallIgnoresExpiration(call)).toBe(false);
+		expect(verifyCallIgnoresExpiration(call)).toBe(true);
 	});
 
 	it("CS-JWT-EXP-09 four-arg verify reads ignoreExpiration at index 2", () => {

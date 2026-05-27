@@ -102,6 +102,16 @@ export function callHasAuthContext(call: ts.CallExpression): boolean {
 			}
 		}
 
+		if (ts.isClassDeclaration(current) || ts.isClassExpression(current)) {
+			const className =
+				current.name && ts.isIdentifier(current.name)
+					? current.name.text
+					: undefined;
+			if (className && isAuthMaterialName(className)) {
+				return true;
+			}
+		}
+
 		if (
 			current.parent &&
 			ts.isVariableDeclaration(current.parent) &&

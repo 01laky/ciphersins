@@ -8,25 +8,25 @@ import {
 	findingPrimaryLocationLineHash,
 	formatJson,
 	formatSarif,
-	normalizeSarifForSnapshot,
 	scan,
 	type Finding,
 } from "@ciphersins/core";
+import { normalizeSarifForSnapshot } from "../packages/core/src/reporting/normalize-sarif-snapshot.js";
 import { jwt03BadFile, rootDir } from "./cli/helpers.js";
 
 describe("CS-REP core reporting exports", () => {
-	it("CS-REP-01 formatJson includes schemaVersion 1 and version", async () => {
+	it("CS-REP-01 formatJson includes schemaVersion 2 and version", async () => {
 		const result = await scan({ paths: [jwt03BadFile], cwd: rootDir });
-		const json = formatJson(result, { cwd: rootDir, toolVersion: "0.9.0" });
+		const json = formatJson(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const doc = JSON.parse(json);
-		expect(doc.schemaVersion).toBe(1);
-		expect(doc.version).toBe("0.9.0");
+		expect(doc.schemaVersion).toBe(2);
+		expect(doc.version).toBe("1.0.0");
 		expect(doc.tool).toBe("ciphersins");
 	});
 
 	it("CS-REP-02 formatSarif driver rules length is 8", async () => {
 		const result = await scan({ paths: [jwt03BadFile], cwd: rootDir });
-		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "0.9.0" });
+		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const doc = JSON.parse(sarif);
 		expect(doc.runs[0].tool.driver.rules).toHaveLength(8);
 		expect(allRules).toHaveLength(8);
@@ -34,7 +34,7 @@ describe("CS-REP core reporting exports", () => {
 
 	it("CS-REP-03 each SARIF driver rule has help.text", async () => {
 		const result = await scan({ paths: [jwt03BadFile], cwd: rootDir });
-		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "0.9.0" });
+		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const doc = JSON.parse(sarif);
 		for (const rule of doc.runs[0].tool.driver.rules) {
 			expect(rule.help?.text).toMatch(/^See \[CS-/);
@@ -65,7 +65,7 @@ describe("CS-REP core reporting exports", () => {
 
 	it("CS-REP-05 normalizeSarifForSnapshot replaces cwd URI with placeholder", async () => {
 		const result = await scan({ paths: [jwt03BadFile], cwd: rootDir });
-		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "0.9.0" });
+		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const normalized = normalizeSarifForSnapshot(sarif) as {
 			runs: Array<{
 				originalUriBaseIds: Record<string, { uri: string }>;
@@ -90,7 +90,7 @@ describe("CS-REP core reporting exports", () => {
 				scannedFiles: [],
 				skippedPaths: [],
 			},
-			{ cwd: rootDir, toolVersion: "0.9.0" },
+			{ cwd: rootDir, toolVersion: "1.0.0" },
 		);
 		const doc = JSON.parse(payload);
 		expect(doc.findings).toEqual([]);
@@ -99,7 +99,7 @@ describe("CS-REP core reporting exports", () => {
 
 	it("CS-REP-05c formatSarif writes to temp file round-trip", async () => {
 		const result = await scan({ paths: [jwt03BadFile], cwd: rootDir });
-		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "0.9.0" });
+		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const tempFile = path.join(
 			fs.mkdtempSync(path.join(os.tmpdir(), "ciphersins-rep-")),
 			"out.sarif",

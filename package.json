@@ -1,13 +1,13 @@
 {
 	"name": "ciphersins",
-	"version": "0.9.1",
+	"version": "1.0.0",
 	"private": true,
 	"description": "Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS app code.",
 	"license": "MIT",
 	"author": "Ladislav Kostolny <01laky@gmail.com>",
 	"type": "module",
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
 	"keywords": [
 		"security",
@@ -43,11 +43,15 @@
 	"scripts": {
 		"build": "node scripts/build-packages.mjs",
 		"typecheck": "node scripts/typecheck-packages.mjs",
-		"test": "vitest run",
+		"test": "vitest run --maxWorkers=2",
+		"test:coverage": "vitest run --coverage --maxWorkers=2",
+		"test:ci": "vitest run --coverage --maxWorkers=2 --reporter=default --reporter=junit --outputFile.junit=junit.xml",
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
 		"smoke:cli": "node scripts/smoke-cli.mjs",
+		"pack:check": "node scripts/pack-check.mjs",
 		"diagrams:build": "node scripts/build-diagrams.mjs",
+		"clean": "node -e \"import('node:fs/promises').then((fs)=>Promise.all(['dist','coverage','junit.xml','test-results'].map((p)=>fs.rm(p,{recursive:true,force:true}))))\"",
 		"verify": "npm run format && npm run typecheck && npm run build && npm test && npm run smoke:cli"
 	},
 	"prettier": {
@@ -56,6 +60,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^22.15.29",
+		"@vitest/coverage-v8": "^3.2.1",
 		"ciphersins": "workspace:*",
 		"prettier": "^3.5.3",
 		"tsup": "^8.5.0",

@@ -2,7 +2,7 @@ import { allRules } from "./rules/index.js";
 import type { Finding, Rule, ScanOptions, Severity } from "./types.js";
 import { isSeverity } from "./reporting/severity.js";
 
-export const RULE_IDS = allRules.map((rule) => rule.id);
+export const RULE_IDS = Object.freeze(allRules.map((rule) => rule.id));
 
 const RULE_ID_SET = new Set(RULE_IDS);
 
@@ -82,6 +82,13 @@ export function mergeDisabledRuleIds(
 }
 
 export function selectRules(rules: Rule[], options: ScanOptions): Rule[] {
+	if (options.only) {
+		assertKnownRuleIds(options.only, "only");
+	}
+	if (options.ignore) {
+		assertKnownRuleIds(options.ignore, "ignore");
+	}
+
 	const disabled = new Set(options.ignore ?? []);
 	let selected = rules.filter((rule) => !disabled.has(rule.id));
 

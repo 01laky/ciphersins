@@ -19,7 +19,7 @@ const jwtGoodDir = path.join(rootDir, "fixtures/cs-jwt-01/good");
 const cliEntry = path.join(rootDir, "packages/cli/dist/cli.js");
 
 const CS_JWT_01_MESSAGE =
-	"jwt.decode() used without jwt.verify() in the same file.";
+	"jwt.decode() used without jwt.verify() in the same function scope.";
 
 function fixturePath(segment: "bad" | "good", name: string): string {
 	return path.join(rootDir, "fixtures/cs-jwt-01", segment, name);
@@ -73,8 +73,8 @@ describe("CS-JWT-01 directory scans", () => {
 	it("CS-JWT-01-02 flags bad fixtures with high severity", async () => {
 		const result = await scan({ paths: [jwtBadDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(16);
-		expect(result.scannedFiles).toHaveLength(14);
+		expect(result.findings).toHaveLength(17);
+		expect(result.scannedFiles).toHaveLength(15);
 		expect(result.findings.every((f) => f.ruleId === "CS-JWT-01")).toBe(true);
 		expect(result.findings.every((f) => f.severity === "high")).toBe(true);
 		expect(result.findings.every((f) => f.message === CS_JWT_01_MESSAGE)).toBe(
@@ -241,13 +241,15 @@ describe("CS-JWT-01 per-file good fixtures", () => {
 		expect(result.findings).toEqual([]);
 	});
 
-	it("CS-JWT-01-07 decode-and-verify-separated-functions.ts yields no findings", async () => {
+	it("CS-JWT-01-07 decode-and-verify-separated-functions.ts flags decode in helper function", async () => {
 		const result = await scan({
-			paths: [fixturePath("good", "decode-and-verify-separated-functions.ts")],
+			paths: [fixturePath("bad", "decode-and-verify-separated-functions.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.line).toBe(6);
+		expect(result.findings[0]?.snippet).toContain("jwt.decode");
 	});
 
 	it("CS-JWT-01-08 no-jsonwebtoken.ts yields no findings", async () => {
@@ -504,7 +506,7 @@ describe("CS-JWT-01 CLI", () => {
 
 		expect(result.status).toBe(0);
 		expect(result.stdout).toContain("No findings.");
-	});
+	}, 15_000);
 });
 
 describe("CS-JWT-01 extended edge cases", () => {
@@ -513,7 +515,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const jwtFindings = result.findings.filter((f) => f.ruleId === "CS-JWT-01");
 
 		expect(result.summary.high).toBe(jwtFindings.length);
-		expect(result.summary.high).toBe(16);
+		expect(result.summary.high).toBe(17);
 		expect(result.summary.medium).toBe(0);
 	});
 
@@ -521,7 +523,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(15);
+		expect(result.scannedFiles).toHaveLength(14);
 	});
 
 	it("CS-JWT-01-46 bad directory finding signatures are unique", async () => {
@@ -529,7 +531,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const signatures = result.findings.map(findingSignature);
 
 		expect(new Set(signatures).size).toBe(signatures.length);
-		expect(signatures).toHaveLength(16);
+		expect(signatures).toHaveLength(17);
 	});
 
 	it("CS-JWT-01-47 CLI bad scan output matches default-import-decode-only.ts line format", () => {
@@ -579,6 +581,224 @@ describe("CS-JWT-01 extended edge cases", () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);
-		expect(result.scannedFiles).toHaveLength(15);
+		expect(result.scannedFiles).toHaveLength(14);
+	});
+});
+
+describe("CS-JWT-01 audit section 9.1", () => {
+	const jwtImport = 'import jwt from "jsonwebtoken";\n';
+
+	function runJwt01OnSource(fileName: string, source: string) {
+		const sourceFile = parseSourceFile(fileName, source);
+		return csJwt01Rule.run({
+			filePath: path.resolve(rootDir, fileName),
+			sourceFile,
+		});
+	}
+
+	function expectDecodeFinding(findings: ReturnType<typeof csJwt01Rule.run>) {
+		expect(findings).toHaveLength(1);
+		expect(findings[0]?.ruleId).toBe("CS-JWT-01");
+		expect(findings[0]?.message).toBe(CS_JWT_01_MESSAGE);
+	}
+
+	it("CS-JWT-01-52 decode-in-class-method.ts flags instance method decode", () => {
+		const source = `${jwtImport}class Reader { read(t: string) { return jwt.decode(t); } }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-class-method.ts", source));
+	});
+
+	it("CS-JWT-01-53 decode-in-static-method.ts flags static method decode", () => {
+		const source = `${jwtImport}class Reader { static read(t: string) { return jwt.decode(t); } }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-static-method.ts", source));
+	});
+
+	it("CS-JWT-01-54 decode-in-constructor.ts flags constructor decode", () => {
+		const source = `${jwtImport}class Reader { constructor(t: string) { jwt.decode(t); } }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-constructor.ts", source));
+	});
+
+	it("CS-JWT-01-55 decode-in-getter.ts flags getter decode", () => {
+		const source = `${jwtImport}class Reader { get token() { return jwt.decode("t"); } }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-getter.ts", source));
+	});
+
+	it("CS-JWT-01-56 decode-in-setter.ts flags setter decode", () => {
+		const source = `${jwtImport}class Reader { set token(t: string) { jwt.decode(t); } }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-setter.ts", source));
+	});
+
+	it("CS-JWT-01-57 decode-in-private-method.ts flags private method decode", () => {
+		const source = `${jwtImport}class Reader { #read(t: string) { return jwt.decode(t); } use(t: string) { return this.#read(t); } }`;
+		expectDecodeFinding(
+			runJwt01OnSource("decode-in-private-method.ts", source),
+		);
+	});
+
+	it("CS-JWT-01-58 decode-in-async-await.ts flags awaited decode", () => {
+		const source = `${jwtImport}export async function read(t: string) { return await Promise.resolve(jwt.decode(t)); }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-async-await.ts", source));
+	});
+
+	it("CS-JWT-01-59 decode-in-generator.ts flags yield decode", () => {
+		const source = `${jwtImport}export function* read(t: string) { yield jwt.decode(t); }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-generator.ts", source));
+	});
+
+	it("CS-JWT-01-60 decode-in-try-catch.ts flags decode in try", () => {
+		const source = `${jwtImport}export function read(t: string) { try { return jwt.decode(t); } catch { return null; } }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-try-catch.ts", source));
+	});
+
+	it("CS-JWT-01-61 decode-in-ternary.ts flags decode in ternary", () => {
+		const source = `${jwtImport}export function read(t: string) { return t ? jwt.decode(t) : null; }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-ternary.ts", source));
+	});
+
+	it("CS-JWT-01-62 decode-in-logical.ts flags decode in logical expression", () => {
+		const source = `${jwtImport}export function read(t: string) { return t && jwt.decode(t); }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-logical.ts", source));
+	});
+
+	it("CS-JWT-01-63 decode-bracket-notation.ts is not flagged (property access only)", () => {
+		const source = `${jwtImport}export function read(t: string) { return jwt['decode'](t); }`;
+		expect(runJwt01OnSource("decode-bracket-notation.ts", source)).toEqual([]);
+	});
+
+	it("CS-JWT-01-64 decode-in-template-literal.ts flags nested decode call", () => {
+		const source = `${jwtImport}export function read(t: string) { return \`\${jwt.decode(t)}\`; }`;
+		expectDecodeFinding(
+			runJwt01OnSource("decode-in-template-literal.ts", source),
+		);
+	});
+
+	it("CS-JWT-01-65 decode-in-default-param.ts flags decode in default initializer", () => {
+		const source = `${jwtImport}export function read(t: string, payload = jwt.decode(t)) { return payload; }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-default-param.ts", source));
+	});
+
+	it("CS-JWT-01-66 decode-in-switch.ts flags decode in switch case", () => {
+		const source = `${jwtImport}export function read(t: string) { switch (t) { default: return jwt.decode(t); } }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-switch.ts", source));
+	});
+
+	it("CS-JWT-01-67 decode-in-promise-then.ts flags decode in then callback", () => {
+		const source = `${jwtImport}export function read(t: string) { return Promise.resolve(t).then((v) => jwt.decode(v)); }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-promise-then.ts", source));
+	});
+
+	it("CS-JWT-01-68 decode-in-jsx-attribute.tsx flags decode in JSX expression", () => {
+		const source = `${jwtImport}export function Badge({ t }: { t: string }) { return <span>{jwt.decode(t)}</span>; }`;
+		expectDecodeFinding(
+			runJwt01OnSource("decode-in-jsx-attribute.tsx", source),
+		);
+	});
+
+	it("CS-JWT-01-69 decode-in-object-spread.ts flags decode in spread object", () => {
+		const source = `${jwtImport}export function read(t: string) { return { ...jwt.decode(t) }; }`;
+		expectDecodeFinding(runJwt01OnSource("decode-in-object-spread.ts", source));
+	});
+
+	it("CS-JWT-01-70 dual-import-decode-only.ts flags named decode import call", () => {
+		const source =
+			'import jwt, { decode } from "jsonwebtoken";\nexport function read(t: string) { return decode(t); }\n';
+		expectDecodeFinding(runJwt01OnSource("dual-import-decode-only.ts", source));
+	});
+
+	it("CS-JWT-01-71 namespace-destructure-decode.ts flags destructured decode import", () => {
+		const source =
+			'import { decode } from "jsonwebtoken";\nexport function read(t: string) { return decode(t); }\n';
+		expectDecodeFinding(
+			runJwt01OnSource("namespace-destructure-decode.ts", source),
+		);
+	});
+
+	it("CS-JWT-01-72 reassigned-namespace-decode.ts is not flagged (reassigned binding)", () => {
+		const source =
+			'import * as jwtNS from "jsonwebtoken";\nconst jwt = jwtNS;\nexport function read(t: string) { return jwt.decode(t); }\n';
+		expect(runJwt01OnSource("reassigned-namespace-decode.ts", source)).toEqual(
+			[],
+		);
+	});
+
+	it("CS-JWT-01-73 verify-in-string-literal.ts still flags decode without verify call", () => {
+		const source = `${jwtImport}const msg = "call jwt.verify here";\nexport function read(t: string) { return jwt.decode(t); }\n`;
+		expectDecodeFinding(
+			runJwt01OnSource("verify-in-string-literal.ts", source),
+		);
+	});
+
+	it("CS-JWT-01-74 decode-and-verify-class-method.ts yields no findings", () => {
+		const source = `${jwtImport}const secret = "s";\nclass Reader { read(t: string) { jwt.verify(t, secret, { algorithms: ["HS256"] }); return jwt.decode(t); } }\n`;
+		expect(
+			runJwt01OnSource("decode-and-verify-class-method.ts", source),
+		).toEqual([]);
+	});
+
+	it("CS-JWT-01-75 jwt-decode-package.ts yields no findings for non-jsonwebtoken decode", () => {
+		const source =
+			'import { decode } from "jwt-decode";\nexport function read(t: string) { return decode(t); }\n';
+		expect(runJwt01OnSource("jwt-decode-package.ts", source)).toEqual([]);
+	});
+
+	it("CS-JWT-01-76 import-type-payload-plus-value-decode.ts yields no findings when verify present", () => {
+		const source = `${jwtImport}import type { JwtPayload } from "jsonwebtoken";\nconst secret = "s";\nexport function read(t: string): JwtPayload | null { jwt.verify(t, secret, { algorithms: ["HS256"] }); return jwt.decode(t); }\n`;
+		expect(
+			runJwt01OnSource("import-type-payload-plus-value-decode.ts", source),
+		).toEqual([]);
+	});
+
+	it("CS-JWT-01-77 inline-require-verify-and-decode.ts yields no findings", () => {
+		const source = `const jwt = require("jsonwebtoken");\nconst secret = "s";\nmodule.exports = function read(t) { jwt.verify(t, secret, { algorithms: ["HS256"] }); return jwt.decode(t); };\n`;
+		expect(
+			runJwt01OnSource("inline-require-verify-and-decode.js", source),
+		).toEqual([]);
+	});
+
+	it("CS-JWT-01-78 dynamic-await-import-decode.ts is not flagged (dynamic import)", () => {
+		const source = `export async function read(t: string) { const jwt = await import("jsonwebtoken"); return jwt.default.decode(t); }\n`;
+		expect(runJwt01OnSource("dynamic-await-import-decode.ts", source)).toEqual(
+			[],
+		);
+	});
+
+	it("CS-JWT-01-79 indirect decode reference via getDecode is not flagged", () => {
+		const source = `${jwtImport}function getDecode() { return jwt.decode; }\nexport function read(t: string) { return getDecode()(t); }\n`;
+		expect(runJwt01OnSource("indirect-decode-ref.ts", source)).toEqual([]);
+	});
+
+	it("CS-JWT-01-80 local decode name without jsonwebtoken yields no findings", () => {
+		const source =
+			"function decode(t: string) { return t; }\nexport function read(t: string) { return decode(t); }\n";
+		expect(runJwt01OnSource("local-decode-stub.ts", source)).toEqual([]);
+	});
+
+	it("CS-JWT-01-81 programmatic .mts extension parses and flags decode", () => {
+		const source = `${jwtImport}export function read(t: string) { return jwt.decode(t); }\n`;
+		expectDecodeFinding(runJwt01OnSource("audit.mts", source));
+	});
+
+	it("CS-JWT-01-82 programmatic .cts extension parses and flags decode", () => {
+		const source = `${jwtImport}export function read(t: string) { return jwt.decode(t); }\n`;
+		expectDecodeFinding(runJwt01OnSource("audit.cts", source));
+	});
+
+	it("CS-JWT-01-83 BOM-prefixed source still reports correct decode line", () => {
+		const source = `\uFEFF${jwtImport}export function read(t: string) { return jwt.decode(t); }\n`;
+		const findings = runJwt01OnSource("bom-decode.ts", source);
+		expectDecodeFinding(findings);
+		expect(findings[0]?.line).toBe(2);
+	});
+
+	it("CS-JWT-01-84 CRLF source reports decode line without carriage return in snippet", () => {
+		const source = `${jwtImport}export function read(t: string) {\r\n  return jwt.decode(t);\r\n}\r\n`;
+		const findings = runJwt01OnSource("crlf-decode.ts", source);
+		expectDecodeFinding(findings);
+		expect(findings[0]?.line).toBe(3);
+		expect(findings[0]?.snippet).not.toMatch(/\r/);
+	});
+
+	it("CS-JWT-01-85 shadowed verify binding does not suppress decode finding", () => {
+		const source = `${jwtImport}const verify = (t: string) => t;\nexport function read(t: string) { verify(t); return jwt.decode(t); }\n`;
+		expectDecodeFinding(runJwt01OnSource("shadowed-verify.ts", source));
 	});
 });

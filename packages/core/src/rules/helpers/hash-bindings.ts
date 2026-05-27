@@ -63,6 +63,43 @@ function isCryptoRequireCall(node: ts.Node): boolean {
 	);
 }
 
+function isPackageRequireCall(node: ts.Node, modules: Set<string>): boolean {
+	if (!ts.isCallExpression(node)) {
+		return false;
+	}
+
+	if (!ts.isIdentifier(node.expression) || node.expression.text !== "require") {
+		return false;
+	}
+
+	const [specifier] = node.arguments;
+	return (
+		specifier !== undefined &&
+		ts.isStringLiteral(specifier) &&
+		modules.has(specifier.text)
+	);
+}
+
+function trackPackageFromRequire(
+	name: ts.BindingName,
+	initializer: ts.Expression,
+	bindings: HashBindings,
+	modules: Set<string>,
+	target: "md5" | "sha1",
+): void {
+	if (!isPackageRequireCall(initializer, modules)) {
+		return;
+	}
+
+	if (ts.isIdentifier(name)) {
+		if (target === "md5") {
+			bindings.md5PackageIdentifiers.add(name.text);
+		} else {
+			bindings.sha1PackageIdentifiers.add(name.text);
+		}
+	}
+}
+
 function trackCryptoHashFromRequire(
 	name: ts.BindingName,
 	initializer: ts.Expression,
@@ -163,13 +200,29 @@ function handleImportDeclaration(
 		return;
 	}
 
-	if (isMd5PackageModule(moduleName) && importClause.name) {
-		bindings.md5PackageIdentifiers.add(importClause.name.text);
+	if (isMd5PackageModule(moduleName)) {
+		if (importClause.name) {
+			bindings.md5PackageIdentifiers.add(importClause.name.text);
+		}
+		if (
+			importClause.namedBindings &&
+			ts.isNamespaceImport(importClause.namedBindings)
+		) {
+			bindings.md5PackageIdentifiers.add(importClause.namedBindings.name.text);
+		}
 		return;
 	}
 
-	if (isSha1PackageModule(moduleName) && importClause.name) {
-		bindings.sha1PackageIdentifiers.add(importClause.name.text);
+	if (isSha1PackageModule(moduleName)) {
+		if (importClause.name) {
+			bindings.sha1PackageIdentifiers.add(importClause.name.text);
+		}
+		if (
+			importClause.namedBindings &&
+			ts.isNamespaceImport(importClause.namedBindings)
+		) {
+			bindings.sha1PackageIdentifiers.add(importClause.namedBindings.name.text);
+		}
 	}
 }
 
@@ -188,6 +241,20 @@ export function getHashBindings(sourceFile: ts.SourceFile): HashBindings {
 						declaration.name,
 						declaration.initializer,
 						bindings,
+					);
+					trackPackageFromRequire(
+						declaration.name,
+						declaration.initializer,
+						bindings,
+						MD5_PACKAGE_MODULES,
+						"md5",
+					);
+					trackPackageFromRequire(
+						declaration.name,
+						declaration.initializer,
+						bindings,
+						SHA1_PACKAGE_MODULES,
+						"sha1",
 					);
 				}
 			}

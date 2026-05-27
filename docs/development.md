@@ -1,10 +1,10 @@
 # Development
 
-Guide for working on CipherSins locally. Product spec: [`proposal.MD`](./proposal.MD).
+Guide for working on CipherSins locally. Product spec: [`proposal.md`](./proposal.md).
 
 ## Prerequisites
 
-- Node.js **18+**
+- Node.js **20+**
 - [pnpm](https://pnpm.io/) **9.15.9** for install (see root `packageManager`), or use **`npm install`** after clone
 
 ## First-time setup
@@ -18,15 +18,15 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 
 ## Common commands
 
-| Command                             | Purpose                                                                                                   |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                                                             |
-| `npm run build`                     | Build `@ciphersins/core` and `ciphersins` CLI (no nested pnpm)                                            |
-| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-REP, CS-RULE-CFG, CS-SUP (946 at v0.9.1) |
-| `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                                                              |
-| `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                                          |
-| `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                                                              |
-| `npm run format:fix`                | Apply Prettier (tabs)                                                                                     |
+| Command                             | Purpose                                                                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                                                                            |
+| `npm run build`                     | Build `@ciphersins/core` and `ciphersins` CLI (no nested pnpm)                                                           |
+| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**1164** at v1.0.0) |
+| `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                                                                             |
+| `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                                                         |
+| `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                                                                             |
+| `npm run format:fix`                | Apply Prettier (tabs)                                                                                                    |
 
 \*Root scripts invoke **`npm run`** internally so **`npm run build`** works even when Corepack cannot launch nested **`pnpm`**.
 
@@ -34,7 +34,7 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 
 ```text
 packages/core   @ciphersins/core — scan engine, rule registry, TS parser
-packages/cli    ciphersins — CLI binary (future npm publish target at v1.0.0)
+packages/cli    ciphersins — CLI binary (npm package `ciphersins`)
 fixtures/       Rule bad/good samples (e.g. fixtures/cs-jwt-01/)
 test/fixtures/  Internal harness fixtures only
 docs/rules/     Per-rule documentation and index
@@ -49,7 +49,7 @@ When no path is passed:
 2. Include = `**/*.{ts,tsx,js,jsx}` and uppercase variants
 3. Exclude = `**/node_modules/**`, `**/dist/**`, `**/*.test.*`, `**/*.spec.*`
 
-Config file parsing is **not implemented yet**. See [`ciphersins.config.example.json`](./ciphersins.config.example.json) for the intended schema.
+Config file parsing is **implemented** — see [`ciphersins.config.example.json`](./ciphersins.config.example.json) and [`cli.md`](./cli.md).
 
 ## Adding a rule
 
@@ -69,9 +69,9 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.9.1` = full config/suppressions; `0.9.0` = CLI JSON/SARIF/`--fail-on`; `0.8.0` = CS-JWT-03 + CS-JWT-04, **8/8 MVP**; `0.7.0` = CS-JWT-02; `0.6.0` = CS-HASH-02; `0.5.0` = CS-HASH-01; `0.4.2` = CI bin link fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
-- **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
+- Repo version **1.0.0** — first stable release with npm publish workflow.
+- Prior phases: `0.9.1` = full config/suppressions; `0.9.0` = CLI JSON/SARIF/`--fail-on`; `0.8.0` = CS-JWT-03 + CS-JWT-04, **8/8 MVP**; earlier minors per [CHANGELOG](../CHANGELOG.md).
 
 ## CI
 
-GitHub Actions runs `pnpm verify` on Node 18, 20, and 22 for every push/PR to `main`.
+GitHub Actions runs `pnpm verify` on Node 20, 22, and 24 for every push/PR to `main`.

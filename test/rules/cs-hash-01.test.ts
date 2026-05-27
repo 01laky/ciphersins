@@ -92,8 +92,8 @@ describe("CS-HASH-01 directory scans", () => {
 	it("CS-HASH-01-04 flags bad fixtures with high severity", async () => {
 		const result = await scan({ paths: [hashBadDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(27);
-		expect(result.scannedFiles).toHaveLength(26);
+		expect(result.findings).toHaveLength(32);
+		expect(result.scannedFiles).toHaveLength(31);
 		expect(result.findings.every((f) => f.ruleId === "CS-HASH-01")).toBe(true);
 		expect(result.findings.every((f) => f.severity === "high")).toBe(true);
 		expect(result.findings.every((f) => f.message === CS_HASH_01_MESSAGE)).toBe(
@@ -625,8 +625,8 @@ describe("CS-HASH-01 extended edge cases", () => {
 		const result = await scan({ paths: [hashBadDir], cwd: rootDir });
 		const hashFindings = filterByRule(result.findings, "CS-HASH-01");
 
-		expect(hashFindings).toHaveLength(27);
-		expect(result.scannedFiles).toHaveLength(26);
+		expect(hashFindings).toHaveLength(32);
+		expect(result.scannedFiles).toHaveLength(31);
 	});
 
 	it("CS-HASH-01-58 create-hash-sha-1-hyphen finding snippet contains sha-1", async () => {
@@ -652,7 +652,7 @@ describe("CS-HASH-01 extended edge cases", () => {
 		const signatures = hashFindings.map(findingSignature);
 
 		expect(new Set(signatures).size).toBe(signatures.length);
-		expect(signatures).toHaveLength(27);
+		expect(signatures).toHaveLength(32);
 	});
 
 	it("CS-HASH-01-61 multiple-weak-hashes.ts yields two findings on distinct lines", async () => {
@@ -671,7 +671,7 @@ describe("CS-HASH-01 extended edge cases", () => {
 		const hashFindings = filterByRule(result.findings, "CS-HASH-01");
 
 		expect(result.summary.high).toBe(hashFindings.length);
-		expect(result.summary.high).toBe(27);
+		expect(result.summary.high).toBe(32);
 	});
 
 	it("CS-HASH-01-63 CLI bad scan output matches create-hash-md5-password.ts line format", () => {
@@ -684,5 +684,61 @@ describe("CS-HASH-01 extended edge cases", () => {
 		expect(result.stdout).toMatch(
 			/fixtures\/cs-hash-01\/bad\/create-hash-md5-password\.ts:\d+:\d+\s+CS-HASH-01\s+high/,
 		);
+	});
+});
+
+describe("CS-HASH-01 audit section 9.7", () => {
+	it("CS-HASH-01-64 require-crypto-md5.js flags require createHash md5", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "require-crypto-md5.js")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
+	});
+
+	it("CS-HASH-01-65 require-sha1-password.ts flags require createHash sha1", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "require-sha1-password.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
+	});
+
+	it("CS-HASH-01-66 namespace-import-md5-password.ts flags namespace crypto createHash", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "namespace-import-md5-password.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
+	});
+
+	it("CS-HASH-01-67 create-hash-md4-password.ts flags md4 in password context", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "create-hash-md4-password.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
+	});
+
+	it("CS-HASH-01-68 create-hash-ripemd160-password.ts flags ripemd160", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "create-hash-ripemd160-password.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
+	});
+
+	it("CS-HASH-01-69 hash-credential-md5.ts flags credential md5 hash", async () => {
+		const result = await scan({
+			paths: [fixturePath("bad", "hash-credential-md5.ts")],
+			cwd: rootDir,
+		});
+
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
 	});
 });

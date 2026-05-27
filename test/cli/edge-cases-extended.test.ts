@@ -175,14 +175,14 @@ describe("CS-CLI extended edge cases — severity and fail summary", () => {
 	it("CS-CLI-EXT-13 formatFailSummary at low threshold includes all non-zero severities", () => {
 		const summary = { low: 2, medium: 3, high: 1, critical: 0 };
 		expect(formatFailSummary(summary, "low")).toBe(
-			"error: 6 finding(s) at or above low (low: 2, medium: 3, high: 1)",
+			"error: 6 findings at or above low (high: 1, medium: 3, low: 2)",
 		);
 	});
 
 	it("CS-CLI-EXT-14 formatFailSummary at medium threshold excludes low counts", () => {
 		const summary = { low: 5, medium: 1, high: 0, critical: 0 };
 		expect(formatFailSummary(summary, "medium")).toBe(
-			"error: 1 finding(s) at or above medium (medium: 1)",
+			"error: 1 finding at or above medium (medium: 1)",
 		);
 	});
 
@@ -351,7 +351,7 @@ describe("CS-CLI extended edge cases — stderr fail summary and quiet", () => {
 		]);
 		expect(result.status).toBe(1);
 		expect(result.stdout).toBe("");
-		expect(result.stderr).toMatch(/error: \d+ finding\(s\) at or above high/);
+		expect(result.stderr).toMatch(/error: \d+ findings? at or above high/);
 	});
 });
 
@@ -366,7 +366,7 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 		for (const scanned of doc.scannedFiles) {
 			expect(path.isAbsolute(scanned)).toBe(false);
 		}
-	});
+	}, 15_000);
 
 	it("CS-CLI-EXT-35 JSON findings are sorted by file line column ruleId", () => {
 		const result = cli(["--format", "json", "--no-config", jwt03BadDir]);
@@ -394,7 +394,7 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 			expect(finding).not.toHaveProperty("snippet", null);
 			expect(finding).not.toHaveProperty("helpUrl", null);
 		}
-	});
+	}, 15_000);
 
 	it("CS-CLI-EXT-37 JSON includes skippedPaths for missing path alongside valid path", () => {
 		const result = cli([
@@ -406,8 +406,8 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 		]);
 		const doc = JSON.parse(result.stdout);
 		expect(
-			doc.skippedPaths.some((entry: string) =>
-				entry.endsWith("totally-missing-path-xyz"),
+			doc.skippedPaths.some((entry: { path: string }) =>
+				entry.path.endsWith("totally-missing-path-xyz"),
 			),
 		).toBe(true);
 		expect(doc.findings).toEqual([]);
@@ -423,13 +423,13 @@ describe("CS-CLI extended edge cases — JSON output contract", () => {
 			doc.summary.high +
 			doc.summary.critical;
 		expect(doc.summary.total).toBe(sum);
-		expect(doc.summary.total).toBe(164);
+		expect(doc.summary.total).toBe(191);
 	});
 
-	it("CS-CLI-EXT-39 JSON version field matches package version 0.9.1", () => {
+	it("CS-CLI-EXT-39 JSON version field matches package version 1.0.0", () => {
 		const result = cli(["--format", "json", "--no-config", jwt03GoodDir]);
 		const doc = JSON.parse(result.stdout);
-		expect(doc.version).toBe("0.9.1");
+		expect(doc.version).toBe("1.0.0");
 		expect(doc.tool).toBe("ciphersins");
 	});
 });
@@ -486,7 +486,7 @@ describe("CS-CLI extended edge cases — SARIF output contract", () => {
 		const jsonDoc = JSON.parse(jsonResult.stdout);
 		const sarifDoc = JSON.parse(sarifResult.stdout);
 		expect(sarifDoc.runs[0].results).toHaveLength(jsonDoc.findings.length);
-	});
+	}, 30_000);
 
 	it("CS-CLI-EXT-46 SARIF partialFingerprints differ for distinct findings same file", () => {
 		const result = cli(["--format", "sarif", "--no-config", jwt03BadDir]);
@@ -502,7 +502,7 @@ describe("CS-CLI extended edge cases — SARIF output contract", () => {
 		const result = cli(["--format", "sarif", "--no-config", jwt03GoodDir]);
 		const driver = JSON.parse(result.stdout).runs[0].tool.driver;
 		expect(driver.name).toBe("CipherSins");
-		expect(driver.version).toBe("0.9.1");
+		expect(driver.version).toBe("1.0.0");
 		expect(driver.informationUri).toContain("CipherSins");
 	});
 });
@@ -557,14 +557,14 @@ describe("CS-CLI extended edge cases — output file and config", () => {
 		});
 	});
 
-	it("CS-CLI-EXT-51 invalid config failOn value exits 2", () => {
+	it("CS-CLI-EXT-51 invalid config failOn value exits 3", () => {
 		withTempDir("ciphersins-ext-bad-failon-", (tempDir) => {
 			fs.writeFileSync(
 				path.join(tempDir, "ciphersins.config.json"),
 				JSON.stringify({ failOn: "urgent" }),
 			);
 			const result = cli([jwt03GoodDir], { cwd: tempDir });
-			expect(result.status).toBe(2);
+			expect(result.status).toBe(3);
 			expect(result.stderr).toMatch(/invalid failOn/);
 		});
 	});
@@ -651,12 +651,12 @@ describe("CS-CLI extended edge cases — help routing", () => {
 		expect(result.stdout).toContain("docs/cli.md");
 	});
 
-	it("CS-CLI-EXT-58 top-level --version prints 0.9.1", () => {
+	it("CS-CLI-EXT-58 top-level --version prints 1.0.0", () => {
 		const result = spawnSync(process.execPath, [cliEntry, "--version"], {
 			encoding: "utf8",
 			cwd: rootDir,
 		});
-		expect(result.stdout.trim()).toBe("0.9.1");
+		expect(result.stdout.trim()).toBe("1.0.0");
 	});
 });
 

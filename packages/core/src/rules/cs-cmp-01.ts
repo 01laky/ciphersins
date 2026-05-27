@@ -9,7 +9,7 @@ import {
 } from "./helpers/crypto-auth-imports.js";
 
 const MESSAGE =
-	"Timing-unsafe equality compare (=== or ==) on auth-related value; use crypto.timingSafeEqual or a constant-time compare.";
+	"Timing-unsafe equality compare (===, ==, !==, or !=) on auth-related value; use crypto.timingSafeEqual or a constant-time compare.";
 const HELP_URL =
 	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-CMP-01.md";
 
@@ -28,6 +28,10 @@ export const csCmp01Rule: Rule = {
 		for (const compare of collectEqualityBinaryExpressions(
 			context.sourceFile,
 		)) {
+			if (isNullishLiteral(compare.left) || isNullishLiteral(compare.right)) {
+				continue;
+			}
+
 			if (operandIsTimingSafeEqualCall(compare.left, cryptoImports)) {
 				continue;
 			}
@@ -65,4 +69,14 @@ function operandIsTimingSafeEqualCall(
 	return (
 		ts.isCallExpression(node) && isTimingSafeEqualCall(node, cryptoImports)
 	);
+}
+
+function isNullishLiteral(node: ts.Expression): boolean {
+	if (node.kind === ts.SyntaxKind.NullKeyword) {
+		return true;
+	}
+	if (node.kind === ts.SyntaxKind.UndefinedKeyword) {
+		return true;
+	}
+	return ts.isIdentifier(node) && node.text === "undefined";
 }

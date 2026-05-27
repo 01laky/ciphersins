@@ -8,14 +8,17 @@ import {
 	formatRelativePath,
 	getLineSnippet,
 	getPositionForLineColumn,
-	isScannableExtension,
-	listDirectoryEntries,
 	parseSourceFile,
 	ParseSourceFileError,
-	readPathKind,
 	resolveFiles,
 	scan,
 } from "@ciphersins/core";
+import {
+	isScannableExtension,
+	listDirectoryEntries,
+	readPathKind,
+} from "../packages/core/src/resolve-files.js";
+import { skippedPath } from "./helpers/skipped-path.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "..");
@@ -88,7 +91,9 @@ describe("CS-S24 mixed scan paths", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.skippedPaths).toEqual([path.resolve(missing)]);
+		expect(result.skippedPaths).toEqual([
+			skippedPath(path.resolve(missing), "missing"),
+		]);
 		expect(result.scannedFiles.length).toBeGreaterThan(0);
 		expect(result.scannedFiles).toContain(path.resolve(multilineFixture));
 	});
@@ -280,7 +285,7 @@ describe("CS-S36 syntax-broken source", () => {
 });
 
 describe("CS-S37 multiple parse failures", () => {
-	it("CS-S37 aggregates errors when multiple unreadable files are scanned", async () => {
+	it("CS-S37 collects parse errors when multiple unreadable files are scanned", async () => {
 		await withTempDir("ciphersins-multi-fail-", async (tempDir) => {
 			const first = path.join(tempDir, "first.ts");
 			const second = path.join(tempDir, "second.ts");
@@ -291,17 +296,9 @@ describe("CS-S37 multiple parse failures", () => {
 			}
 
 			try {
-				let caught: unknown;
-				try {
-					await scan({ paths: [first, second], cwd: rootDir });
-				} catch (error) {
-					caught = error;
-				}
-
-				expect(caught).toBeInstanceOf(AggregateError);
-				const aggregate = caught as AggregateError;
-				expect(aggregate.message).toMatch(/Failed to parse 2 file/);
-				expect(aggregate.errors).toHaveLength(2);
+				const result = await scan({ paths: [first, second], cwd: rootDir });
+				expect(result.parseErrors).toHaveLength(2);
+				expect(result.findings).toEqual([]);
 			} finally {
 				for (const file of [first, second]) {
 					fs.chmodSync(file, 0o644);
@@ -422,7 +419,7 @@ describe("CS-S43 CLI parse failure exit code", () => {
 				);
 
 				expect(result.status).toBe(2);
-				expect(result.stderr).toMatch(/^error: /);
+				expect(result.stderr).toContain("warning:");
 				expect(result.stderr).toContain("Failed to parse");
 			} finally {
 				fs.chmodSync(unreadable, 0o644);
@@ -450,6 +447,9 @@ describe("CS-S44 runScanCommand findings output", () => {
 			summary: { low: 0, medium: 0, high: 1, critical: 0 },
 			scannedFiles: [path.resolve("src/auth.ts")],
 			skippedPaths: [],
+			parseErrors: [],
+			ruleErrors: [],
+			warnings: [],
 		});
 
 		vi.doMock("@ciphersins/core", async (importOriginal) => {
@@ -479,7 +479,7 @@ describe("CS-S44 runScanCommand findings output", () => {
 			await import("../packages/cli/src/commands/scan.js");
 
 		try {
-			const exitCode = await runScanCommandMocked(["./src"]);
+			const exitCode = await runScanCommandMocked(["--no-config", "./src"]);
 			expect(exitCode).toBe(0);
 			expect(stdoutWrites.join("")).toContain("CS-TEST-OUT");
 			expect(stdoutWrites.join("")).toContain("test finding for CLI output");
@@ -495,12 +495,15 @@ describe("CS-S44 runScanCommand findings output", () => {
 	});
 });
 
-describe("CS-S45 resolveFiles file path bypasses globs", () => {
-	it("CS-S45 scans a markdown file when passed explicitly as a file path", async () => {
+describe("CS-S45 resolveFiles skips non-scannable explicit paths", () => {
+	it("CS-S45 skips a markdown file when passed explicitly as a file path", async () => {
 		const markdown = path.join(edgeDir, "README.md");
 		const result = await resolveFiles({ paths: [markdown], cwd: rootDir });
 
-		expect(result.files).toEqual([path.resolve(markdown)]);
+		expect(result.files).toEqual([]);
+		expect(result.skippedPaths).toEqual([
+			skippedPath(path.resolve(markdown), "non-scannable-extension"),
+		]);
 	});
 });
 

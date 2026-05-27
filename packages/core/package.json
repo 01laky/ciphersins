@@ -1,0 +1,37 @@
+{
+	"name": "@ciphersins/core",
+	"version": "0.2.1",
+	"private": true,
+	"description": "CipherSins static analysis engine for crypto API misuse in TypeScript/JavaScript",
+	"license": "MIT",
+	"type": "module",
+	"sideEffects": false,
+	"engines": {
+		"node": ">=18"
+	},
+	"files": [
+		"dist"
+	],
+	"main": "./dist/index.cjs",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.cjs"
+		}
+	},
+	"scripts": {
+		"build": "tsup",
+		"typecheck": "tsc --noEmit -p tsconfig.json"
+	},
+	"dependencies": {
+		"tinyglobby": "^0.2.14",
+		"typescript": "^5.8.3"
+	},
+	"devDependencies": {
+		"@types/node": "^22.15.29",
+		"tsup": "^8.5.0"
+	}
+}

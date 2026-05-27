@@ -6,6 +6,8 @@ Thank you for your interest in contributing.
 
 Read [`docs/proposal.MD`](./docs/proposal.MD) before making changes. It defines scope, MVP rules, and non-goals.
 
+For local setup and commands, see [`docs/development.md`](./docs/development.md).
+
 ## Requirements
 
 - **Long, descriptive commit messages** with subject + body explaining what, why, and how tested.

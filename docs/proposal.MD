@@ -2,11 +2,11 @@
 
 ## What It Is (One-Liner)
 
-**CipherSins** is a standalone CLI scanner for **crypto API misuse** in application code (TypeScript/JavaScript). Metaphor: *"gitleaks for bad crypto API usage"* — not for leaked secrets in strings, but for **footguns** in code (JWT, timing compare, weak hash, RNG, symmetric crypto).
+**CipherSins** is a standalone CLI scanner for **crypto API misuse** in application code (TypeScript/JavaScript). Metaphor: _"gitleaks for bad crypto API usage"_ — not for leaked secrets in strings, but for **footguns** in code (JWT, timing compare, weak hash, RNG, symmetric crypto).
 
 **npm package name:** `ciphersins`  
 **CLI binary / command:** `ciphersins` → `npx ciphersins scan`  
-**Tagline:** *Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.*
+**Tagline:** _Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code._
 
 ---
 
@@ -37,12 +37,12 @@ ESLint plugins exist (`eslint-plugin-jwt`, `eslint-plugin-node-security`), but t
 
 ## Differentiation from Competition
 
-| Tool | What it does | Gap |
-|------|--------------|-----|
-| gitleaks / trufflehog | secrets in files | not API misuse patterns |
-| npm audit | dependencies/CVEs | not app code |
-| eslint-plugin-jwt | JWT rules | requires ESLint setup |
-| crypto-guard-cli (npm) | Solidity AI audit | different domain |
+| Tool                   | What it does      | Gap                     |
+| ---------------------- | ----------------- | ----------------------- |
+| gitleaks / trufflehog  | secrets in files  | not API misuse patterns |
+| npm audit              | dependencies/CVEs | not app code            |
+| eslint-plugin-jwt      | JWT rules         | requires ESLint setup   |
+| crypto-guard-cli (npm) | Solidity AI audit | different domain        |
 
 **CipherSins positioning:** not ledger-first — **rule-first static analysis CLI** for app crypto footguns, CI-native, SARIF for GitHub/GitLab.
 
@@ -54,37 +54,37 @@ Rules use stable IDs: `CS-<CATEGORY>-<NUMBER>`
 
 ### JWT
 
-| ID | Severity | Description | Detection (approximate) |
-|----|----------|-------------|-------------------------|
-| CS-JWT-01 | high | Decode without verify | `jwt.decode(` without subsequent `jwt.verify` in the same flow / file pattern |
-| CS-JWT-02 | high | Verify without `algorithms` | `jwt.verify(token, secret)` without a 3rd argument or without `algorithms: [...]` |
-| CS-JWT-03 | critical | Algorithm none / bypass | `algorithms: ['none']`, `alg: 'none'`, similar |
-| CS-JWT-04 | medium | Missing exp validation | verify without `exp` check / `ignoreExpiration: true` without comment/suppression |
+| ID        | Severity | Description                 | Detection (approximate)                                                           |
+| --------- | -------- | --------------------------- | --------------------------------------------------------------------------------- |
+| CS-JWT-01 | high     | Decode without verify       | `jwt.decode(` without subsequent `jwt.verify` in the same flow / file pattern     |
+| CS-JWT-02 | high     | Verify without `algorithms` | `jwt.verify(token, secret)` without a 3rd argument or without `algorithms: [...]` |
+| CS-JWT-03 | critical | Algorithm none / bypass     | `algorithms: ['none']`, `alg: 'none'`, similar                                    |
+| CS-JWT-04 | medium   | Missing exp validation      | verify without `exp` check / `ignoreExpiration: true` without comment/suppression |
 
 ### Comparison / Timing
 
-| ID | Severity | Description |
-|----|----------|-------------|
-| CS-CMP-01 | high | Timing-unsafe compare on auth material | `===` / `==` where left/right side suggests token/secret/hash/password (heuristic + AST) |
+| ID        | Severity | Description                            |
+| --------- | -------- | -------------------------------------- | ---------------------------------------------------------------------------------------- |
+| CS-CMP-01 | high     | Timing-unsafe compare on auth material | `===` / `==` where left/right side suggests token/secret/hash/password (heuristic + AST) |
 
 ### RNG / Tokens
 
-| ID | Severity | Description |
-|----|----------|-------------|
-| CS-RNG-01 | high | `Math.random()` in auth context | call within block with token/session/otp/password naming |
+| ID        | Severity | Description                     |
+| --------- | -------- | ------------------------------- | -------------------------------------------------------- |
+| CS-RNG-01 | high     | `Math.random()` in auth context | call within block with token/session/otp/password naming |
 
 ### Hash / Password
 
-| ID | Severity | Description |
-|----|----------|-------------|
-| CS-HASH-01 | high | MD5 / SHA1 for password | `createHash('md5')`, `md5(`, similar in password flow |
-| CS-HASH-02 | medium | Weak bcrypt cost | `bcrypt.hash` / `hashSync` with cost < 10 |
+| ID         | Severity | Description             |
+| ---------- | -------- | ----------------------- | ----------------------------------------------------- |
+| CS-HASH-01 | high     | MD5 / SHA1 for password | `createHash('md5')`, `md5(`, similar in password flow |
+| CS-HASH-02 | medium   | Weak bcrypt cost        | `bcrypt.hash` / `hashSync` with cost < 10             |
 
 ### Symmetric Crypto (optional in v1 if time allows)
 
-| ID | Severity | Description |
-|----|----------|-------------|
-| CS-ENC-01 | medium | Hardcoded key / IV in code | literal key at `createCipheriv` |
+| ID        | Severity | Description                |
+| --------- | -------- | -------------------------- | ------------------------------- |
+| CS-ENC-01 | medium   | Hardcoded key / IV in code | literal key at `createCipheriv` |
 
 ---
 
@@ -108,20 +108,20 @@ ciphersins/
 
   ```ts
   interface Rule {
-    id: string;           // "CS-JWT-01"
-    title: string;
-    severity: "low" | "medium" | "high" | "critical";
-    run(context: RuleContext): Finding[];
+  	id: string; // "CS-JWT-01"
+  	title: string;
+  	severity: "low" | "medium" | "high" | "critical";
+  	run(context: RuleContext): Finding[];
   }
 
   interface Finding {
-    ruleId: string;
-    message: string;
-    file: string;
-    line: number;
-    column: number;
-    snippet?: string;
-    helpUrl?: string;
+  	ruleId: string;
+  	message: string;
+  	file: string;
+  	line: number;
+  	column: number;
+  	snippet?: string;
+  	helpUrl?: string;
   }
   ```
 
@@ -154,29 +154,29 @@ ciphersins scan --only CS-JWT-01,CS-CMP-01
 
 ### Flags (MVP)
 
-| Flag | Description |
-|------|-------------|
-| `[path]` | default `.` or `./src` |
+| Flag                | Description                                         |
+| ------------------- | --------------------------------------------------- |
+| `[path]`            | default `./src` if it exists, otherwise `.`         |
 | `--fail-on <level>` | `low` \| `medium` \| `high` \| `critical` — CI fail |
-| `--format <fmt>` | `pretty` (default), `json`, `sarif` |
-| `--output <file>` | write SARIF/JSON to file |
-| `--config <path>` | `ciphersins.config.json` |
-| `--only <ids>` | comma-separated rule IDs |
-| `--ignore <ids>` | disabled rules |
-| `--quiet` | exit code only |
+| `--format <fmt>`    | `pretty` (default), `json`, `sarif`                 |
+| `--output <file>`   | write SARIF/JSON to file                            |
+| `--config <path>`   | `ciphersins.config.json`                            |
+| `--only <ids>`      | comma-separated rule IDs                            |
+| `--ignore <ids>`    | disabled rules                                      |
+| `--quiet`           | exit code only                                      |
 
 ### `ciphersins.config.json` (example)
 
 ```json
 {
-  "include": ["src/**/*.{ts,tsx,js,jsx}"],
-  "exclude": ["**/*.test.ts", "**/dist/**", "**/node_modules/**"],
-  "failOn": "high",
-  "rules": {
-    "CS-JWT-02": "error",
-    "CS-HASH-02": "warn"
-  },
-  "ignore": []
+	"include": ["src/**/*.{ts,tsx,js,jsx}"],
+	"exclude": ["**/*.test.ts", "**/dist/**", "**/node_modules/**"],
+	"failOn": "high",
+	"rules": {
+		"CS-JWT-02": "error",
+		"CS-HASH-02": "warn"
+	},
+	"ignore": []
 }
 ```
 
@@ -224,29 +224,29 @@ MVP can be documentation only + link to `crypto.timingSafeEqual`.
 
 ## Roadmap After MVP
 
-| Version | Scope |
-|---------|-------|
-| v1.0 | 8 rules, pretty + json + sarif, config |
-| v1.1 | GitHub Action `ciphersins-action` |
-| v1.2 | more rules (AES-GCM misuse, createDecipher deprecated, pbkdf2 iterations) |
-| v2 | `--baseline` (new findings only), HTML report |
+| Version | Scope                                                                     |
+| ------- | ------------------------------------------------------------------------- |
+| v1.0    | 8 rules, pretty + json + sarif, config, **first npm publish**             |
+| v1.1    | GitHub Action `ciphersins-action`                                         |
+| v1.2    | more rules (AES-GCM misuse, createDecipher deprecated, pbkdf2 iterations) |
+| v2      | `--baseline` (new findings only), HTML report                             |
 
 ---
 
 ## Tech Stack (Recommended)
 
-| Area | Choice |
-|------|--------|
-| Language | TypeScript |
-| Build | tsup or unbuild for core + cli |
-| Test | vitest + fixtures snapshot |
-| Publish | npm package `ciphersins`, `files: ["dist"]`, `bin: { "ciphersins": "dist/cli.js" }` |
-| License | MIT |
-| Node | >= 18 |
+| Area     | Choice                                                                              |
+| -------- | ----------------------------------------------------------------------------------- |
+| Language | TypeScript                                                                          |
+| Build    | tsup or unbuild for core + cli                                                      |
+| Test     | vitest + fixtures snapshot                                                          |
+| Publish  | npm package `ciphersins` at **v1.0.0 only** — no npm publish before MVP is complete |
+| License  | MIT                                                                                 |
+| Node     | >= 18                                                                               |
 
 ---
 
-## README Structure (First Publish 0.0.1)
+## README Structure (npm v1.0.0)
 
 1. Logo / name CipherSins
 2. One-liner + terminal screenshot
@@ -266,7 +266,130 @@ MVP can be documentation only + link to `crypto.timingSafeEqual`.
 4. CLI `scan` + pretty output + exit codes
 5. Remaining JWT/HASH rules
 6. JSON + SARIF + config file
-7. Publish 0.0.1 to npm
+7. **npm publish `1.0.0`** when all MVP success criteria pass — no publish before that
+
+Implementation prompts live in [`prompts/`](../prompts/) (one agent spec per phase).
+
+---
+
+## Recommended Decisions (Implementation)
+
+Open questions from the proposal review, with recommended defaults for v1.0 implementation.
+
+### Default scan path
+
+| Option         | Recommendation                                                                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.` vs `./src` | **Default `./src`** when the directory exists; otherwise fall back to `.`                                                                                |
+| Rationale      | Most Node/TS apps keep source under `src/`; scanning `.` by default pulls in config, scripts, and fixtures noise. Config `include` overrides either way. |
+
+### AST parser
+
+| Option                                                 | Recommendation                                                                                                                                                                                     |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TypeScript compiler API vs `@typescript-eslint/parser` | **TypeScript compiler API** (`typescript` package)                                                                                                                                                 |
+| Rationale                                              | Standalone CLI with no ESLint coupling; stable line/column positions; parses `.ts`, `.tsx`, `.js`, `.jsx` with one code path. ESLint parser adds peer deps and blurs the “not ESLint” positioning. |
+
+### CS-JWT-01 — “same auth flow” scope
+
+| Phase     | Recommendation                                                                                                                                                                        |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0      | **Same file only** — flag `jwt.decode()` when no `jwt.verify()` appears anywhere in that file (after decode in source order is a stretch goal; same-file presence is enough for MVP). |
+| v1.1+     | Optional **same function / call graph** heuristic for fewer false negatives across helpers.                                                                                           |
+| Rationale | Cross-file flow analysis is expensive and fragile; same-file catches the common copy-paste mistake without building a full call graph.                                                |
+
+### CS-JWT-04 — expiration validation
+
+| Phase     | Recommendation                                                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0      | Flag `ignoreExpiration: true` in `jwt.verify` options; flag verify calls with no evidence of `exp` handling in the same function (best-effort AST check). |
+| v1.1+     | Tighter coupling if needed after fixture feedback.                                                                                                        |
+| Rationale | Full “exp must be checked” proof is hard statically; start with obvious misconfigurations.                                                                |
+
+### CS-CMP-01 — false positive control
+
+| Recommendation                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Require **auth-material naming** on at least one operand (`token`, `secret`, `password`, `hash`, `otp`, `signature`, …) **and** a crypto/auth import in the file (`jsonwebtoken`, `crypto`, `bcrypt`, …). |
+| Exclude comparisons inside **test files** via default config exclude `**/*.test.*`, `**/*.spec.*`.                                                                                                        |
+| Rationale                                                                                                                                                                                                 | Pure string equality in UI code should not match; auth-adjacent naming + import reduces noise. |
+
+### CS-ENC-01 — hardcoded key / IV
+
+| Recommendation                                                                                                                  |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Defer to v1.0.x** (after JWT, CMP, RNG, HASH rules ship). Mark optional in MVP table; not required for npm **1.0.0** publish. |
+| Rationale                                                                                                                       | Lower frequency than JWT mistakes; same AST infra, easy add-on once core pipeline exists. |
+
+### Versioning — repo vs npm
+
+| Artifact  | Recommendation                                                                                                                                   |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Git repo  | **0.1.0** — initial scaffold and docs (current). Bump **PATCH/MINOR** in-repo after each completed phase (`0.2.0`, `0.3.0`, …) — no npm publish. |
+| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.                      |
+| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                                  |
+
+### npm publish policy
+
+| Rule          | Detail                                                                               |
+| ------------- | ------------------------------------------------------------------------------------ |
+| Before v1.0.0 | **Do not publish** to npm — local `pnpm` / workspace linking only.                   |
+| At v1.0.0     | Publish `ciphersins` with `files: ["dist"]`, `bin: { "ciphersins": "dist/cli.js" }`. |
+| After v1.0.0  | Normal semver releases (1.0.1 fixes, 1.1.0 GitHub Action, etc.).                     |
+
+### Monorepo layout
+
+| Recommendation                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **pnpm workspaces**: root `package.json` + `packages/core` + `packages/cli`.                                                                                                                              |
+| **`cli` depends on `core`**; published npm package is **`ciphersins`** from `packages/cli` (or root re-export — prefer single publish entry from `packages/cli` with `core` bundled or as workspace dep). |
+| **`fixtures/` at repo root** — shared by core tests and docs examples.                                                                                                                                    |
+| Rationale                                                                                                                                                                                                 | Matches proposal; keeps engine testable without CLI; one binary on npm. |
+
+### Rule help URLs
+
+| Recommendation                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `helpUrl`: `https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md` until `ciphersins.dev` exists. |
+| Add one markdown doc per rule under `docs/rules/` when implementing each rule.                                     |
+| Rationale                                                                                                          | Pretty output links should work on day one without a custom domain. |
+
+### Suppressions (MVP)
+
+| Recommendation                                                                                                                                |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Ship **`// ciphersins-ignore-next-line CS-JWT-01`** in v1.0 if trivial to parse; otherwise document in config schema and implement in v1.0.1. |
+| Never suppress **critical** findings via comment without an explicit `--allow-critical-ignore` flag (optional, default off).                  |
+| Rationale                                                                                                                                     | Teams need an escape hatch for false positives; critical bypass should be deliberate. |
+
+### CI defaults (document in README)
+
+```yaml
+- run: pnpm exec ciphersins scan --fail-on high --format sarif --output ciphersins.sarif
+```
+
+| Default            | Value    |
+| ------------------ | -------- |
+| `--fail-on`        | `high`   |
+| `--format` in CI   | `sarif`  |
+| `--format` locally | `pretty` |
+
+### Testing strategy
+
+| Recommendation                                                                          |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **vitest** per rule: `fixtures/<rule-id>/bad/` → expect N findings; `good/` → expect 0. |
+| Snapshot **SARIF/JSON** output for one golden fixture set (regression on format).       |
+| No unit tests that only assert mocks — every test ties to a fixture file.               |
+| Rationale                                                                               | Aligns with proposal; fixtures are the contract for rule behavior. |
+
+### Out of scope for v1.0 (explicit)
+
+- Call-graph / cross-module JWT flow analysis
+- Auto-fix or codemods
+- `ciphersins/helpers` package export (docs + `crypto.timingSafeEqual` link only)
+- GitHub Action (v1.1)
+- `--baseline` diff mode (v2)
 
 ---
 
@@ -274,7 +397,8 @@ MVP can be documentation only + link to `crypto.timingSafeEqual`.
 
 - User wanted an original name — generic `cryptoguard-cli` was rejected / `crypto-guard-cli` is taken (Web3).
 - Chosen **CipherSins** = cipher + sins (crypto sins in code).
-- Workspace is currently empty — scaffold from scratch.
+- Workspace scaffolded at **0.1.0** (docs, hooks, proposal); implementation starts from [`prompts/phase-0-monorepo-scaffold-agent-prompt.md`](../prompts/phase-0-monorepo-scaffold-agent-prompt.md).
+- **No npm publish until v1.0.0** — MVP complete in git first.
 - Minimal scope: no extra abstractions, no tests for the sake of tests, no commits unless requested.
 - User communication: Slovak; code/comments/README: English.
 

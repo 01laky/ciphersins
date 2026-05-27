@@ -2,18 +2,41 @@
 
 Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.
 
-**Tagline:** *gitleaks for bad crypto API usage* — not secrets in strings, but footguns in application code.
+**Tagline:** _gitleaks for bad crypto API usage_ — not secrets in strings, but footguns in application code.
 
 ```bash
-npx ciphersins scan
+pnpm exec ciphersins scan ./src
 ```
 
-> CLI implementation is in progress. See [`docs/proposal.MD`](./docs/proposal.MD) for the full spec.
+> Rule implementation is in progress (Phase 0 ships the scan pipeline with an empty rule registry). See [`docs/proposal.MD`](./docs/proposal.MD).
 
-## Contributing
+## Status (v0.2.1)
 
-After clone, run `./scripts/setup-githooks.sh` once. See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+- pnpm monorepo: `@ciphersins/core` + `ciphersins` CLI
+- TypeScript compiler API parsing with default include/exclude globs
+- `ciphersins scan [path]` — prints `No findings.` until rules land in Phase 1
+- Vitest scaffold suite **CS-S01–CS-S22** + edge-case suite **CS-S23–CS-S46**
+
+## Quick start (development)
+
+```bash
+pnpm install
+./scripts/setup-githooks.sh
+pnpm verify
+pnpm exec ciphersins scan test/fixtures/scaffold
+```
+
+See [`docs/development.md`](./docs/development.md) for the full contributor guide.
+
+## Documentation
+
+| Doc                                                                            | Description                                         |
+| ------------------------------------------------------------------------------ | --------------------------------------------------- |
+| [`docs/proposal.MD`](./docs/proposal.MD)                                       | Product spec, MVP rules, architecture               |
+| [`docs/development.md`](./docs/development.md)                                 | Local setup, commands, monorepo layout              |
+| [`docs/ciphersins.config.example.json`](./docs/ciphersins.config.example.json) | Intended config schema (parser not yet implemented) |
+| [`CONTRIBUTING.md`](./CONTRIBUTING.md)                                         | Commit standards, git hooks                         |
 
 ## License
 
-MIT
+MIT — see [`LICENSE`](./LICENSE).

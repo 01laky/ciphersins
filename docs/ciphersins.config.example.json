@@ -1,0 +1,10 @@
+{
+	"include": ["src/**/*.{ts,tsx,js,jsx}"],
+	"exclude": ["**/*.test.ts", "**/dist/**", "**/node_modules/**"],
+	"failOn": "high",
+	"rules": {
+		"CS-JWT-02": "error",
+		"CS-HASH-02": "warn"
+	},
+	"ignore": []
+}

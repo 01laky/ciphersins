@@ -10,7 +10,7 @@ import { createFinding } from "./helpers/finding.js";
 const MESSAGE =
 	"Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).";
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-02.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-02.md";
 
 export const csHash02Rule: Rule = {
 	id: "CS-HASH-02",

@@ -17,7 +17,7 @@ const RULE_ID = "CS-JWT-03";
 const MESSAGE =
 	'jwt.verify() or jwt.sign() allows the "none" algorithm; remove "none" from algorithms / do not use algorithm: "none".';
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-03.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-03.md";
 
 export const csJwt03Rule: Rule = {
 	id: RULE_ID,

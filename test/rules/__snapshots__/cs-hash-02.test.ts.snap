@@ -4,7 +4,7 @@ exports[`CS-HASH-02 extended edge cases > CS-HASH-02-67 golden snapshot for hash
 {
   "column": 9,
   "file": "hash-async-callback-weak.ts",
-  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-02.md",
+  "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-02.md",
   "line": 4,
   "message": "Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).",
   "ruleId": "CS-HASH-02",
@@ -17,7 +17,7 @@ exports[`CS-HASH-02 finding shape > CS-HASH-02-47 golden snapshot for hash-sync-
 {
   "column": 9,
   "file": "hash-sync-cost-8.ts",
-  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-02.md",
+  "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-02.md",
   "line": 4,
   "message": "Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).",
   "ruleId": "CS-HASH-02",
@@ -30,7 +30,7 @@ exports[`CS-HASH-02 finding shape > CS-HASH-02-48 golden snapshot for gen-salt-w
 {
   "column": 9,
   "file": "gen-salt-weak.ts",
-  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-02.md",
+  "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-02.md",
   "line": 4,
   "message": "Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).",
   "ruleId": "CS-HASH-02",

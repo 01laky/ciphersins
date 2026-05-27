@@ -10,7 +10,7 @@ import { callHasPasswordContext } from "./helpers/password-context.js";
 const MESSAGE =
 	"Weak hash algorithm (MD5 or SHA1) used where password-related naming suggests password storage; use bcrypt, scrypt, argon2, or PBKDF2.";
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-HASH-01.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-01.md";
 
 export const csHash01Rule: Rule = {
 	id: "CS-HASH-01",

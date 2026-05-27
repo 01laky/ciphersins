@@ -14,7 +14,7 @@ const RULE_ID = "CS-JWT-04";
 const MESSAGE =
 	"jwt.verify() called with ignoreExpiration: true; expired tokens will be accepted unless you enforce exp validation elsewhere.";
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-04.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-04.md";
 
 export const csJwt04Rule: Rule = {
 	id: RULE_ID,

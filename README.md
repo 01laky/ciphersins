@@ -4,7 +4,7 @@
 ![node](https://img.shields.io/badge/node-%3E%3D18-339933)
 ![rules](https://img.shields.io/badge/rules-8%2F8_implemented-9cf)
 ![tests](https://img.shields.io/badge/tests-785_passing-brightgreen)
-[![ci](https://github.com/01laky/ciphersins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/ciphersins/actions/workflows/ci.yml)
+[![ci](https://github.com/01laky/CipherSins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/CipherSins/actions/workflows/ci.yml)
 ![status](https://img.shields.io/badge/status-pre--release_0.8.0-yellow)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
@@ -73,13 +73,13 @@ Each rule ships with **bad/good fixtures** and vitest IDs so crypto regressions 
 
 Your application source is resolved by glob, parsed into a TypeScript AST, and checked by registered rules that encode **known cryptographic anti-patterns** — not generic syntax warnings.
 
-![End-to-end scan pipeline](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/pipeline.svg)
+![End-to-end scan pipeline](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/pipeline.svg)
 
 **Design constraints:** AST + binding analysis (no regex-only detection); each finding carries severity and a link to remediation docs; cross-file taint tracking is out of scope for v1.
 
 ### Rule example (CS-JWT-01)
 
-![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/rules-overview.svg)
+![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/rules-overview.svg)
 
 Diagram sources: [`docs/img/`](./docs/img/) (Mermaid `.mmd` + committed SVG). Regenerate with `pnpm diagrams:build`.
 
@@ -116,7 +116,7 @@ Full index: [`docs/rules/README.md`](./docs/rules/README.md).
 **npm publish is planned for v1.0.0.** Until then, clone and link from source:
 
 ```bash
-git clone https://github.com/01laky/ciphersins.git
+git clone https://github.com/01laky/CipherSins.git
 cd ciphersins
 pnpm install
 ./scripts/setup-githooks.sh
@@ -138,7 +138,7 @@ pnpm exec ciphersins scan fixtures/cs-jwt-01/bad
 ```text
 fixtures/cs-jwt-01/bad/default-import-decode-only.ts:4:9  CS-JWT-01  high
   jwt.decode() used without jwt.verify() in the same file.
-  https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md
+  https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md
 ```
 
 The good fixtures show the same APIs used with proper verification — expect `No findings.`:

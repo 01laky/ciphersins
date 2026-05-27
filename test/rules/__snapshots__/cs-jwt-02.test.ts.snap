@@ -5,7 +5,7 @@ exports[`CS-JWT-02 extended edge cases > CS-JWT-02-91 golden snapshot decode-and
   {
     "column": 19,
     "file": "decode-and-verify-no-algorithms.ts",
-    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-02.md",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-02.md",
     "line": 7,
     "message": "jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.",
     "ruleId": "CS-JWT-02",
@@ -20,7 +20,7 @@ exports[`CS-JWT-02 metadata and snapshots > CS-JWT-02-52 golden snapshot verify-
   {
     "column": 9,
     "file": "verify-two-args-default.ts",
-    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-02.md",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-02.md",
     "line": 6,
     "message": "jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.",
     "ruleId": "CS-JWT-02",
@@ -35,7 +35,7 @@ exports[`CS-JWT-02 metadata and snapshots > CS-JWT-02-53 golden snapshot verify-
   {
     "column": 9,
     "file": "verify-with-callback.ts",
-    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-02.md",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-02.md",
     "line": 6,
     "message": "jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.",
     "ruleId": "CS-JWT-02",

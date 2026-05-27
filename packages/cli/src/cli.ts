@@ -11,7 +11,7 @@ Commands:
   scan [path]   Scan TypeScript/JavaScript files (default path: ./src or .)
 
 Run ciphersins scan with no path to use the default scan root.
-Docs: https://github.com/01laky/ciphersins/blob/main/docs/about.md
+Docs: https://github.com/01laky/CipherSins/blob/main/docs/about.md
 `;
 
 async function main(): Promise<void> {

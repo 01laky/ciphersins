@@ -25,7 +25,7 @@ Each finding is printed as:
 ```text
 relative/path.ts:line:column  CS-JWT-01  high
   jwt.decode() used without jwt.verify() in the same file.
-  https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md
+  https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md
 ```
 
 Critical findings (for example **CS-JWT-03**):
@@ -33,7 +33,7 @@ Critical findings (for example **CS-JWT-03**):
 ```text
 relative/path.ts:line:column  CS-JWT-03  critical
   jwt.verify() or jwt.sign() allows the "none" algorithm; remove "none" from algorithms / do not use algorithm: "none".
-  https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-03.md
+  https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-03.md
 ```
 
 Severity levels in v0.8.0: **critical** (JWT-03), **high** (JWT-01/02, CMP, RNG, HASH-01), **medium** (JWT-04, HASH-02).

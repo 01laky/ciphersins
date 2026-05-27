@@ -12,7 +12,7 @@ import {
 const RULE_ID = "CS-JWT-01";
 const MESSAGE = "jwt.decode() used without jwt.verify() in the same file.";
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md";
 
 export const csJwt01Rule: Rule = {
 	id: RULE_ID,

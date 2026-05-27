@@ -14,7 +14,7 @@ const RULE_ID = "CS-JWT-02";
 const MESSAGE =
 	"jwt.verify() called without an explicit algorithms option; pass { algorithms: ['HS256'] } (or your allowed set) to prevent algorithm confusion attacks.";
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-02.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-02.md";
 
 export const csJwt02Rule: Rule = {
 	id: RULE_ID,

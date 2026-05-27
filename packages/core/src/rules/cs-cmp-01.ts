@@ -11,7 +11,7 @@ import {
 const MESSAGE =
 	"Timing-unsafe equality compare (=== or ==) on auth-related value; use crypto.timingSafeEqual or a constant-time compare.";
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-CMP-01.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-CMP-01.md";
 
 export const csCmp01Rule: Rule = {
 	id: "CS-CMP-01",

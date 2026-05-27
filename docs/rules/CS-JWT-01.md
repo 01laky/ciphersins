@@ -50,7 +50,7 @@ If you decode for debugging, ensure `jwt.verify()` is also called on the same to
 
 ## What CipherSins checks
 
-![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/rules-overview.svg)
+![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/rules-overview.svg)
 
 - **Same file scope (v1.0):** flags decode call sites when no `jsonwebtoken` verify call exists **anywhere in the file**.
 - Supports default import, namespace import, named import (including aliases), CommonJS `require`, destructured require, and inline `require('jsonwebtoken').decode(...)`.

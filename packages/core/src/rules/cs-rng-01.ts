@@ -7,7 +7,7 @@ import { isMathRandomCall } from "./helpers/is-math-random-call.js";
 const MESSAGE =
 	"Math.random() used where auth-related naming suggests secrets, tokens, or session identifiers; use crypto.randomBytes or crypto.randomUUID.";
 const HELP_URL =
-	"https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-RNG-01.md";
+	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-RNG-01.md";
 
 export const csRng01Rule: Rule = {
 	id: "CS-RNG-01",

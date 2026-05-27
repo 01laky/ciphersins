@@ -8,7 +8,7 @@ Product overview: [`about.md`](./about.md) · Full spec: [`proposal.MD`](./propo
 
 Source paths and globs resolve to scannable files, each file is parsed with the TypeScript compiler API, and registered rules return structured findings. The CLI (or `scan()` API) aggregates results by severity.
 
-![End-to-end scan pipeline](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/pipeline.svg)
+![End-to-end scan pipeline](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/pipeline.svg)
 
 | Stage   | Module                                   | Responsibility                                       |
 | ------- | ---------------------------------------- | ---------------------------------------------------- |
@@ -38,7 +38,7 @@ Each rule resolves import/require bindings, walks relevant AST nodes, applies ca
 
 CS-JWT-01 suppresses all decode findings when any `jwt.verify()` exists in the same file. **CS-JWT-02** independently flags tracked `verify()` calls missing explicit `{ algorithms: [...] }`. **CS-JWT-03** flags verify/sign options that allow or use **`none`**. **CS-JWT-04** flags `ignoreExpiration: true`. Other rules use their own gates (e.g. CS-CMP-01 requires a crypto/auth import; CS-HASH-02 has no import gate).
 
-![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/rules-overview.svg)
+![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/CipherSins/main/docs/img/rules-overview.svg)
 
 See [`rules/CS-JWT-01.md`](./rules/CS-JWT-01.md) for rule-specific bad/good examples. JWT rules: [CS-JWT-02](./rules/CS-JWT-02.md), [CS-JWT-03](./rules/CS-JWT-03.md), [CS-JWT-04](./rules/CS-JWT-04.md). Hash rules: [CS-HASH-01](./rules/CS-HASH-01.md), [CS-HASH-02](./rules/CS-HASH-02.md).
 

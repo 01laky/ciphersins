@@ -33,12 +33,12 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/01laky/ciphersins.git"
+		"url": "git+https://github.com/01laky/CipherSins.git"
 	},
 	"bugs": {
-		"url": "https://github.com/01laky/ciphersins/issues"
+		"url": "https://github.com/01laky/CipherSins/issues"
 	},
-	"homepage": "https://github.com/01laky/ciphersins#readme",
+	"homepage": "https://github.com/01laky/CipherSins#readme",
 	"packageManager": "pnpm@9.15.9",
 	"scripts": {
 		"build": "node scripts/build-packages.mjs",

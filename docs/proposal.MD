@@ -352,7 +352,7 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 | Recommendation                                                                                                     |
 | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `helpUrl`: `https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md` until `ciphersins.dev` exists. |
+| `helpUrl`: `https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md` until `ciphersins.dev` exists. |
 | Add one markdown doc per rule under `docs/rules/` when implementing each rule.                                     |
 | Rationale                                                                                                          | Pretty output links should work on day one without a custom domain. |
 

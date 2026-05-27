@@ -4,7 +4,7 @@ exports[`CS-JWT-01 finding shape > CS-JWT-01-22 golden snapshot for default-impo
 {
   "column": 9,
   "file": "default-import-decode-only.ts",
-  "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md",
+  "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md",
   "line": 4,
   "message": "jwt.decode() used without jwt.verify() in the same file.",
   "ruleId": "CS-JWT-01",

@@ -5,7 +5,7 @@ exports[`CS-JWT-03 extended edge cases > CS-JWT-03-80 golden snapshot verify-com
   {
     "column": 9,
     "file": "verify-computed-algorithms-none.ts",
-    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-03.md",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-03.md",
     "line": 6,
     "message": "jwt.verify() or jwt.sign() allows the "none" algorithm; remove "none" from algorithms / do not use algorithm: "none".",
     "ruleId": "CS-JWT-03",
@@ -20,7 +20,7 @@ exports[`CS-JWT-03 extended edge cases > CS-JWT-03-87 golden snapshot decode-and
   {
     "column": 19,
     "file": "decode-and-verify-none.ts",
-    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-03.md",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-03.md",
     "line": 7,
     "message": "jwt.verify() or jwt.sign() allows the "none" algorithm; remove "none" from algorithms / do not use algorithm: "none".",
     "ruleId": "CS-JWT-03",
@@ -35,7 +35,7 @@ exports[`CS-JWT-03 metadata and snapshots > CS-JWT-03-52 golden snapshot verify-
   {
     "column": 9,
     "file": "verify-algorithms-none-literal.ts",
-    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-03.md",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-03.md",
     "line": 6,
     "message": "jwt.verify() or jwt.sign() allows the "none" algorithm; remove "none" from algorithms / do not use algorithm: "none".",
     "ruleId": "CS-JWT-03",
@@ -50,7 +50,7 @@ exports[`CS-JWT-03 metadata and snapshots > CS-JWT-03-53 golden snapshot sign-al
   {
     "column": 9,
     "file": "sign-algorithm-none.ts",
-    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-03.md",
+    "helpUrl": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-03.md",
     "line": 6,
     "message": "jwt.verify() or jwt.sign() allows the "none" algorithm; remove "none" from algorithms / do not use algorithm: "none".",
     "ruleId": "CS-JWT-03",

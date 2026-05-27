@@ -41,7 +41,7 @@
 		"prepublishOnly": "node ../../scripts/sync-version.mjs && npm run build"
 	},
 	"dependencies": {
-		"@ciphersins/core": "1.0.0"
+		"@ciphersins/core": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/node": "^22.15.29",

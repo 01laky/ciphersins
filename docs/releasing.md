@@ -74,9 +74,9 @@ Set `NODE_AUTH_TOKEN` to your npm token.
 
 ## Troubleshooting
 
-| Issue                                       | Fix                                                                       |
-| ------------------------------------------- | ------------------------------------------------------------------------- |
-| `402 Payment Required` / package name taken | Ensure npm org/user owns `ciphersins` and `@ciphersins/core`              |
-| CLI publish fails on `@ciphersins/core`     | Publish core first; run `sync-version.mjs` so CLI depends on exact semver |
-| Tag push does nothing                       | Check Actions tab; tag must match `v*.*.*` pattern                        |
-| Provenance errors                           | Requires `id-token: write` (already set in workflow)                      |
+| Issue                                       | Fix                                                                                |
+| ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `402 Payment Required` / package name taken | Ensure npm org/user owns `ciphersins` and `@ciphersins/core`                       |
+| CLI publish fails on `@ciphersins/core`     | Publish core first; keep `workspace:*` in git — pnpm publish resolves it to semver |
+| Tag push does nothing                       | Check Actions tab; tag must match `v*.*.*` pattern                                 |
+| Provenance errors                           | Requires `id-token: write` (already set in workflow)                               |

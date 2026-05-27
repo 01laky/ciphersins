@@ -16,13 +16,5 @@ function syncPackageVersion(relativePath) {
 	return packageJson.version;
 }
 
-const coreVersion = syncPackageVersion("packages/core");
+syncPackageVersion("packages/core");
 syncPackageVersion("packages/cli");
-
-const cliPackageJsonPath = path.join(rootDir, "packages/cli/package.json");
-const cliPackageJson = JSON.parse(fs.readFileSync(cliPackageJsonPath, "utf8"));
-cliPackageJson.dependencies["@ciphersins/core"] = coreVersion;
-fs.writeFileSync(
-	cliPackageJsonPath,
-	`${JSON.stringify(cliPackageJson, null, "\t")}\n`,
-);

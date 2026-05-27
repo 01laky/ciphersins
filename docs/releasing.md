@@ -24,6 +24,22 @@ Or export a token for the session:
 export NODE_AUTH_TOKEN=npm_...
 ```
 
+### Create the `@ciphersins` npm organization (required)
+
+`@ciphersins/core` is a **scoped** package — npm requires an organization with that exact name before the first publish.
+
+1. Open [npm — Create an Org](https://www.npmjs.com/org/create)
+2. Organization name: **`ciphersins`** (lowercase, no `@`)
+3. Add your npm user as **Owner**
+4. Verify:
+
+```bash
+npm whoami
+npm org ls ciphersins
+```
+
+If you see `Scope not found` or `403` on publish, the org is missing or your user is not a member. The publish script checks this **before** running the full test suite.
+
 ## Pre-release verification
 
 From repo root:
@@ -104,11 +120,12 @@ npm view @ciphersins/core version
 
 ## Troubleshooting
 
-| Issue                                       | Fix                                                                                |
-| ------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `ENEEDAUTH` / need auth                     | `npm login` or `export NODE_AUTH_TOKEN=npm_...` before `npm run publish:npm`       |
-| `402 Payment Required` / package name taken | Ensure npm org/user owns `ciphersins` and `@ciphersins/core`                       |
-| CLI publish fails on `@ciphersins/core`     | Publish core first; keep `workspace:*` in git — pnpm publish resolves it to semver |
-| Tag push does nothing                       | Check Actions tab; tag must match `v*.*.*` pattern                                 |
-| Provenance errors locally                   | Use `--no-provenance`, or npm 9+ with `npm login`                                  |
-| `pnpm install --frozen-lockfile` fails      | CLI must use `workspace:*` for `@ciphersins/core`; do not commit semver there      |
+| Issue                                       | Fix                                                                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `Scope not found` / `@ciphersins/core` 404  | Create npm org **ciphersins** at [npmjs.com/org/create](https://www.npmjs.com/org/create); `npm org ls ciphersins` |
+| `ENEEDAUTH` / need auth                     | `npm login` or `export NODE_AUTH_TOKEN=npm_...` before `npm run publish:npm`                                       |
+| `402 Payment Required` / package name taken | Ensure npm org/user owns `ciphersins` and `@ciphersins/core`                                                       |
+| CLI publish fails on `@ciphersins/core`     | Publish core first; keep `workspace:*` in git — pnpm publish resolves it to semver                                 |
+| Tag push does nothing                       | Check Actions tab; tag must match `v*.*.*` pattern                                                                 |
+| Provenance errors locally                   | Use `--no-provenance`, or npm 9+ with `npm login`                                                                  |
+| `pnpm install --frozen-lockfile` fails      | CLI must use `workspace:*` for `@ciphersins/core`; do not commit semver there                                      |

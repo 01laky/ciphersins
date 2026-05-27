@@ -4,7 +4,7 @@ Overview: [about.md](./about.md) · Rules: [rules index](./rules/README.md)
 
 ## What is CipherSins?
 
-A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript application code — JWT decode-without-verify, timing-unsafe compares, weak RNG in auth paths, MD5/SHA1 password hashing, and weak bcrypt cost.
+A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript application code — JWT decode-without-verify, verify without algorithm allowlists, **`none` algorithm bypass**, disabled expiration checks, timing-unsafe compares, weak RNG in auth paths, MD5/SHA1 password hashing, and weak bcrypt cost.
 
 **Tagline:** _Static scanner for JWT, timing, RNG, and password-hashing footguns in Node/TS app code._
 
@@ -12,7 +12,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## Is it on npm?
 
-**Not yet.** npm publish is planned for **v1.0.0** when MVP rules, SARIF output, and config parsing are complete. Install from source until then — see [README](../README.md#install).
+**Not yet.** npm publish is planned for **v1.0.0** when SARIF output and config parsing are complete. Install from source until then — see [README](../README.md#install).
 
 ## Does it find secrets or API keys?
 
@@ -24,7 +24,7 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## How many rules are implemented?
 
-**6 of 8** MVP rules at **0.7.0**: CS-JWT-01, CS-JWT-02, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
+**8/8 MVP rules** at **0.8.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
 
 ## Why same-file scope for CS-JWT-01?
 
@@ -42,7 +42,7 @@ Unreachable `if (false) { jwt.verify(...) }` still suppresses findings — v1 do
 
 ## How do I add a rule?
 
-See [development.md — Adding a rule](./development.md#adding-a-rule). Worked examples: **CS-JWT-01**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02** in `packages/core/src/rules/`.
+See [development.md — Adding a rule](./development.md#adding-a-rule). Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02** in `packages/core/src/rules/`.
 
 ## What test IDs mean
 
@@ -51,6 +51,10 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-S01–S22**       | Scaffold / integration    |
 | **CS-S23–S49**       | Edge cases                |
 | **CS-JWT-01-01–50**  | CS-JWT-01 rule            |
+| **CS-JWT-02-01–82**  | CS-JWT-02 rule            |
+| **CS-JWT-03-01–82**  | CS-JWT-03 rule            |
+| **CS-JWT-04-01–91**  | CS-JWT-04 rule            |
+| **CS-JWT-OPT-01–15** | jwt-verify-options helper |
 | **CS-CMP-01-01–45**  | CS-CMP-01 rule            |
 | **CS-RNG-01-01–37**  | CS-RNG-01 rule            |
 | **CS-HASH-01-01–63** | CS-HASH-01 rule           |
@@ -63,9 +67,9 @@ See [development.md — Adding a rule](./development.md#adding-a-rule). Worked e
 | **CS-BCBIND-01–18**  | Bcrypt-bindings helper    |
 | **CS-AUTH-01–10**    | Auth-material helper      |
 | **CS-CRYPTO-01–09**  | Crypto-auth-import helper |
-| **CS-INT-01–17**     | Cross-rule integration    |
+| **CS-INT-01–33**     | Cross-rule integration    |
 
-Run `pnpm test` or `npm test` for the full suite (564 tests at v0.7.0).
+Run `pnpm test` or `npm test` for the full suite (785 tests at v0.8.0).
 
 ## Who maintains this?
 

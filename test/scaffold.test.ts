@@ -13,6 +13,8 @@ import {
 	csHash02Rule,
 	csJwt01Rule,
 	csJwt02Rule,
+	csJwt03Rule,
+	csJwt04Rule,
 	csRng01Rule,
 	formatRelativePath,
 	getLineSnippet,
@@ -44,6 +46,8 @@ describe("CS-S01 exports", () => {
 		expect(typeof createRuleContext).toBe("function");
 		expect(typeof csJwt01Rule.run).toBe("function");
 		expect(typeof csJwt02Rule.run).toBe("function");
+		expect(typeof csJwt03Rule.run).toBe("function");
+		expect(typeof csJwt04Rule.run).toBe("function");
 		expect(typeof csCmp01Rule.run).toBe("function");
 		expect(typeof csRng01Rule.run).toBe("function");
 		expect(typeof csHash01Rule.run).toBe("function");
@@ -52,11 +56,13 @@ describe("CS-S01 exports", () => {
 });
 
 describe("CS-S02 rule registry", () => {
-	it("CS-S02 registers JWT, CMP, RNG, and HASH rules in stable order", () => {
-		expect(allRules).toHaveLength(6);
+	it("CS-S02 registers all eight MVP rules in stable order", () => {
+		expect(allRules).toHaveLength(8);
 		expect(allRules.map((r) => r.id)).toEqual([
 			"CS-JWT-01",
 			"CS-JWT-02",
+			"CS-JWT-03",
+			"CS-JWT-04",
 			"CS-CMP-01",
 			"CS-RNG-01",
 			"CS-HASH-01",
@@ -70,6 +76,8 @@ describe("CS-S49 rule registry order", () => {
 		expect(allRules.map((rule) => rule.id)).toEqual([
 			"CS-JWT-01",
 			"CS-JWT-02",
+			"CS-JWT-03",
+			"CS-JWT-04",
 			"CS-CMP-01",
 			"CS-RNG-01",
 			"CS-HASH-01",
@@ -426,6 +434,6 @@ describe("CS-S22 CLI help and version", () => {
 		});
 
 		expect(result.status).toBe(0);
-		expect(result.stdout.trim()).toBe("0.7.0");
+		expect(result.stdout.trim()).toBe("0.8.0");
 	});
 });

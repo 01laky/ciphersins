@@ -3,6 +3,26 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.8.0]
+
+### Added
+
+- **CS-JWT-03** — flags tracked `jwt.verify()` with `algorithms: ['none']` (case-insensitive) and `jwt.sign()` with `algorithm: 'none'`; **critical** severity.
+- **CS-JWT-04** — flags tracked `jwt.verify()` with inline `ignoreExpiration: true`; **medium** severity.
+- Extended shared helper **`jwt-verify-options`** with `verifyCallAllowsNoneAlgorithm`, `signCallUsesNoneAlgorithm`, and `verifyCallIgnoresExpiration`.
+- Fixtures `fixtures/cs-jwt-03/{bad,good}/` (**23 bad / 15 good**); `fixtures/cs-jwt-04/{bad,good}/` (**16 bad / 12 good**).
+- Migrated `verify-algorithms-none-literal.ts` from `fixtures/cs-jwt-02/good/` to **`fixtures/cs-jwt-03/bad/`** — JWT-02 treats any non-empty `algorithms` literal as satisfied; dangerous `none` values belong under JWT-03.
+- Tests: CS-JWT-03-01–97, CS-JWT-04-01–103, CS-JWT-NONE-01–14, CS-JWT-EXP-01–10, CS-JWT-BIND-01–05, CS-INT-01–40 (**785** total).
+- **`docs/rules/CS-JWT-03.md`**, **`docs/rules/CS-JWT-04.md`**; smoke-cli JWT-03/JWT-04 regression.
+
+### Changed
+
+- `allRules` registry: CS-JWT-01, CS-JWT-02, **CS-JWT-03**, **CS-JWT-04**, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02 (stable order) — **8/8 MVP rules complete**.
+- CS-INT-08 combined bad total **164** findings (JWT-03 **25**, JWT-04 **20**); eight good dirs **118** files.
+- First **critical** severity in the rule pack (CS-JWT-03); CLI and docs updated for severity ladder.
+- Rules index, architecture diagram, README, and supporting docs updated for v0.8.0.
+- CLI `--version` output updated to `0.8.0`.
+
 ## [0.7.0]
 
 ### Added

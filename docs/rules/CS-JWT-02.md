@@ -12,7 +12,7 @@
 
 Always pass an explicit allowlist such as `{ algorithms: ['HS256'] }` for symmetric keys or `{ algorithms: ['RS256'] }` for asymmetric verification.
 
-**CS-JWT-01** flags decode-without-verify. **CS-JWT-02** flags verify calls that omit algorithm allowlisting.
+**CS-JWT-01** flags decode-without-verify. **CS-JWT-02** flags verify calls that omit algorithm allowlisting. Dangerous algorithm values (for example **`none`**) are covered by **[CS-JWT-03](./CS-JWT-03.md)**.
 
 ## Bad example
 
@@ -81,18 +81,18 @@ Example: a file with both `jwt.decode(token)` and `jwt.verify(token, secret)` yi
 
 ## False positives and limits
 
-| Scenario                                                         | Behavior                                                                                                |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `jwt.verify(token, key, { algorithms: ['HS256'] })`              | **Not flagged**                                                                                         |
-| `jwt.verify(token, key, opts)` where `opts` is an **identifier** | **Not flagged in v1**                                                                                   |
-| `{ algorithms: allowedAlgs }` inline with variable value         | **Not flagged in v1**                                                                                   |
-| `jwt.verify(token, key, 'HS256')` string 3rd arg                 | **Not flagged in v1**                                                                                   |
-| `{ algorithms: ['none'] }`                                       | **Not flagged by JWT-02** — non-empty literal satisfies JWT-02; dangerous values → future **CS-JWT-03** |
-| `jwt.decode` only                                                | **Not flagged by JWT-02**                                                                               |
-| Indirect call `const v = jwt.verify; v(t,s)`                     | **Not flagged in v1**                                                                                   |
-| Dynamic `import('jsonwebtoken')`                                 | **Not flagged in v1**                                                                                   |
-| `jose`, `passport-jwt`                                           | **Out of scope**                                                                                        |
-| Verify in `*.test.ts` / `*.spec.ts`                              | **Excluded by default scan globs**                                                                      |
+| Scenario                                                         | Behavior                                                                                                           |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `jwt.verify(token, key, { algorithms: ['HS256'] })`              | **Not flagged**                                                                                                    |
+| `jwt.verify(token, key, opts)` where `opts` is an **identifier** | **Not flagged in v1**                                                                                              |
+| `{ algorithms: allowedAlgs }` inline with variable value         | **Not flagged in v1**                                                                                              |
+| `jwt.verify(token, key, 'HS256')` string 3rd arg                 | **Not flagged in v1**                                                                                              |
+| `{ algorithms: ['none'] }`                                       | **Not flagged by JWT-02** — non-empty literal satisfies JWT-02; dangerous values → **[CS-JWT-03](./CS-JWT-03.md)** |
+| `jwt.decode` only                                                | **Not flagged by JWT-02**                                                                                          |
+| Indirect call `const v = jwt.verify; v(t,s)`                     | **Not flagged in v1**                                                                                              |
+| Dynamic `import('jsonwebtoken')`                                 | **Not flagged in v1**                                                                                              |
+| `jose`, `passport-jwt`                                           | **Out of scope**                                                                                                   |
+| Verify in `*.test.ts` / `*.spec.ts`                              | **Excluded by default scan globs**                                                                                 |
 
 ## Fix
 
@@ -113,3 +113,5 @@ const payload = jwt.verify(token, publicKey, { algorithms: ["RS256"] });
 - [jsonwebtoken README](https://github.com/auth0/node-jsonwebtoken)
 - [OWASP JWT Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html)
 - Related: [CS-JWT-01](./CS-JWT-01.md) — decode without verify
+- Related: [CS-JWT-03](./CS-JWT-03.md) — `none` algorithm bypass
+- Related: [CS-JWT-04](./CS-JWT-04.md) — `ignoreExpiration: true`

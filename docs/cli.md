@@ -14,7 +14,7 @@ pnpm exec ciphersins --version
 | ----------------- | ------------------------------------------------------ |
 | `scan [path]`     | Scan TypeScript/JavaScript files for crypto API misuse |
 | `--help`, `-h`    | Print usage                                            |
-| `--version`, `-v` | Print package version (0.7.0)                          |
+| `--version`, `-v` | Print package version (0.8.0)                          |
 
 When `path` is omitted, the scan root is `./src` if it exists, otherwise `.`.
 
@@ -28,7 +28,15 @@ relative/path.ts:line:column  CS-JWT-01  high
   https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-01.md
 ```
 
-Severity levels in v0.7.0: **high** (JWT, CMP, RNG, HASH-01), **medium** (HASH-02).
+Critical findings (for example **CS-JWT-03**):
+
+```text
+relative/path.ts:line:column  CS-JWT-03  critical
+  jwt.verify() or jwt.sign() allows the "none" algorithm; remove "none" from algorithms / do not use algorithm: "none".
+  https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-03.md
+```
+
+Severity levels in v0.8.0: **critical** (JWT-03), **high** (JWT-01/02, CMP, RNG, HASH-01), **medium** (JWT-04, HASH-02).
 
 - **Path** — relative to the process working directory when possible
 - **Snippet** — available on `Finding` objects from `@ciphersins/core`; not printed in CLI v0.6.x
@@ -49,6 +57,8 @@ Missing scan paths emit a **warning** on stderr and are skipped.
 ```bash
 pnpm exec ciphersins scan ./src
 pnpm exec ciphersins scan fixtures/cs-jwt-01/bad
+pnpm exec ciphersins scan fixtures/cs-jwt-03/bad
+pnpm exec ciphersins scan fixtures/cs-jwt-04/bad
 pnpm exec ciphersins scan fixtures/cs-hash-02/bad
 ```
 

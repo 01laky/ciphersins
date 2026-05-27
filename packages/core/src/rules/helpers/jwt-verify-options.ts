@@ -1,6 +1,6 @@
 import ts from "typescript";
 
-function isAlgorithmsPropertyName(name: ts.PropertyName): boolean {
+export function isAlgorithmsPropertyName(name: ts.PropertyName): boolean {
 	if (ts.isIdentifier(name) && name.text === "algorithms") {
 		return true;
 	}
@@ -12,6 +12,20 @@ function isAlgorithmsPropertyName(name: ts.PropertyName): boolean {
 		return ts.isStringLiteral(expression) && expression.text === "algorithms";
 	}
 	return false;
+}
+
+function isAlgorithmPropertyName(name: ts.PropertyName): boolean {
+	return (
+		(ts.isIdentifier(name) && name.text === "algorithm") ||
+		(ts.isStringLiteral(name) && name.text === "algorithm")
+	);
+}
+
+function isIgnoreExpirationPropertyName(name: ts.PropertyName): boolean {
+	return (
+		(ts.isIdentifier(name) && name.text === "ignoreExpiration") ||
+		(ts.isStringLiteral(name) && name.text === "ignoreExpiration")
+	);
 }
 
 function objectLiteralHasShorthandAlgorithmsProperty(
@@ -69,7 +83,7 @@ function isCallbackArgument(expr: ts.Expression): boolean {
 	return ts.isArrowFunction(expr) || ts.isFunctionExpression(expr);
 }
 
-export function getVerifyOptionsArgument(
+function getJsonWebTokenMethodOptionsArgument(
 	call: ts.CallExpression,
 ): ts.Expression | undefined {
 	const { arguments: args } = call;
@@ -81,6 +95,18 @@ export function getVerifyOptionsArgument(
 		return undefined;
 	}
 	return third;
+}
+
+export function getVerifyOptionsArgument(
+	call: ts.CallExpression,
+): ts.Expression | undefined {
+	return getJsonWebTokenMethodOptionsArgument(call);
+}
+
+export function getSignOptionsArgument(
+	call: ts.CallExpression,
+): ts.Expression | undefined {
+	return getJsonWebTokenMethodOptionsArgument(call);
 }
 
 export function verifyCallMissingAlgorithms(call: ts.CallExpression): boolean {
@@ -102,4 +128,104 @@ export function verifyCallMissingAlgorithms(call: ts.CallExpression): boolean {
 		return false;
 	}
 	return !objectLiteralHasExplicitAlgorithms(optionsArg);
+}
+
+export function isNoneAlgorithmStringLiteral(node: ts.Expression): boolean {
+	return ts.isStringLiteral(node) && node.text.toLowerCase() === "none";
+}
+
+export function arrayLiteralContainsNone(
+	node: ts.ArrayLiteralExpression,
+): boolean {
+	return node.elements.some(
+		(el) => !ts.isOmittedExpression(el) && isNoneAlgorithmStringLiteral(el),
+	);
+}
+
+export function objectLiteralVerifyAllowsNone(
+	node: ts.ObjectLiteralExpression,
+): boolean {
+	for (const prop of node.properties) {
+		if (!ts.isPropertyAssignment(prop)) {
+			continue;
+		}
+		if (!isAlgorithmsPropertyName(prop.name)) {
+			continue;
+		}
+		const { initializer } = prop;
+		if (initializer && ts.isArrayLiteralExpression(initializer)) {
+			return arrayLiteralContainsNone(initializer);
+		}
+		return false;
+	}
+	return false;
+}
+
+export function verifyCallAllowsNoneAlgorithm(
+	call: ts.CallExpression,
+): boolean {
+	const optionsArg = getVerifyOptionsArgument(call);
+	if (!optionsArg || !ts.isObjectLiteralExpression(optionsArg)) {
+		return false;
+	}
+	if (objectLiteralHasShorthandAlgorithmsProperty(optionsArg)) {
+		return false;
+	}
+	if (objectLiteralHasNonLiteralAlgorithmsProperty(optionsArg)) {
+		return false;
+	}
+	return objectLiteralVerifyAllowsNone(optionsArg);
+}
+
+export function objectLiteralSignUsesNone(
+	node: ts.ObjectLiteralExpression,
+): boolean {
+	for (const prop of node.properties) {
+		if (!ts.isPropertyAssignment(prop)) {
+			continue;
+		}
+		if (!isAlgorithmPropertyName(prop.name)) {
+			continue;
+		}
+		const { initializer } = prop;
+		return (
+			initializer !== undefined && isNoneAlgorithmStringLiteral(initializer)
+		);
+	}
+	return false;
+}
+
+export function signCallUsesNoneAlgorithm(call: ts.CallExpression): boolean {
+	const optionsArg = getSignOptionsArgument(call);
+	if (!optionsArg || !ts.isObjectLiteralExpression(optionsArg)) {
+		return false;
+	}
+	return objectLiteralSignUsesNone(optionsArg);
+}
+
+export function objectLiteralIgnoresExpiration(
+	node: ts.ObjectLiteralExpression,
+): boolean {
+	for (const prop of node.properties) {
+		if (!ts.isPropertyAssignment(prop)) {
+			continue;
+		}
+		if (!isIgnoreExpirationPropertyName(prop.name)) {
+			continue;
+		}
+		const { initializer } = prop;
+		return (
+			initializer !== undefined &&
+			initializer.kind === ts.SyntaxKind.TrueKeyword
+		);
+	}
+	return false;
+}
+
+export function verifyCallIgnoresExpiration(call: ts.CallExpression): boolean {
+	const optionsArg = getVerifyOptionsArgument(call);
+	if (!optionsArg || !ts.isObjectLiteralExpression(optionsArg)) {
+		return false;
+	}
+	return objectLiteralIgnoresExpiration(optionsArg);
 }

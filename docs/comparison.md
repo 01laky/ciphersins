@@ -28,7 +28,7 @@ export function getUser(token: string) {
 
 CipherSins uses **AST + import binding resolution** to connect `jwt.decode` to the `jsonwebtoken` module regardless of import style.
 
-CipherSins also flags **MD5/SHA1 password hashing** (`createHash`, weak-digest `pbkdf2`), **weak bcrypt cost** (`hashSync`/`genSalt*` with rounds < 10), **timing-unsafe compares** on auth material, and **`Math.random()` in auth context** — neither **npm audit** (dependency CVEs) nor **gitleaks** (secret strings) cover these classes of mistake.
+CipherSins also flags **MD5/SHA1 password hashing** (`createHash`, weak-digest `pbkdf2`), **weak bcrypt cost** (`hashSync`/`genSalt*` with rounds < 10), **timing-unsafe compares** on auth material, **`Math.random()` in auth context**, **`none` algorithm bypass** on JWT verify/sign, and **`ignoreExpiration: true`** — neither **npm audit** (dependency CVEs) nor **gitleaks** (secret strings) cover these classes of mistake.
 
 ## CipherSins vs npm audit
 
@@ -38,23 +38,25 @@ CipherSins also flags **MD5/SHA1 password hashing** (`createHash`, weak-digest `
 
 General SAST tools can encode similar rules, but CipherSins is **purpose-built** for a curated MVP rule set:
 
-- Consistent rule IDs (`CS-JWT-01`, `CS-JWT-02`, `CS-CMP-01`, `CS-RNG-01`, `CS-HASH-01`, `CS-HASH-02`, …)
+- Consistent rule IDs (`CS-JWT-01` … `CS-HASH-02`)
 - Bad/good fixtures per rule
-- Numbered vitest cases per rule (564 tests at v0.7.0)
+- Numbered vitest cases per rule (785 tests at v0.8.0)
 - Linked rule documentation with fix guidance
 
-**Implemented at v0.7.0 (6 rules):**
+**Implemented at v0.8.0 (8 rules):**
 
-| Rule       | What it catches                             |
-| ---------- | ------------------------------------------- |
-| CS-JWT-01  | JWT decode without verify (same file)       |
-| CS-JWT-02  | JWT verify without explicit `algorithms`    |
-| CS-CMP-01  | Timing-unsafe `===`/`==` on auth material   |
-| CS-RNG-01  | `Math.random()` in auth-named context       |
-| CS-HASH-01 | MD5/SHA1 password hashing                   |
-| CS-HASH-02 | Weak bcrypt cost (< 10) in password context |
+| Rule       | Severity | What it catches                             |
+| ---------- | -------- | ------------------------------------------- |
+| CS-JWT-01  | high     | JWT decode without verify (same file)       |
+| CS-JWT-02  | high     | JWT verify without explicit `algorithms`    |
+| CS-JWT-03  | critical | JWT `none` algorithm on verify or sign      |
+| CS-JWT-04  | medium   | JWT verify with `ignoreExpiration: true`    |
+| CS-CMP-01  | high     | Timing-unsafe `===`/`==` on auth material   |
+| CS-RNG-01  | high     | `Math.random()` in auth-named context       |
+| CS-HASH-01 | high     | MD5/SHA1 password hashing                   |
+| CS-HASH-02 | medium   | Weak bcrypt cost (< 10) in password context |
 
-CipherSins flags **`jwt.verify()` without explicit `algorithms`** — ESLint security plugins and generic SAST tools rarely enforce JWT algorithm allowlists on Auth0/jsonwebtoken call sites.
+CipherSins flags **`jwt.verify()` without explicit `algorithms`**, **`none` algorithm bypass**, and **`ignoreExpiration: true`** — ESLint security plugins and generic SAST tools rarely enforce these jsonwebtoken call-site constraints together.
 
 You might still use Semgrep or ESLint alongside CipherSins for broader coverage.
 

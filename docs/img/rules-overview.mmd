@@ -3,6 +3,8 @@ flowchart TB
 		direction TB
 		JWT["CS-JWT-01 · jsonwebtoken bindings"]
 		JWT2["CS-JWT-02 · verify algorithms"]
+		JWT3["CS-JWT-03 · none algorithm critical"]
+		JWT4["CS-JWT-04 · ignoreExpiration medium"]
 		CMP["CS-CMP-01 · auth === / == + import gate"]
 		RNG["CS-RNG-01 · Math.random auth context"]
 		HASH["CS-HASH-01 · weak hash + password context"]
@@ -26,6 +28,24 @@ flowchart TB
 		VALG{"verifyCallMissingAlgorithms()?"}
 		BIND2 --> WALK2 --> VMATCH --> VALG
 		VALG -->|yes| J2FIND["createFinding()"]
+	end
+
+	subgraph JWT3_FLOW["CS-JWT-03"]
+		BIND3["getJsonWebTokenBindings()"]
+		WALK3["collectCallExpressions()"]
+		VSMATCH["tracked jwt.verify() / jwt.sign()"]
+		VNONE{"verifyCallAllowsNoneAlgorithm() or signCallUsesNoneAlgorithm()?"}
+		BIND3 --> WALK3 --> VSMATCH --> VNONE
+		VNONE -->|yes| J3FIND["createFinding() · critical"]
+	end
+
+	subgraph JWT4_FLOW["CS-JWT-04"]
+		BIND4["getJsonWebTokenBindings()"]
+		WALK4["collectCallExpressions()"]
+		VMATCH4["tracked jwt.verify()"]
+		VEXP{"verifyCallIgnoresExpiration()?"}
+		BIND4 --> WALK4 --> VMATCH4 --> VEXP
+		VEXP -->|yes| J4FIND["createFinding() · medium"]
 	end
 
 	subgraph CMP_FLOW["CS-CMP-01"]
@@ -73,12 +93,16 @@ flowchart TB
 
 	JWT --> JWT_FLOW
 	JWT2 --> JWT2_FLOW
+	JWT3 --> JWT3_FLOW
+	JWT4 --> JWT4_FLOW
 	CMP --> CMP_FLOW
 	RNG --> RNG_FLOW
 	HASH --> HASH_FLOW
 	HASH2 --> HASH2_FLOW
 	JFIND --> REPORT
 	J2FIND --> REPORT
+	J3FIND --> REPORT
+	J4FIND --> REPORT
 	CFIND --> REPORT
 	RFIND --> REPORT
 	HFIND --> REPORT
@@ -89,7 +113,7 @@ flowchart TB
 	classDef clean fill:#134e4a,stroke:#5eead4,stroke-width:2px,color:#f0fdfa
 	classDef report fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
 
-	class JWT,JWT2,CMP,RNG,HASH,HASH2 rule
-	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG decision
+	class JWT,JWT2,JWT3,JWT4,CMP,RNG,HASH,HASH2 rule
+	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG,VNONE,VEXP decision
 	class JCLEAN,CCLEAN,CSKIP clean
 	class LOC,MSG,DOC report

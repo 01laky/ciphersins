@@ -17,28 +17,30 @@ Source paths and globs resolve to scannable files, each file is parsed with the 
 | Rules   | `runRules`, `allRules`                   | Per-file `Rule.run(context)`                         |
 | Output  | `scan`, CLI                              | Severity summary; CLI prints relative path + message |
 
-## Rule registry (v0.7.0)
+## Rule registry (v0.8.0)
 
-Six rules run in stable order on every scanned file:
+Eight MVP rules run in stable order on every scanned file:
 
-| Index | Rule       | Category |
-| ----- | ---------- | -------- |
-| 0     | CS-JWT-01  | JWT      |
-| 1     | CS-JWT-02  | JWT      |
-| 2     | CS-CMP-01  | Compare  |
-| 3     | CS-RNG-01  | RNG      |
-| 4     | CS-HASH-01 | Hash     |
-| 5     | CS-HASH-02 | Hash     |
+| Index | Rule       | Severity | Category |
+| ----- | ---------- | -------- | -------- |
+| 0     | CS-JWT-01  | high     | JWT      |
+| 1     | CS-JWT-02  | high     | JWT      |
+| 2     | CS-JWT-03  | critical | JWT      |
+| 3     | CS-JWT-04  | medium   | JWT      |
+| 4     | CS-CMP-01  | high     | Compare  |
+| 5     | CS-RNG-01  | high     | RNG      |
+| 6     | CS-HASH-01 | high     | Hash     |
+| 7     | CS-HASH-02 | medium   | Hash     |
 
 Each rule resolves import/require bindings, walks relevant AST nodes, applies category-specific helpers (`jsonwebtoken-bindings`, `jwt-verify-options`, `crypto-auth-imports`, `password-context`, `bcrypt-bindings`, …), and emits findings via `createFinding()`.
 
 ## Rule detection (CS-JWT-01 example)
 
-CS-JWT-01 suppresses all decode findings when any `jwt.verify()` exists in the same file. **CS-JWT-02** independently flags tracked `verify()` calls missing explicit `{ algorithms: [...] }`. Other rules use their own gates (e.g. CS-CMP-01 requires a crypto/auth import; CS-HASH-02 has no import gate).
+CS-JWT-01 suppresses all decode findings when any `jwt.verify()` exists in the same file. **CS-JWT-02** independently flags tracked `verify()` calls missing explicit `{ algorithms: [...] }`. **CS-JWT-03** flags verify/sign options that allow or use **`none`**. **CS-JWT-04** flags `ignoreExpiration: true`. Other rules use their own gates (e.g. CS-CMP-01 requires a crypto/auth import; CS-HASH-02 has no import gate).
 
 ![CS-JWT-01 detection flow](https://raw.githubusercontent.com/01laky/ciphersins/main/docs/img/rules-overview.svg)
 
-See [`rules/CS-JWT-01.md`](./rules/CS-JWT-01.md) for rule-specific bad/good examples. Hash rules: [CS-HASH-01](./rules/CS-HASH-01.md), [CS-HASH-02](./rules/CS-HASH-02.md).
+See [`rules/CS-JWT-01.md`](./rules/CS-JWT-01.md) for rule-specific bad/good examples. JWT rules: [CS-JWT-02](./rules/CS-JWT-02.md), [CS-JWT-03](./rules/CS-JWT-03.md), [CS-JWT-04](./rules/CS-JWT-04.md). Hash rules: [CS-HASH-01](./rules/CS-HASH-01.md), [CS-HASH-02](./rules/CS-HASH-02.md).
 
 ## Diagram sources
 

@@ -12,6 +12,8 @@ const jwt02BadDir = path.join(rootDir, "fixtures/cs-jwt-02/bad");
 const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
 const rngBadDir = path.join(rootDir, "fixtures/cs-rng-01/bad");
 const hashBadDir = path.join(rootDir, "fixtures/cs-hash-01/bad");
+const jwt03BadDir = path.join(rootDir, "fixtures/cs-jwt-03/bad");
+const jwt04BadDir = path.join(rootDir, "fixtures/cs-jwt-04/bad");
 const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");
 
 function assert(condition, message) {
@@ -40,6 +42,8 @@ assert(
 for (const [dir, ruleId] of [
 	[jwtBadDir, "CS-JWT-01"],
 	[jwt02BadDir, "CS-JWT-02"],
+	[jwt03BadDir, "CS-JWT-03"],
+	[jwt04BadDir, "CS-JWT-04"],
 	[cmpBadDir, "CS-CMP-01"],
 	[rngBadDir, "CS-RNG-01"],
 	[hashBadDir, "CS-HASH-01"],
@@ -62,6 +66,8 @@ for (const [dir, ruleId] of [
 for (const goodDir of [
 	path.join(rootDir, "fixtures/cs-jwt-01/good"),
 	path.join(rootDir, "fixtures/cs-jwt-02/good"),
+	path.join(rootDir, "fixtures/cs-jwt-03/good"),
+	path.join(rootDir, "fixtures/cs-jwt-04/good"),
 	path.join(rootDir, "fixtures/cs-cmp-01/good"),
 	path.join(rootDir, "fixtures/cs-rng-01/good"),
 	path.join(rootDir, "fixtures/cs-hash-01/good"),

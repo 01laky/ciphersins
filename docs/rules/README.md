@@ -8,12 +8,14 @@ Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>
 | ----------------------------- | -------- | --------------------------- | ----------- |
 | [CS-JWT-01](./CS-JWT-01.md)   | high     | JWT decode without verify   | implemented |
 | [CS-JWT-02](./CS-JWT-02.md)   | high     | Verify without algorithms   | implemented |
-| CS-JWT-03                     | critical | Algorithm none / bypass     | planned     |
-| CS-JWT-04                     | medium   | Missing exp validation      | planned     |
+| [CS-JWT-03](./CS-JWT-03.md)   | critical | Algorithm none / bypass     | implemented |
+| [CS-JWT-04](./CS-JWT-04.md)   | medium   | Missing exp validation      | implemented |
 | [CS-CMP-01](./CS-CMP-01.md)   | high     | Timing-unsafe compare       | implemented |
 | [CS-RNG-01](./CS-RNG-01.md)   | high     | Math.random in auth context | implemented |
 | [CS-HASH-01](./CS-HASH-01.md) | high     | MD5/SHA1 for password       | implemented |
 | [CS-HASH-02](./CS-HASH-02.md) | medium   | Weak bcrypt cost            | implemented |
+
+**8/8 MVP rules implemented** at v0.8.0.
 
 ## Adding a rule
 

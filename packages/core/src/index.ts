@@ -33,8 +33,21 @@ export {
 	allRules,
 	csJwt01Rule,
 	csJwt02Rule,
+	csJwt03Rule,
+	csJwt04Rule,
 	csCmp01Rule,
 	csRng01Rule,
 	csHash01Rule,
 	csHash02Rule,
 } from "./rules/index.js";
+export {
+	verifyCallAllowsNoneAlgorithm,
+	signCallUsesNoneAlgorithm,
+	verifyCallIgnoresExpiration,
+	arrayLiteralContainsNone,
+	isNoneAlgorithmStringLiteral,
+	objectLiteralVerifyAllowsNone,
+	objectLiteralIgnoresExpiration,
+	getSignOptionsArgument,
+	getVerifyOptionsArgument,
+} from "./rules/helpers/jwt-verify-options.js";

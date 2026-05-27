@@ -66,7 +66,7 @@ describe("CS-RNG-01 rule registry", () => {
 		expect(csRng01Rule.title).toBe("Math.random in auth context");
 		expect(csRng01Rule.severity).toBe("high");
 		expect(fromRegistry).toBe(csRng01Rule);
-		expect(allRules[3]).toBe(csRng01Rule);
+		expect(allRules[5]).toBe(csRng01Rule);
 	});
 });
 
@@ -412,7 +412,7 @@ describe("CS-RNG-01 extended edge cases", () => {
 		expect(result.findings[0]?.snippet).toMatch(/Math(\?\.|\.)random/i);
 	});
 
-	it("CS-RNG-01-37 shadowed-math-auth-context.ts stays clean with all six rules", async () => {
+	it("CS-RNG-01-37 shadowed-math-auth-context.ts stays clean with all eight rules", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "shadowed-math-auth-context.ts")],
 			cwd: rootDir,

@@ -22,7 +22,7 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 | ----------------------------------- | -------------------------------------------------------------------- |
 | `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                        |
 | `npm run build`                     | Build `@ciphersins/core` and `ciphersins` CLI (no nested pnpm)       |
-| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT (564 at v0.7.0) |
+| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT (785 at v0.8.0) |
 | `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                         |
 | `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                     |
 | `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                         |
@@ -53,7 +53,7 @@ Config file parsing is **not implemented yet**. See [`ciphersins.config.example.
 
 ## Adding a rule
 
-Worked examples: **CS-JWT-01**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02** in `packages/core/src/rules/`. Shared helpers: **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH-01/02), **`bcrypt-bindings`** / **`bcrypt-cost`** (HASH-02).
+Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02** in `packages/core/src/rules/`. Shared helpers: **`jwt-verify-options`** (JWT-02/03/04), **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH-01/02), **`bcrypt-bindings`** / **`bcrypt-cost`** (HASH-02).
 
 1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/` with minimal samples
 2. Implement `Rule` in `packages/core/src/rules/` using AST analysis (no regex-only detection)
@@ -69,7 +69,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.7.0` = CS-JWT-02; `0.6.0` = CS-HASH-02; `0.5.0` = CS-HASH-01; `0.4.2` = CI bin link fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
+- Repo version bumps after each completed phase (`0.8.0` = CS-JWT-03 + CS-JWT-04, **8/8 MVP**; `0.7.0` = CS-JWT-02; `0.6.0` = CS-HASH-02; `0.5.0` = CS-HASH-01; `0.4.2` = CI bin link fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

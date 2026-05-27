@@ -5,6 +5,7 @@ const JSONWEBTOKEN = "jsonwebtoken";
 export interface JsonWebTokenBindings {
 	decodeIdentifiers: Set<string>;
 	verifyIdentifiers: Set<string>;
+	signIdentifiers: Set<string>;
 	memberObjects: Set<string>;
 	hasInlineRequire: boolean;
 }
@@ -13,6 +14,7 @@ export function createEmptyJsonWebTokenBindings(): JsonWebTokenBindings {
 	return {
 		decodeIdentifiers: new Set<string>(),
 		verifyIdentifiers: new Set<string>(),
+		signIdentifiers: new Set<string>(),
 		memberObjects: new Set<string>(),
 		hasInlineRequire: false,
 	};
@@ -93,6 +95,9 @@ function handleImportDeclaration(
 			if (importedName === "verify") {
 				bindings.verifyIdentifiers.add(localName);
 			}
+			if (importedName === "sign") {
+				bindings.signIdentifiers.add(localName);
+			}
 		}
 	}
 }
@@ -133,6 +138,9 @@ function handleRequireInitializer(
 			if (importedName === "verify") {
 				bindings.verifyIdentifiers.add(localName);
 			}
+			if (importedName === "sign") {
+				bindings.signIdentifiers.add(localName);
+			}
 		}
 	}
 }
@@ -158,15 +166,26 @@ export function hasJsonWebTokenUsage(bindings: JsonWebTokenBindings): boolean {
 	return (
 		bindings.decodeIdentifiers.size > 0 ||
 		bindings.verifyIdentifiers.size > 0 ||
+		bindings.signIdentifiers.size > 0 ||
 		bindings.memberObjects.size > 0 ||
 		bindings.hasInlineRequire
 	);
 }
 
+function isJsonWebTokenMemberAccess(
+	node: ts.Node,
+	method: "decode" | "verify" | "sign",
+): node is ts.PropertyAccessExpression {
+	if (!ts.isPropertyAccessExpression(node)) {
+		return false;
+	}
+	return node.name.text === method;
+}
+
 export function matchesJsonWebTokenMethodCall(
 	call: ts.CallExpression,
 	bindings: JsonWebTokenBindings,
-	method: "decode" | "verify",
+	method: "decode" | "verify" | "sign",
 ): boolean {
 	const callee = call.expression;
 
@@ -174,15 +193,13 @@ export function matchesJsonWebTokenMethodCall(
 		const identifiers =
 			method === "decode"
 				? bindings.decodeIdentifiers
-				: bindings.verifyIdentifiers;
+				: method === "verify"
+					? bindings.verifyIdentifiers
+					: bindings.signIdentifiers;
 		return identifiers.has(callee.text);
 	}
 
-	if (!ts.isPropertyAccessExpression(callee)) {
-		return false;
-	}
-
-	if (callee.name.text !== method) {
+	if (!isJsonWebTokenMemberAccess(callee, method)) {
 		return false;
 	}
 

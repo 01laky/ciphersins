@@ -83,6 +83,8 @@ describe("CS-JWT-02 rule registry", () => {
 		expect(allRules.map((rule) => rule.id)).toEqual([
 			"CS-JWT-01",
 			"CS-JWT-02",
+			"CS-JWT-03",
+			"CS-JWT-04",
 			"CS-CMP-01",
 			"CS-RNG-01",
 			"CS-HASH-01",
@@ -474,15 +476,6 @@ describe("CS-JWT-02 per-file good fixtures", () => {
 		expect(result.findings).toEqual([]);
 	});
 
-	it("CS-JWT-02-47 verify-algorithms-none-literal.ts yields zero findings", async () => {
-		const result = await scan({
-			paths: [fixturePath("good", "verify-algorithms-none-literal.ts")],
-			cwd: rootDir,
-		});
-
-		expect(result.findings).toEqual([]);
-	});
-
 	it("CS-JWT-02-48 verify-third-arg-string-literal.ts yields zero findings", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "verify-third-arg-string-literal.ts")],
@@ -545,7 +538,7 @@ describe("CS-JWT-02 metadata and snapshots", () => {
 		const result = await scan({ paths: [jwt02BadDir], cwd: rootDir });
 
 		expect(result.summary.high).toBe(25);
-		expect(result.summary.medium).toBe(0);
+		expect(result.summary.medium).toBe(1);
 	});
 
 	it("CS-JWT-02-55 combined jwt-01 and jwt-02 bad dirs include both rule hits", async () => {
@@ -710,10 +703,10 @@ describe("CS-JWT-02 extended edge cases", () => {
 		expect(new Set(signatures).size).toBe(signatures.length);
 	});
 
-	it("CS-JWT-02-70 good directory scans exactly 24 files", async () => {
+	it("CS-JWT-02-70 good directory scans exactly 23 files", async () => {
 		const result = await scan({ paths: [jwt02GoodDir], cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(24);
+		expect(result.scannedFiles).toHaveLength(23);
 		expect(result.findings).toEqual([]);
 	});
 
@@ -739,8 +732,8 @@ describe("CS-JWT-02 extended edge cases", () => {
 		const result = await scan({ paths: allBad, cwd: rootDir });
 
 		expect(result.summary.high).toBe(93);
-		expect(result.summary.medium).toBe(26);
-		expect(result.findings).toHaveLength(119);
+		expect(result.summary.medium).toBe(27);
+		expect(result.findings).toHaveLength(120);
 	});
 
 	it("CS-JWT-02-73 verify-optional-chaining.ts column on verify call", async () => {
@@ -815,15 +808,6 @@ jwt.verify(token, secret);
 
 	it("CS-JWT-02-79 registry allRules index 1 is csJwt02Rule", () => {
 		expect(allRules[1]).toBe(csJwt02Rule);
-	});
-
-	it("CS-JWT-02-80 verify-algorithms-none-literal.ts yields zero JWT-02 findings", async () => {
-		const result = await scan({
-			paths: [fixturePath("good", "verify-algorithms-none-literal.ts")],
-			cwd: rootDir,
-		});
-
-		expect(filterByRule(result.findings, "CS-JWT-02")).toHaveLength(0);
 	});
 
 	it("CS-JWT-02-81 verify-algorithms-asymmetric.ts yields zero findings", async () => {
@@ -941,7 +925,7 @@ jwt.verify(token, secret);
 		expect(new Set(signatures).size).toBe(25);
 	});
 
-	it("CS-JWT-02-93 all migrated jwt-01 good fixtures stay clean with six rules", async () => {
+	it("CS-JWT-02-93 all migrated jwt-01 good fixtures stay clean with eight rules", async () => {
 		const migrated = [
 			"verify-only.ts",
 			"decode-and-verify-default.ts",

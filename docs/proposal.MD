@@ -1,6 +1,6 @@
 # CipherSins — Implementation Proposal
 
-> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.7.0**) implements the scan pipeline, CLI `scan` command, and **six MVP rules** (CS-JWT-01, CS-JWT-02, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
+> **Note:** This document describes the **v1.0 target** and roadmap. Current pre-release (**0.8.0**) implements the scan pipeline, CLI `scan` command, and **all eight MVP rules** (CS-JWT-01 through CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02). Sections on CLI flags, SARIF, config parsing, and CI `--fail-on` describe **planned** work unless marked implemented in [CHANGELOG](../CHANGELOG.md). Product summary: [about.md](./about.md).
 
 ## What It Is (One-Liner)
 
@@ -56,12 +56,12 @@ Rules use stable IDs: `CS-<CATEGORY>-<NUMBER>`
 
 ### JWT
 
-| ID        | Severity | Description                 | Detection (approximate)                                                           |
-| --------- | -------- | --------------------------- | --------------------------------------------------------------------------------- |
-| CS-JWT-01 | high     | Decode without verify       | `jwt.decode(` without subsequent `jwt.verify` in the same flow / file pattern     |
-| CS-JWT-02 | high     | Verify without `algorithms` | `jwt.verify(token, secret)` without a 3rd argument or without `algorithms: [...]` |
-| CS-JWT-03 | critical | Algorithm none / bypass     | `algorithms: ['none']`, `alg: 'none'`, similar                                    |
-| CS-JWT-04 | medium   | Missing exp validation      | verify without `exp` check / `ignoreExpiration: true` without comment/suppression |
+| ID        | Severity | Description                 | Detection (approximate)                                                                           |
+| --------- | -------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
+| CS-JWT-01 | high     | Decode without verify       | `jwt.decode(` without subsequent `jwt.verify` in the same flow / file pattern                     |
+| CS-JWT-02 | high     | Verify without `algorithms` | `jwt.verify(token, secret)` without a 3rd argument or without `algorithms: [...]`                 |
+| CS-JWT-03 | critical | Algorithm none / bypass     | `algorithms: ['none']` on verify; `algorithm: 'none'` on sign (**implemented v0.8.0**)            |
+| CS-JWT-04 | medium   | Missing exp validation      | `ignoreExpiration: true` on verify (**implemented v0.8.0**); broader exp heuristics deferred v1.1 |
 
 ### Comparison / Timing
 
@@ -302,11 +302,11 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 ### CS-JWT-04 — expiration validation
 
-| Phase     | Recommendation                                                                                                                                            |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| v1.0      | Flag `ignoreExpiration: true` in `jwt.verify` options; flag verify calls with no evidence of `exp` handling in the same function (best-effort AST check). |
-| v1.1+     | Tighter coupling if needed after fixture feedback.                                                                                                        |
-| Rationale | Full “exp must be checked” proof is hard statically; start with obvious misconfigurations.                                                                |
+| Phase        | Recommendation                                                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0 (0.8.0) | **Implemented:** flag `ignoreExpiration: true` in inline `jwt.verify` options object literals on tracked bindings.              |
+| v1.1+        | Flag verify calls with no evidence of `exp` handling in the same function; variable/spread options; comment-based suppressions. |
+| Rationale    | Full “exp must be checked” proof is hard statically; v0.8.0 starts with obvious misconfigurations (`ignoreExpiration: true`).   |
 
 ### CS-CMP-01 — false positive control
 
@@ -325,11 +325,11 @@ Open questions from the proposal review, with recommended defaults for v1.0 impl
 
 ### Versioning — repo vs npm
 
-| Artifact  | Recommendation                                                                                                                  |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Git repo  | Pre-release **0.7.0** in-repo (6/8 MVP rules). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
-| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.     |
-| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                 |
+| Artifact  | Recommendation                                                                                                                      |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Git repo  | Pre-release **0.8.0** in-repo (**8/8 MVP rules**). Bump **MINOR** after each completed rule phase — npm publish at **v1.0.0** only. |
+| npm       | **First and only initial publish: `1.0.0`** when all **8 MVP rules**, config, JSON/SARIF, and MVP success criteria are met.         |
+| Rationale | Development stays in private git; **1.0.0** on npm means “CI-ready rule pack v1” — not a half-finished scanner.                     |
 
 ### npm publish policy
 

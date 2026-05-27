@@ -72,6 +72,20 @@ If you decode for debugging, ensure `jwt.verify()` is also called on the same to
 | Two-arg `jwt.verify(token, secret)` without algorithms | **Not flagged by JWT-01** — covered by **[CS-JWT-02](./CS-JWT-02.md)**  |
 | Local wrapper calling `jwt.decode` inside              | **Flagged** on inner decode call                                        |
 
+## Relationship to CS-JWT-02 / CS-JWT-03 / CS-JWT-04
+
+| File pattern                                            | CS-JWT-01 | CS-JWT-02 | CS-JWT-03 | CS-JWT-04 |
+| ------------------------------------------------------- | --------- | --------- | --------- | --------- |
+| `decode` only                                           | Flags     | Clean     | Clean     | Clean     |
+| `verify` without `algorithms`                           | Clean     | Flags     | Clean     | Clean     |
+| `{ algorithms: ['none'] }` on verify                    | Clean     | Clean     | Flags     | Clean     |
+| `{ ignoreExpiration: true }` with explicit `algorithms` | Clean     | Clean     | Clean     | Flags     |
+| `{ algorithms: ['none'], ignoreExpiration: true }`      | Clean     | Clean     | Flags     | Flags     |
+| `decode` + weak `verify` (no algorithms)                | Clean     | Flags     | Clean     | Clean     |
+| `decode` + `{ algorithms: ['HS256'] }` verify           | Clean     | Clean     | Clean     | Clean     |
+
+Any **`jwt.verify()`** call site in the file suppresses **CS-JWT-01** decode findings, even when that verify is itself flagged by JWT-02, JWT-03, or JWT-04.
+
 ## Fix
 
 Replace decode-only auth paths with verified reads:
@@ -80,7 +94,7 @@ Replace decode-only auth paths with verified reads:
 const payload = jwt.verify(token, secret, { algorithms: ["HS256"] });
 ```
 
-See **[CS-JWT-02](./CS-JWT-02.md)** for verify calls that omit `algorithms`.
+See **[CS-JWT-02](./CS-JWT-02.md)** for verify calls that omit `algorithms`, **[CS-JWT-03](./CS-JWT-03.md)** for `none` algorithm bypass, and **[CS-JWT-04](./CS-JWT-04.md)** for `ignoreExpiration: true`.
 
 ## References
 

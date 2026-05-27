@@ -1,0 +1,61 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CS-JWT-04 extended edge cases > CS-JWT-04-89 golden snapshot verify-algorithms-and-ignore-expiration.ts 1`] = `
+[
+  {
+    "column": 9,
+    "file": "verify-algorithms-and-ignore-expiration.ts",
+    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-04.md",
+    "line": 6,
+    "message": "jwt.verify() called with ignoreExpiration: true; expired tokens will be accepted unless you enforce exp validation elsewhere.",
+    "ruleId": "CS-JWT-04",
+    "severity": "medium",
+    "snippet": "	return jwt.verify(token, secret, {",
+  },
+]
+`;
+
+exports[`CS-JWT-04 extended edge cases > CS-JWT-04-101 golden snapshot verify-spread-ignore-expiration.ts 1`] = `
+[
+  {
+    "column": 9,
+    "file": "verify-spread-ignore-expiration.ts",
+    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-04.md",
+    "line": 7,
+    "message": "jwt.verify() called with ignoreExpiration: true; expired tokens will be accepted unless you enforce exp validation elsewhere.",
+    "ruleId": "CS-JWT-04",
+    "severity": "medium",
+    "snippet": "	return jwt.verify(token, secret, {",
+  },
+]
+`;
+
+exports[`CS-JWT-04 metadata and snapshots > CS-JWT-04-52 golden snapshot verify-ignore-expiration-only.ts 1`] = `
+[
+  {
+    "column": 9,
+    "file": "verify-ignore-expiration-only.ts",
+    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-04.md",
+    "line": 6,
+    "message": "jwt.verify() called with ignoreExpiration: true; expired tokens will be accepted unless you enforce exp validation elsewhere.",
+    "ruleId": "CS-JWT-04",
+    "severity": "medium",
+    "snippet": "	return jwt.verify(token, secret, {",
+  },
+]
+`;
+
+exports[`CS-JWT-04 metadata and snapshots > CS-JWT-04-53 golden snapshot verify-ignore-expiration-callback.ts 1`] = `
+[
+  {
+    "column": 2,
+    "file": "verify-ignore-expiration-callback.ts",
+    "helpUrl": "https://github.com/01laky/ciphersins/blob/main/docs/rules/CS-JWT-04.md",
+    "line": 9,
+    "message": "jwt.verify() called with ignoreExpiration: true; expired tokens will be accepted unless you enforce exp validation elsewhere.",
+    "ruleId": "CS-JWT-04",
+    "severity": "medium",
+    "snippet": "	jwt.verify(",
+  },
+]
+`;

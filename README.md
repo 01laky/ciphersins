@@ -1,11 +1,11 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-0.4.0-blue)
+![core](https://img.shields.io/badge/core-0.4.1-blue)
 ![node](https://img.shields.io/badge/node-%3E%3D18-339933)
 ![rules](https://img.shields.io/badge/rules-3%2F8_implemented-9cf)
 ![tests](https://img.shields.io/badge/tests-200_passing-brightgreen)
 [![ci](https://github.com/01laky/ciphersins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/ciphersins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-pre--release_0.4.0-yellow)
+![status](https://img.shields.io/badge/status-pre--release_0.4.1-yellow)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
@@ -13,7 +13,7 @@
 
 Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** Pre-release **`0.4.0`**. Scan pipeline, TypeScript AST parsing, and **three MVP rules** are implemented: **CS-JWT-01** (decode without verify), **CS-CMP-01** (timing-unsafe compare on auth material), **CS-RNG-01** (`Math.random` in auth context). Remaining JWT, hash rules, SARIF output, and config parsing are on the roadmap. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
+**Status:** Pre-release **`0.4.1`**. Scan pipeline, TypeScript AST parsing, and **three MVP rules** are implemented: **CS-JWT-01** (decode without verify), **CS-CMP-01** (timing-unsafe compare on auth material), **CS-RNG-01** (`Math.random` in auth context). Remaining JWT, hash rules, SARIF output, and config parsing are on the roadmap. **npm publish at v1.0.0** — install from source until then. Review [CHANGELOG.md](./CHANGELOG.md) after each phase bump.
 
 ---
 

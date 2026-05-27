@@ -5,12 +5,12 @@ Guide for working on CipherSins locally. Product spec: [`proposal.MD`](./proposa
 ## Prerequisites
 
 - Node.js **18+**
-- [pnpm](https://pnpm.io/) **9.15.9** (see root `packageManager`)
+- [pnpm](https://pnpm.io/) **9.15.9** for install (see root `packageManager`), or use **`npm install`** after clone
 
 ## First-time setup
 
 ```bash
-pnpm install
+pnpm install   # or: npm install
 ./scripts/setup-githooks.sh
 ```
 
@@ -18,15 +18,17 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 
 ## Common commands
 
-| Command                            | Purpose                                                            |
-| ---------------------------------- | ------------------------------------------------------------------ |
-| `pnpm verify`                      | format → typecheck → build → install (link bin) → test → CLI smoke |
-| `pnpm build`                       | Build `@ciphersins/core` and `ciphersins` CLI                      |
-| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/CMP/RNG/AUTH/INT tests                 |
-| `pnpm exec ciphersins scan [path]` | Run local CLI against a path                                       |
-| `pnpm smoke:cli`                   | Post-build CLI smoke via `scripts/smoke-cli.mjs`                   |
-| `pnpm diagrams:build`              | Regenerate README SVGs from `docs/img/*.mmd`                       |
-| `pnpm format:fix`                  | Apply Prettier (tabs)                                              |
+| Command                             | Purpose                                                        |
+| ----------------------------------- | -------------------------------------------------------------- |
+| `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                  |
+| `npm run build`                     | Build `@ciphersins/core` and `ciphersins` CLI (no nested pnpm) |
+| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/CMP/RNG/AUTH/INT tests             |
+| `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                   |
+| `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`               |
+| `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                   |
+| `npm run format:fix`                | Apply Prettier (tabs)                                          |
+
+\*Root scripts invoke **`npm run`** internally so **`npm run build`** works even when Corepack cannot launch nested **`pnpm`**.
 
 ## Monorepo layout
 
@@ -67,7 +69,7 @@ Export individual rules from `@ciphersins/core` when isolated unit tests need `r
 
 ## Versioning
 
-- Repo version bumps after each completed phase (`0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
+- Repo version bumps after each completed phase (`0.4.1` = build-script fix; `0.4.0` = CS-CMP-01 + CS-RNG-01; `0.3.3` = JWT test hardening).
 - **No npm publish until v1.0.0** when MVP rules and SARIF are complete.
 
 ## CI

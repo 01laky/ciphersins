@@ -3,6 +3,17 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.4.1]
+
+### Fixed
+
+- Root **`build`**, **`typecheck`**, and **`verify`** scripts no longer spawn nested **`pnpm`** processes — they use `scripts/build-packages.mjs` and `scripts/typecheck-packages.mjs` instead. Fixes **`npm run build`** failing when Corepack cannot verify the pinned pnpm release signature (common on some Node 20 installs).
+- CI runs **`npm run verify`** after **`pnpm install --frozen-lockfile`** so verify does not depend on a second Corepack fetch.
+
+### Changed
+
+- CLI `--version` output updated to `0.4.1`.
+
 ## [0.4.0]
 
 ### Added

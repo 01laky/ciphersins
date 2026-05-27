@@ -1,6 +1,6 @@
 {
 	"name": "ciphersins",
-	"version": "0.4.0",
+	"version": "0.4.1",
 	"private": true,
 	"description": "Static scanner for JWT, timing, and weak crypto footguns in Node/TS app code.",
 	"license": "MIT",
@@ -30,14 +30,14 @@
 	"homepage": "https://github.com/01laky/ciphersins#readme",
 	"packageManager": "pnpm@9.15.9",
 	"scripts": {
-		"build": "pnpm -r build",
-		"typecheck": "pnpm --filter @ciphersins/core typecheck && pnpm --filter @ciphersins/core build && pnpm --filter ciphersins typecheck",
+		"build": "node scripts/build-packages.mjs",
+		"typecheck": "node scripts/typecheck-packages.mjs",
 		"test": "vitest run",
 		"format": "prettier --check .",
 		"format:fix": "prettier --write .",
 		"smoke:cli": "node scripts/smoke-cli.mjs",
 		"diagrams:build": "node scripts/build-diagrams.mjs",
-		"verify": "pnpm format && pnpm typecheck && pnpm build && pnpm install && pnpm test && pnpm smoke:cli"
+		"verify": "npm run format && npm run typecheck && npm run build && npm test && npm run smoke:cli"
 	},
 	"prettier": {
 		"useTabs": true,

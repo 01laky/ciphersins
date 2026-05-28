@@ -134,7 +134,7 @@ describe("CS-CLI format and output integration", () => {
 	it("CS-CLI-30 SARIF tool.driver.rules length is 8", () => {
 		const result = cli(["--format", "sarif", "--no-config", jwt03BadFile]);
 		const doc = JSON.parse(result.stdout);
-		expect(doc.runs[0].tool.driver.rules).toHaveLength(8);
+		expect(doc.runs[0].tool.driver.rules).toHaveLength(12);
 	});
 
 	it("CS-CLI-31 every SARIF result ruleId exists in driver rules", () => {
@@ -197,11 +197,11 @@ describe("CS-CLI format and output integration", () => {
 		expect(result.stderr).toMatch(/^error: /);
 	});
 
-	it("CS-CLI-37 zero-findings SARIF good dir has empty results and 8 rules", () => {
+	it("CS-CLI-37 zero-findings SARIF good dir has empty results and 12 rules", () => {
 		const result = cli(["--format", "sarif", "--no-config", jwt03GoodDir]);
 		const doc = JSON.parse(result.stdout);
 		expect(doc.runs[0].results).toEqual([]);
-		expect(doc.runs[0].tool.driver.rules).toHaveLength(8);
+		expect(doc.runs[0].tool.driver.rules).toHaveLength(12);
 	});
 
 	it("CS-CLI-38 zero-findings JSON good dir has findings [] not No findings.", () => {
@@ -251,7 +251,7 @@ describe("CS-CLI format and output integration", () => {
 		]);
 		expect(result.status).toBe(1);
 		const doc = JSON.parse(result.stdout);
-		expect(doc.summary.total).toBe(194);
+		expect(doc.summary.total).toBe(225);
 	}, 30_000);
 
 	it("CS-CLI-48 jwt-03 bad fail-on high quiet --no-config exits 1 with stderr summary", () => {

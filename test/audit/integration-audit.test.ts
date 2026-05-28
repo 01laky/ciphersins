@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { formatJson, scan } from "ciphersins";
 import { mergeScanOptions } from "../../packages/ciphersins/src/config/merge-scan-options.js";
 import { parseScanArgs } from "../../packages/ciphersins/src/parse-scan-args.js";
-import { cli, jwt01BadDir, rootDir } from "../cli/helpers.js";
+import { cli, allBadDirs, jwt01BadDir, rootDir } from "../cli/helpers.js";
 
 const combinedDir = path.join(rootDir, "test/fixtures/combined");
 const crossRuleFile = path.join(combinedDir, "cross-rule-suppression.ts");
@@ -22,15 +22,19 @@ function withTempDir(
 }
 
 describe("CS-INT integration audit", () => {
-	it("CS-INT-41 combined directory triggers all eight MVP rule ids", async () => {
-		const result = await scan({ paths: [combinedDir], cwd: rootDir });
+	it("CS-INT-41 combined bad directories trigger all twelve MVP rule ids", async () => {
+		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 		const ruleIds = [
 			...new Set(result.findings.map((finding) => finding.ruleId)),
 		].sort();
 		expect(ruleIds).toEqual([
 			"CS-CMP-01",
+			"CS-DEC-01",
+			"CS-ENC-01",
+			"CS-ENC-02",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
 			"CS-JWT-01",
 			"CS-JWT-02",
 			"CS-JWT-03",

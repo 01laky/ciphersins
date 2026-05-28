@@ -510,17 +510,19 @@ describe("CS-S46 scan metadata consistency", () => {
 });
 
 describe("CS-S47 edge fixtures with all rules active", () => {
-	it("CS-S47 scans edge-case harness without findings", async () => {
+	it("CS-S47 scans edge-case harness with only CBC static IV ENC-01 finding", async () => {
 		const result = await scan({ paths: [edgeDir], cwd: rootDir });
 
-		expect(result.findings).toEqual([]);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-ENC-01");
 		expect(result.scannedFiles.length).toBeGreaterThan(0);
 	});
 
-	it("CS-S47b edge-case harness file count stable with zero findings", async () => {
+	it("CS-S47b edge-case harness file count stable with one ENC-01 finding", async () => {
 		const result = await scan({ paths: [edgeDir], cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(7);
-		expect(result.findings).toEqual([]);
+		expect(result.scannedFiles).toHaveLength(8);
+		expect(result.findings).toHaveLength(1);
+		expect(result.findings[0]?.ruleId).toBe("CS-ENC-01");
 	});
 });

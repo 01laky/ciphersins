@@ -407,7 +407,7 @@ describe("CS-RNG-01 extended edge cases", () => {
 		expect(result.findings[0]?.snippet).toMatch(/Math(\?\.|\.)random/i);
 	});
 
-	it("CS-RNG-01-37 shadowed-math-auth-context.ts stays clean with all eight rules", async () => {
+	it("CS-RNG-01-37 shadowed-math-auth-context.ts stays clean with all twelve rules", async () => {
 		const result = await scan({
 			paths: [fixturePath("good", "shadowed-math-auth-context.ts")],
 			cwd: rootDir,

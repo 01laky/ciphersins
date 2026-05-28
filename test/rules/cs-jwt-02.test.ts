@@ -89,6 +89,10 @@ describe("CS-JWT-02 rule registry", () => {
 			"CS-RNG-01",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
+			"CS-ENC-01",
+			"CS-ENC-02",
+			"CS-DEC-01",
 		]);
 	});
 });
@@ -732,8 +736,8 @@ describe("CS-JWT-02 extended edge cases", () => {
 		const result = await scan({ paths: allBad, cwd: rootDir });
 
 		expect(result.summary.high).toBe(116);
-		expect(result.summary.medium).toBe(29);
-		expect(result.findings).toHaveLength(145);
+		expect(result.summary.medium).toBe(31);
+		expect(result.findings).toHaveLength(147);
 	});
 
 	it("CS-JWT-02-73 verify-optional-chaining.ts column on verify call", async () => {
@@ -925,7 +929,7 @@ jwt.verify(token, secret);
 		expect(new Set(signatures).size).toBe(28);
 	});
 
-	it("CS-JWT-02-114 all migrated jwt-01 good fixtures stay clean with eight rules", async () => {
+	it("CS-JWT-02-114 all migrated jwt-01 good fixtures stay clean with twelve rules", async () => {
 		const migrated = [
 			"verify-only.ts",
 			"decode-and-verify-default.ts",

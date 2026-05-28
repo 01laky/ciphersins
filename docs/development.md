@@ -52,7 +52,7 @@ Config file parsing is **implemented** — see [`ciphersins.config.example.json`
 
 ## Adding a rule
 
-Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02** in `packages/ciphersins/src/rules/`. Shared helpers: **`jwt-verify-options`** (JWT-02/03/04), **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH-01/02), **`bcrypt-bindings`** / **`bcrypt-cost`** (HASH-02).
+Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02**, **CS-ENC-01**, **CS-ENC-02**, **CS-DEC-01**, **CS-HASH-03** in `packages/ciphersins/src/rules/`. Shared helpers: **`jwt-verify-options`** (JWT-02/03/04), **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH-01/02/03), **`bcrypt-bindings`** / **`bcrypt-cost`** (HASH-02), **`crypto-cipher-bindings`** / **`cipher-literals`** (ENC-01/02, DEC-01), **`pbkdf2-iterations`** (HASH-03).
 
 1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/` with minimal samples
 2. Implement `Rule` in `packages/ciphersins/src/rules/` using AST analysis (no regex-only detection)

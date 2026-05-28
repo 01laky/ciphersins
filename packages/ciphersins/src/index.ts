@@ -72,4 +72,9 @@ export {
 	csRng01Rule,
 	csHash01Rule,
 	csHash02Rule,
+	csHash03Rule,
+	csEnc01Rule,
+	csEnc02Rule,
+	csDec01Rule,
 } from "./rules/index.js";
+export { PBKDF2_MIN_ITERATIONS } from "./rules/helpers/pbkdf2-iterations.js";

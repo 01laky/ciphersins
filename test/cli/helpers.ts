@@ -31,6 +31,14 @@ export const jwt04BadMediumOnlyFile = path.join(
 export const jwt03GoodDir = path.join(rootDir, "fixtures/cs-jwt-03/good");
 export const jwt02GoodDir = path.join(rootDir, "fixtures/cs-jwt-02/good");
 export const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");
+export const enc01BadDir = path.join(rootDir, "fixtures/cs-enc-01/bad");
+export const enc02BadDir = path.join(rootDir, "fixtures/cs-enc-02/bad");
+export const dec01BadDir = path.join(rootDir, "fixtures/cs-dec-01/bad");
+export const hash03BadDir = path.join(rootDir, "fixtures/cs-hash-03/bad");
+export const enc01GoodDir = path.join(rootDir, "fixtures/cs-enc-01/good");
+export const enc02GoodDir = path.join(rootDir, "fixtures/cs-enc-02/good");
+export const dec01GoodDir = path.join(rootDir, "fixtures/cs-dec-01/good");
+export const hash03GoodDir = path.join(rootDir, "fixtures/cs-hash-03/good");
 export const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
 export const ciFixtureDir = path.join(rootDir, "test/fixtures/ci");
 
@@ -43,6 +51,10 @@ export const allBadDirs = [
 	path.join(rootDir, "fixtures/cs-rng-01/bad"),
 	path.join(rootDir, "fixtures/cs-hash-01/bad"),
 	path.join(rootDir, "fixtures/cs-hash-02/bad"),
+	enc01BadDir,
+	enc02BadDir,
+	dec01BadDir,
+	hash03BadDir,
 ];
 
 export function cli(

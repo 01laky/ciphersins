@@ -7,7 +7,15 @@ import {
 	loadConfig,
 	loadConfigFile,
 } from "../../packages/ciphersins/src/config/load-config.js";
-import { cli, jwt01BadDir, jwt03BadDir, rootDir } from "./helpers.js";
+import {
+	cli,
+	dec01BadDir,
+	enc01BadDir,
+	enc02BadDir,
+	jwt01BadDir,
+	jwt03BadDir,
+	rootDir,
+} from "./helpers.js";
 
 function withTempDir(prefix: string, run: (dir: string) => void) {
 	const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
@@ -176,5 +184,89 @@ describe("CS-CLI config loading", () => {
 			expect(result.status).toBe(3);
 			expect(result.stderr).toMatch(/unknown rule id/);
 		});
+	});
+});
+
+describe("CS-CLI v1.2 enc rule config", () => {
+	it("CS-CLI-CFG-ENC-01 config ignore disables CS-ENC-01 findings", () => {
+		withTempDir("ciphersins-cli-ignore-enc01-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ ignore: ["CS-ENC-01"] }),
+			);
+			const result = cli(["--format", "json", enc01BadDir], { cwd: tempDir });
+			expect(result.status).toBe(0);
+			const doc = JSON.parse(result.stdout);
+			expect(
+				doc.findings.some((f: { ruleId: string }) => f.ruleId === "CS-ENC-01"),
+			).toBe(false);
+		});
+	});
+
+	it("CS-CLI-CFG-ENC-02 config rules off disables CS-ENC-02 via rules map", () => {
+		withTempDir("ciphersins-cli-rules-off-enc02-", (tempDir) => {
+			fs.writeFileSync(
+				path.join(tempDir, "ciphersins.config.json"),
+				JSON.stringify({ rules: { "CS-ENC-02": "off" } }),
+			);
+			const result = cli(["--format", "json", enc02BadDir], { cwd: tempDir });
+			const doc = JSON.parse(result.stdout);
+			expect(
+				doc.findings.some((f: { ruleId: string }) => f.ruleId === "CS-ENC-02"),
+			).toBe(false);
+			expect(
+				doc.findings.some((f: { ruleId: string }) => f.ruleId === "CS-ENC-01"),
+			).toBe(true);
+		});
+	});
+});
+
+describe("CS-CLI v1.2 enc rule filters", () => {
+	it("CS-CLI-FILT-ENC-01 CLI --only CS-ENC-01 limits enc-01 bad output", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--only",
+			"CS-ENC-01",
+			enc01BadDir,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		expect(doc.findings.length).toBeGreaterThan(0);
+		expect(
+			doc.findings.every((f: { ruleId: string }) => f.ruleId === "CS-ENC-01"),
+		).toBe(true);
+	});
+
+	it("CS-CLI-FILT-ENC-02 CLI --only CS-ENC-02 limits enc-02 bad output", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--only",
+			"CS-ENC-02",
+			enc02BadDir,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		expect(doc.findings.length).toBeGreaterThan(0);
+		expect(
+			doc.findings.every((f: { ruleId: string }) => f.ruleId === "CS-ENC-02"),
+		).toBe(true);
+	});
+
+	it("CS-CLI-FILT-ENC-03 CLI --only CS-DEC-01 limits dec-01 bad output", () => {
+		const result = cli([
+			"--format",
+			"json",
+			"--only",
+			"CS-DEC-01",
+			dec01BadDir,
+		]);
+		expect(result.status).toBe(0);
+		const doc = JSON.parse(result.stdout);
+		expect(doc.findings.length).toBeGreaterThan(0);
+		expect(
+			doc.findings.every((f: { ruleId: string }) => f.ruleId === "CS-DEC-01"),
+		).toBe(true);
 	});
 });

@@ -12,7 +12,7 @@ inputs:
   version:
     description: npm version pin for ciphersins
     required: false
-    default: "1.1.0"
+    default: "1.2.0"
   fail-on:
     description: Severity threshold for exit code 1 (low|medium|high|critical|none)
     required: false

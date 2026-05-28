@@ -24,7 +24,11 @@ A static CLI scanner for **crypto API misuse** in TypeScript/JavaScript applicat
 
 ## How many rules are implemented?
 
-**8/8 MVP rules** at **1.0.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02. See [rules index](./rules/README.md).
+**12/12 rules** at **1.2.0**: CS-JWT-01, CS-JWT-02, CS-JWT-03 (**critical**), CS-JWT-04, CS-CMP-01, CS-RNG-01, CS-HASH-01, CS-HASH-02, CS-ENC-01, CS-ENC-02, CS-DEC-01, CS-HASH-03. See [rules index](./rules/README.md).
+
+## CS-HASH-01 vs CS-HASH-03 — what's the difference?
+
+**CS-HASH-01** flags **weak digests** (MD5/SHA1) in password-named code — including `pbkdf2`/`pbkdf2Sync` with `'md5'` or `'sha1'`. **CS-HASH-03** flags **low PBKDF2 iteration counts** (< 100,000) in password context — even when the digest is `sha256`. A call like `pbkdf2Sync(password, salt, 1000, 32, "md5")` can trigger **both** rules. Prefer bcrypt (cost ≥ 12), argon2, or scrypt instead of tuning PBKDF2 alone. See [CS-HASH-01](./rules/CS-HASH-01.md) and [CS-HASH-03](./rules/CS-HASH-03.md).
 
 ## Why same-file scope for CS-JWT-01?
 

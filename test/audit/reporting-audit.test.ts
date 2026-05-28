@@ -168,7 +168,7 @@ describe("CS-REP-EXT audit reporting", () => {
 		}
 	});
 
-	it("CS-REP-EXT-30 all 8 rule ids appear in SARIF driver rules in allRules order", async () => {
+	it("CS-REP-EXT-30 all 12 rule ids appear in SARIF driver rules in allRules order", async () => {
 		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
 		const sarif = formatSarif(result, { cwd: rootDir, toolVersion: "1.0.0" });
 		const ids = JSON.parse(sarif).runs[0].tool.driver.rules.map(

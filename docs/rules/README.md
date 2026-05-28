@@ -14,8 +14,12 @@ Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>
 | [CS-RNG-01](./CS-RNG-01.md)   | high     | Math.random in auth context | implemented |
 | [CS-HASH-01](./CS-HASH-01.md) | high     | MD5/SHA1 for password       | implemented |
 | [CS-HASH-02](./CS-HASH-02.md) | medium   | Weak bcrypt cost            | implemented |
+| [CS-ENC-01](./CS-ENC-01.md)   | medium   | Hardcoded cipher key or IV  | implemented |
+| [CS-ENC-02](./CS-ENC-02.md)   | high     | AES-GCM static or reused IV | implemented |
+| [CS-DEC-01](./CS-DEC-01.md)   | medium   | Deprecated createDecipher   | implemented |
+| [CS-HASH-03](./CS-HASH-03.md) | medium   | PBKDF2 iterations too low   | implemented |
 
-**8/8 MVP rules implemented** at v1.0.0.
+**12/12 rules implemented** at v1.2.0.
 
 Each rule doc includes **Suppressing** (inline comments), **Library scope** (which npm modules are tracked), **Limitations** (known false negatives/positives), and **Source** (implementation file under `packages/ciphersins/src/rules/`).
 

@@ -9,6 +9,10 @@ flowchart TB
 		RNG["CS-RNG-01 · Math.random auth context"]
 		HASH["CS-HASH-01 · weak hash + password context"]
 		HASH2["CS-HASH-02 · weak bcrypt cost"]
+		ENC1["CS-ENC-01 · hardcoded key/IV"]
+		ENC2["CS-ENC-02 · GCM static/reused IV"]
+		DEC1["CS-DEC-01 · deprecated createCipher"]
+		HASH3["CS-HASH-03 · low PBKDF2 iterations"]
 	end
 
 	subgraph JWT_FLOW["CS-JWT-01"]
@@ -84,6 +88,41 @@ flowchart TB
 		PWD2 -->|yes| H2FIND["createFinding()"]
 	end
 
+	subgraph ENC1_FLOW["CS-ENC-01"]
+		CBIND["getCipherBindings()"]
+		CIV{"createCipheriv or createDecipheriv?"}
+		HARD{"key or IV hardcoded literal?"}
+		CBIND --> CIV --> HARD
+		HARD -->|yes| E1FIND["createFinding() · medium"]
+	end
+
+	subgraph ENC2_FLOW["CS-ENC-02"]
+		CBIND2["getCipherBindings()"]
+		GCM{"aes-*-gcm algorithm?"}
+		RAND{"IV from randomBytes()?"}
+		REUSE{"static IV or reused literal?"}
+		CBIND2 --> GCM --> RAND
+		RAND -->|no| REUSE
+		REUSE -->|yes| E2FIND["createFinding() · high"]
+	end
+
+	subgraph DEC1_FLOW["CS-DEC-01"]
+		CBIND3["getCipherBindings()"]
+		DEP{"createCipher or createDecipher?"}
+		CBIND3 --> DEP
+		DEP -->|yes| D1FIND["createFinding() · medium"]
+	end
+
+	subgraph HASH3_FLOW["CS-HASH-03"]
+		HBIND3["getHashBindingsForPbkdf2()"]
+		PBK{"tracked pbkdf2/pbkdf2Sync?"}
+		PWD3{"callHasPasswordContext()?"}
+		ITER{"iterations < 100_000?"}
+		HBIND3 --> PBK --> PWD3
+		PWD3 -->|yes| ITER
+		ITER -->|yes| H3FIND["createFinding() · medium"]
+	end
+
 	subgraph REPORT["Finding output"]
 		direction LR
 		LOC["file · line · column"]
@@ -99,6 +138,10 @@ flowchart TB
 	RNG --> RNG_FLOW
 	HASH --> HASH_FLOW
 	HASH2 --> HASH2_FLOW
+	ENC1 --> ENC1_FLOW
+	ENC2 --> ENC2_FLOW
+	DEC1 --> DEC1_FLOW
+	HASH3 --> HASH3_FLOW
 	JFIND --> REPORT
 	J2FIND --> REPORT
 	J3FIND --> REPORT
@@ -107,13 +150,17 @@ flowchart TB
 	RFIND --> REPORT
 	HFIND --> REPORT
 	H2FIND --> REPORT
+	E1FIND --> REPORT
+	E2FIND --> REPORT
+	D1FIND --> REPORT
+	H3FIND --> REPORT
 
 	classDef rule fill:#431407,stroke:#fb923c,stroke-width:2px,color:#ffedd5
 	classDef decision fill:#312e81,stroke:#a5b4fc,stroke-width:2px,color:#eef2ff
 	classDef clean fill:#134e4a,stroke:#5eead4,stroke-width:2px,color:#f0fdfa
 	classDef report fill:#172554,stroke:#60a5fa,stroke-width:2px,color:#dbeafe
 
-	class JWT,JWT2,JWT3,JWT4,CMP,RNG,HASH,HASH2 rule
-	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG,VNONE,VEXP decision
+	class JWT,JWT2,JWT3,JWT4,CMP,RNG,HASH,HASH2,ENC1,ENC2,DEC1,HASH3 rule
+	class VERIFY,GATE,AUTH,SAFE,CTX,WEAK,PWD,COST,PWD2,VALG,VNONE,VEXP,CIV,HARD,GCM,RAND,REUSE,DEP,PBK,PWD3,ITER decision
 	class JCLEAN,CCLEAN,CSKIP clean
 	class LOC,MSG,DOC report

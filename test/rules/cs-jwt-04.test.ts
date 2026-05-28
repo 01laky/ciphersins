@@ -33,6 +33,10 @@ const allBadDirs = [
 	path.join(rootDir, "fixtures/cs-rng-01/bad"),
 	path.join(rootDir, "fixtures/cs-hash-01/bad"),
 	path.join(rootDir, "fixtures/cs-hash-02/bad"),
+	path.join(rootDir, "fixtures/cs-enc-01/bad"),
+	path.join(rootDir, "fixtures/cs-enc-02/bad"),
+	path.join(rootDir, "fixtures/cs-dec-01/bad"),
+	path.join(rootDir, "fixtures/cs-hash-03/bad"),
 ];
 
 const allGoodDirs = [
@@ -110,6 +114,10 @@ describe("CS-JWT-04 rule registry", () => {
 			"CS-RNG-01",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
+			"CS-ENC-01",
+			"CS-ENC-02",
+			"CS-DEC-01",
 		]);
 	});
 });
@@ -928,7 +936,7 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 		expect(filterByRule(result.findings, "CS-JWT-04")).toHaveLength(23);
 	});
 
-	it("CS-JWT-04-98 entire jwt-04 good directory stays clean with all eight rules", async () => {
+	it("CS-JWT-04-98 entire jwt-04 good directory stays clean with all twelve rules", async () => {
 		const result = await scan({ paths: [jwt04GoodDir], cwd: rootDir });
 
 		expect(result.scannedFiles).toHaveLength(13);

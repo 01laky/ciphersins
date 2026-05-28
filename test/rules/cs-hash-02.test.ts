@@ -84,6 +84,10 @@ describe("CS-HASH-02 rule registry", () => {
 			"CS-RNG-01",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
+			"CS-ENC-01",
+			"CS-ENC-02",
+			"CS-DEC-01",
 		]);
 	});
 });

@@ -3,6 +3,37 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.2.0]
+
+### Added
+
+- **CS-ENC-01** — flags hardcoded key or IV literals passed to tracked `createCipheriv` / `createDecipheriv` calls; uses `crypto-cipher-bindings` and `cipher-literals` helpers for import-aware Node `crypto` detection.
+- **CS-ENC-02** — flags AES-GCM `createCipheriv` with static IV literals or the same literal IV reused across multiple GCM calls in one file; bypasses when IV comes from tracked `randomBytes()`.
+- **CS-DEC-01** — flags deprecated `createCipher` / `createDecipher` (OpenSSL EVP_BytesToKey) in favor of explicit `createCipheriv` / `createDecipheriv`.
+- **CS-HASH-03** — flags `pbkdf2` / `pbkdf2Sync` with iteration count below 100,000 in password context; complements CS-HASH-01 (weak digest) with iteration threshold via `pbkdf2-iterations` helper.
+- **Shared helpers** — `cipher-literals`, `crypto-cipher-bindings`, `pbkdf2-iterations` under `packages/ciphersins/src/rules/helpers/`.
+- **Fixtures** — `fixtures/cs-enc-01`, `cs-enc-02`, `cs-dec-01`, `cs-hash-03` with bad/good samples per rule.
+- **Rule documentation** — `docs/rules/CS-ENC-01.md`, `CS-ENC-02.md`, `CS-DEC-01.md`, `CS-HASH-03.md` with false-positive tables; CS-HASH-03 includes CS-HASH-01 overlap table.
+- **Vitest coverage** — **1429** tests (≥142 new vs v1.1.0 baseline of 1239); extended edge-case suites (`cs-enc-edge`, `cipher-literals`, binding/PBKDF2 helpers), suppression fixtures, config filter tests per §12 extended scope.
+
+### Changed
+
+- **`allRules` registry** — CS-ENC-01, CS-ENC-02, CS-DEC-01, CS-HASH-03 registered alongside existing eight rules (**12/12**).
+- **Architecture diagrams** — `rules-overview.mmd` extended with four new rule flows; `pipeline.mmd` registry label updated to 12 rules.
+- **GitHub Action default version** — composite action `version` input default `1.1.0` → `1.2.0`.
+- **action-smoke.yml** — ENC good fixture scan step after JWT good fixture.
+
+### Documentation
+
+- **Rules index** — `docs/rules/README.md` lists 12/12 implemented rules with links.
+- **README** — rule table, badges, and status updated for v1.2.0.
+- **comparison.md** — four new rule rows; test count reference updated.
+- **proposal.md** — v1.2 roadmap marked implemented.
+- **github-action.md** — `@v1.2.0` examples and default version pin.
+- **development.md** — helpers list and worked examples for v1.2 rules.
+- **faq.md** — rule count and CS-HASH-01 vs CS-HASH-03 distinction.
+- **ciphersins.config.example.json** — severity examples for CS-ENC-01, CS-ENC-02, CS-HASH-03.
+
 ## [1.1.0]
 
 ### Added

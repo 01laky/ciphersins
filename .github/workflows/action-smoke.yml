@@ -53,6 +53,16 @@ jobs:
           write-summary: true
           scan-title: CipherSins smoke (good)
 
+      - name: ENC good fixture should pass
+        uses: ./.github/actions/scan
+        with:
+          path: fixtures/cs-enc-01/good
+          fail-on: high
+          upload-sarif: false
+          version: workspace
+          format: json
+          write-summary: false
+
       - name: Soft-fail allows exit 1
         uses: ./.github/actions/scan
         with:

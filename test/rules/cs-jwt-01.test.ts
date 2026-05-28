@@ -577,7 +577,7 @@ describe("CS-JWT-01 extended edge cases", () => {
 		expect(finding!.snippet).toMatch(/jwt\?\.decode|decode/i);
 	});
 
-	it("CS-JWT-01-51 entire jwt-01 good directory stays clean with eight rules", async () => {
+	it("CS-JWT-01-51 entire jwt-01 good directory stays clean with twelve rules", async () => {
 		const result = await scan({ paths: [jwtGoodDir], cwd: rootDir });
 
 		expect(result.findings).toEqual([]);

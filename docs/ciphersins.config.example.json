@@ -5,7 +5,10 @@
 	"only": [],
 	"rules": {
 		"CS-JWT-02": "error",
-		"CS-HASH-02": "warn"
+		"CS-HASH-02": "warn",
+		"CS-ENC-01": "warn",
+		"CS-ENC-02": "error",
+		"CS-HASH-03": "warn"
 	},
 	"ignore": []
 }

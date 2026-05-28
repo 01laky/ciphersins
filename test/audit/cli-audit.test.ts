@@ -326,11 +326,11 @@ jwt.decode("token");
 		expect(result.stderr).not.toContain("~/foo");
 	}, 15_000);
 
-	it("CS-CLI-92 --list-rules prints all 8 rules as JSON", () => {
+	it("CS-CLI-92 --list-rules prints all 12 rules as JSON", () => {
 		const result = cli(["--list-rules"]);
 		expect(result.status).toBe(0);
 		const rules = JSON.parse(result.stdout);
-		expect(rules).toHaveLength(8);
+		expect(rules).toHaveLength(12);
 		expect(rules.map((rule: { id: string }) => rule.id)).toContain("CS-JWT-01");
 		expect(rules[0]).toMatchObject({
 			id: expect.any(String),

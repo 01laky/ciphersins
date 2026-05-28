@@ -35,6 +35,10 @@ const allBadDirs = [
 	path.join(rootDir, "fixtures/cs-rng-01/bad"),
 	path.join(rootDir, "fixtures/cs-hash-01/bad"),
 	path.join(rootDir, "fixtures/cs-hash-02/bad"),
+	path.join(rootDir, "fixtures/cs-enc-01/bad"),
+	path.join(rootDir, "fixtures/cs-enc-02/bad"),
+	path.join(rootDir, "fixtures/cs-dec-01/bad"),
+	path.join(rootDir, "fixtures/cs-hash-03/bad"),
 ];
 
 const allGoodDirs = [
@@ -112,6 +116,10 @@ describe("CS-JWT-03 rule registry", () => {
 			"CS-RNG-01",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
+			"CS-ENC-01",
+			"CS-ENC-02",
+			"CS-DEC-01",
 		]);
 	});
 });
@@ -725,13 +733,13 @@ describe("CS-JWT-03 extended edge cases", () => {
 		expect(result.findings[0]?.snippet).toContain("jwt.sign");
 	});
 
-	it("CS-JWT-03-72 combined eight bad dirs summary critical high medium and total counts", async () => {
+	it("CS-JWT-03-72 combined twelve bad dirs summary critical high medium and total counts", async () => {
 		const result = await scan({ paths: allBadDirs, cwd: rootDir });
 
 		expect(result.summary.critical).toBe(27);
-		expect(result.summary.high).toBe(116);
-		expect(result.summary.medium).toBe(51);
-		expect(result.findings).toHaveLength(194);
+		expect(result.summary.high).toBe(122);
+		expect(result.summary.medium).toBe(76);
+		expect(result.findings).toHaveLength(225);
 	});
 
 	it("CS-JWT-03-73 verify-algorithms-none-and-hs256.ts yields exactly one finding", async () => {
@@ -946,7 +954,7 @@ jwt.sign({ sub: "u" }, secret, { algorithm: "HS256" });
 		);
 	});
 
-	it("CS-JWT-03-92 entire jwt-03 good directory stays clean with all eight rules", async () => {
+	it("CS-JWT-03-92 entire jwt-03 good directory stays clean with all twelve rules", async () => {
 		const result = await scan({ paths: [jwt03GoodDir], cwd: rootDir });
 
 		expect(result.scannedFiles).toHaveLength(15);

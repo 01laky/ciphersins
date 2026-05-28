@@ -84,6 +84,10 @@ describe("CS-HASH-01 rule registry", () => {
 			"CS-RNG-01",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
+			"CS-ENC-01",
+			"CS-ENC-02",
+			"CS-DEC-01",
 		]);
 	});
 });
@@ -91,12 +95,12 @@ describe("CS-HASH-01 rule registry", () => {
 describe("CS-HASH-01 directory scans", () => {
 	it("CS-HASH-01-04 flags bad fixtures with high severity", async () => {
 		const result = await scan({ paths: [hashBadDir], cwd: rootDir });
+		const hashFindings = filterByRule(result.findings, "CS-HASH-01");
 
-		expect(result.findings).toHaveLength(32);
+		expect(hashFindings).toHaveLength(32);
 		expect(result.scannedFiles).toHaveLength(31);
-		expect(result.findings.every((f) => f.ruleId === "CS-HASH-01")).toBe(true);
-		expect(result.findings.every((f) => f.severity === "high")).toBe(true);
-		expect(result.findings.every((f) => f.message === CS_HASH_01_MESSAGE)).toBe(
+		expect(hashFindings.every((f) => f.severity === "high")).toBe(true);
+		expect(hashFindings.every((f) => f.message === CS_HASH_01_MESSAGE)).toBe(
 			true,
 		);
 	});
@@ -181,22 +185,22 @@ describe("CS-HASH-01 per-file bad fixtures", () => {
 		expect(result.findings).toHaveLength(1);
 	});
 
-	it("CS-HASH-01-14 pbkdf2-md5-password.ts yields exactly one finding", async () => {
+	it("CS-HASH-01-14 pbkdf2-md5-password.ts yields exactly one CS-HASH-01 finding", async () => {
 		const result = await scan({
 			paths: [fixturePath("bad", "pbkdf2-md5-password.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
 	});
 
-	it("CS-HASH-01-15 pbkdf2-async-sha1-password.ts yields exactly one finding", async () => {
+	it("CS-HASH-01-15 pbkdf2-async-sha1-password.ts yields exactly one CS-HASH-01 finding", async () => {
 		const result = await scan({
 			paths: [fixturePath("bad", "pbkdf2-async-sha1-password.ts")],
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toHaveLength(1);
+		expect(filterByRule(result.findings, "CS-HASH-01")).toHaveLength(1);
 	});
 
 	it("CS-HASH-01-16 chained-digest-password.ts yields exactly one finding", async () => {
@@ -469,9 +473,10 @@ describe("CS-HASH-01 finding shape", () => {
 			paths: [fixturePath("bad", "pbkdf2-md5-password.ts")],
 			cwd: rootDir,
 		});
+		const hash01Finding = filterByRule(result.findings, "CS-HASH-01")[0];
 
-		expect(result.findings).toHaveLength(1);
-		expect(normalizeFinding(result.findings[0]!)).toMatchSnapshot();
+		expect(hash01Finding).toBeDefined();
+		expect(normalizeFinding(hash01Finding!)).toMatchSnapshot();
 	});
 
 	it("CS-HASH-01-45 summary.high equals CS-HASH-01 finding count for bad directory", async () => {
@@ -479,7 +484,7 @@ describe("CS-HASH-01 finding shape", () => {
 		const hashFindings = filterByRule(result.findings, "CS-HASH-01");
 
 		expect(result.summary.high).toBe(hashFindings.length);
-		expect(result.summary.medium).toBe(0);
+		expect(result.summary.medium).toBe(2);
 		expect(result.summary.low).toBe(0);
 		expect(result.summary.critical).toBe(0);
 	});
@@ -492,7 +497,9 @@ describe("CS-HASH-01 isolated rule run", () => {
 			csHash01Rule.run(createRuleContext(file)),
 		);
 
-		const scanSigs = scanResult.findings.map(findingSignature).sort();
+		const scanSigs = filterByRule(scanResult.findings, "CS-HASH-01")
+			.map(findingSignature)
+			.sort();
 		const isolatedSigs = isolatedFindings.map(findingSignature).sort();
 
 		expect(isolatedSigs).toEqual(scanSigs);

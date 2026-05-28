@@ -9,8 +9,12 @@ import {
 	createEmptySummary,
 	createRuleContext,
 	csCmp01Rule,
+	csDec01Rule,
+	csEnc01Rule,
+	csEnc02Rule,
 	csHash01Rule,
 	csHash02Rule,
+	csHash03Rule,
 	csJwt01Rule,
 	csJwt02Rule,
 	csJwt03Rule,
@@ -19,6 +23,7 @@ import {
 	formatRelativePath,
 	getLineSnippet,
 	parseSourceFile,
+	PBKDF2_MIN_ITERATIONS,
 	resolveDefaultScanRoot,
 	resolveFiles,
 	runRules,
@@ -54,12 +59,17 @@ describe("CS-S01 exports", () => {
 		expect(typeof csRng01Rule.run).toBe("function");
 		expect(typeof csHash01Rule.run).toBe("function");
 		expect(typeof csHash02Rule.run).toBe("function");
+		expect(typeof csHash03Rule.run).toBe("function");
+		expect(typeof csEnc01Rule.run).toBe("function");
+		expect(typeof csEnc02Rule.run).toBe("function");
+		expect(typeof csDec01Rule.run).toBe("function");
+		expect(PBKDF2_MIN_ITERATIONS).toBe(100_000);
 	});
 });
 
 describe("CS-S02 rule registry", () => {
-	it("CS-S02 registers all eight MVP rules in stable order", () => {
-		expect(allRules).toHaveLength(8);
+	it("CS-S02 registers all twelve MVP rules in stable order", () => {
+		expect(allRules).toHaveLength(12);
 		expect(allRules.map((r) => r.id)).toEqual([
 			"CS-JWT-01",
 			"CS-JWT-02",
@@ -69,6 +79,10 @@ describe("CS-S02 rule registry", () => {
 			"CS-RNG-01",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
+			"CS-ENC-01",
+			"CS-ENC-02",
+			"CS-DEC-01",
 		]);
 	});
 });
@@ -84,6 +98,10 @@ describe("CS-S49 rule registry order", () => {
 			"CS-RNG-01",
 			"CS-HASH-01",
 			"CS-HASH-02",
+			"CS-HASH-03",
+			"CS-ENC-01",
+			"CS-ENC-02",
+			"CS-DEC-01",
 		]);
 	});
 });

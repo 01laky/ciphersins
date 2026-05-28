@@ -488,7 +488,7 @@ describe("CS-CMP-01 extended edge cases", () => {
 		expect(result.findings).toEqual([]);
 	});
 
-	it("CS-CMP-01-44 bcrypt-import-token-compare.ts flags CS-CMP-01 with all eight rules", async () => {
+	it("CS-CMP-01-44 bcrypt-import-token-compare.ts flags CS-CMP-01 with all twelve rules", async () => {
 		const result = await scan({
 			paths: [fixturePath("bad", "bcrypt-import-token-compare.ts")],
 			cwd: rootDir,

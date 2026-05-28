@@ -3,7 +3,7 @@
 exports[`CS-CLI format and output integration > CS-CLI-20 JSON golden snapshot for jwt-03 bad file 1`] = `
 "{
   "schemaVersion": 2,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "tool": "ciphersins",
   "summary": {
     "low": 0,
@@ -272,8 +272,104 @@ exports[`CS-CLI format and output integration > CS-CLI-22 SARIF golden snapshot 
                 "text": "Weak bcrypt cost",
               },
             },
+            {
+              "defaultConfiguration": {
+                "level": "warning",
+              },
+              "fullDescription": {
+                "text": "PBKDF2 iteration count too low",
+              },
+              "help": {
+                "text": "See [CS-HASH-03](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-03.md) — PBKDF2 iteration count too low.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-03.md",
+              "id": "CS-HASH-03",
+              "name": "CSHASH03",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                ],
+              },
+              "shortDescription": {
+                "text": "PBKDF2 iteration count too low",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning",
+              },
+              "fullDescription": {
+                "text": "Hardcoded cipher key or IV",
+              },
+              "help": {
+                "text": "See [CS-ENC-01](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-01.md) — Hardcoded cipher key or IV.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-01.md",
+              "id": "CS-ENC-01",
+              "name": "CSENC01",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                ],
+              },
+              "shortDescription": {
+                "text": "Hardcoded cipher key or IV",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error",
+              },
+              "fullDescription": {
+                "text": "AES-GCM static or reused IV",
+              },
+              "help": {
+                "text": "See [CS-ENC-02](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-02.md) — AES-GCM static or reused IV.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-02.md",
+              "id": "CS-ENC-02",
+              "name": "CSENC02",
+              "properties": {
+                "security-severity": "7.5",
+                "tags": [
+                  "security",
+                  "high",
+                ],
+              },
+              "shortDescription": {
+                "text": "AES-GCM static or reused IV",
+              },
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning",
+              },
+              "fullDescription": {
+                "text": "Deprecated createDecipher / createCipher",
+              },
+              "help": {
+                "text": "See [CS-DEC-01](https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-DEC-01.md) — Deprecated createDecipher / createCipher.",
+              },
+              "helpUri": "https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-DEC-01.md",
+              "id": "CS-DEC-01",
+              "name": "CSDEC01",
+              "properties": {
+                "security-severity": "5.5",
+                "tags": [
+                  "security",
+                  "medium",
+                ],
+              },
+              "shortDescription": {
+                "text": "Deprecated createDecipher / createCipher",
+              },
+            },
           ],
-          "version": "1.1.0",
+          "version": "1.2.0",
         },
       },
     },

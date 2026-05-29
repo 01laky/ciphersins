@@ -1,5 +1,6 @@
 import { runScanCommand, installScanSignalHandlers } from "./commands/scan.js";
 import { ensureBlockingStdout } from "./ensure-blocking-stdout.js";
+import { errorMessage } from "./shared/error-message.js";
 import { VERSION } from "./version.js";
 
 ensureBlockingStdout();
@@ -104,13 +105,11 @@ process.on("uncaughtException", (error: Error) => {
 });
 
 process.on("unhandledRejection", (reason: unknown) => {
-	const message = reason instanceof Error ? reason.message : String(reason);
-	process.stderr.write(`error: ${message}\n`);
+	process.stderr.write(`error: ${errorMessage(reason)}\n`);
 	process.exit(4);
 });
 
 main().catch((error: unknown) => {
-	const message = error instanceof Error ? error.message : String(error);
-	process.stderr.write(`error: ${message}\n`);
+	process.stderr.write(`error: ${errorMessage(error)}\n`);
 	process.exit(4);
 });

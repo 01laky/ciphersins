@@ -16,6 +16,7 @@ import {
 	summarizeFindings,
 	type Finding,
 } from "ciphersins";
+import { collectCallExpressions } from "../../packages/ciphersins/src/rules/helpers/collect-call-expressions.js";
 import {
 	discoverConfigPath,
 	loadConfig,
@@ -144,7 +145,11 @@ describe("CS-MISC core and CLI helpers", () => {
 jwt.decode("token");
 `,
 		);
-		const context = { filePath: source.fileName, sourceFile: source };
+		const context = {
+			filePath: source.fileName,
+			sourceFile: source,
+			getCallExpressions: () => collectCallExpressions(source),
+		};
 		for (const rule of allRules) {
 			const first = rule.run(context);
 			const second = rule.run(context);

@@ -20,12 +20,14 @@ export interface Rule {
 	id: string;
 	title: string;
 	severity: Severity;
+	cweTags?: string[];
 	run(context: RuleContext): Finding[];
 }
 
 export interface RuleContext {
 	filePath: string;
 	sourceFile: import("typescript").SourceFile;
+	getCallExpressions(): import("typescript").CallExpression[];
 }
 
 export interface ScanOptions {

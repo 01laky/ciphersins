@@ -23,6 +23,7 @@ function runJwt01OnSource(fileName: string, source: string) {
 	return csJwt01Rule.run({
 		filePath: path.resolve(rootDir, fileName),
 		sourceFile,
+		getCallExpressions: () => collectCallExpressions(sourceFile),
 	});
 }
 

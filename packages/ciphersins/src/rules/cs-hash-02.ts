@@ -1,5 +1,4 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import {
 	getBcryptBindings,
 	isWeakBcryptOperation,
@@ -9,8 +8,6 @@ import { createFinding } from "./helpers/finding.js";
 
 const MESSAGE =
 	"Weak bcrypt cost factor (< 10) used where password-related naming suggests password storage; use cost 10 or higher (12+ recommended).";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-02.md";
 
 export const csHash02Rule: Rule = {
 	id: "CS-HASH-02",
@@ -20,7 +17,7 @@ export const csHash02Rule: Rule = {
 		const bindings = getBcryptBindings(context.sourceFile);
 		const findings: Finding[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			if (!isWeakBcryptOperation(call, bindings)) {
 				continue;
 			}
@@ -33,7 +30,6 @@ export const csHash02Rule: Rule = {
 				createFinding({
 					rule: csHash02Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

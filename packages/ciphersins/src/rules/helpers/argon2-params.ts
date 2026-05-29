@@ -1,9 +1,6 @@
 import ts from "typescript";
 import type { Argon2Bindings } from "./argon2-bindings.js";
-import {
-	getArgon2Bindings,
-	isTrackedArgon2HashCall,
-} from "./argon2-bindings.js";
+import { isTrackedArgon2HashCall } from "./argon2-bindings.js";
 
 export const ARGON2_MIN_TIME_COST = 3;
 export const ARGON2_MIN_MEMORY_COST = 65_536;
@@ -132,12 +129,6 @@ export function argon2CallHasWeakParams(
 		return false;
 	}
 	return argon2OptionsHaveWeakParams(optionsArg, sourceFile);
-}
-
-export function getArgon2BindingsForParams(
-	sourceFile: ts.SourceFile,
-): Argon2Bindings {
-	return getArgon2Bindings(sourceFile);
 }
 
 export { isTrackedArgon2HashCall };

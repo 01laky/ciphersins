@@ -1,11 +1,12 @@
 import ts from "typescript";
 import { getLineSnippet } from "../../get-line-snippet.js";
+import { ruleHelpUrl } from "../../rule-help-url.js";
 import type { Finding, Rule } from "../../types.js";
 
 export interface CreateFindingOptions {
 	rule: Pick<Rule, "id" | "severity">;
 	message: string;
-	helpUrl: string;
+	helpUrl?: string;
 	filePath: string;
 	sourceFile: ts.SourceFile;
 	node: ts.Node;
@@ -25,6 +26,6 @@ export function createFinding(options: CreateFindingOptions): Finding {
 		column: character + 1,
 		severity: options.rule.severity,
 		snippet: getLineSnippet(options.sourceFile, findingLine),
-		helpUrl: options.helpUrl,
+		helpUrl: options.helpUrl ?? ruleHelpUrl(options.rule.id),
 	};
 }

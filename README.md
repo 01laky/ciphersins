@@ -1,11 +1,11 @@
 # CipherSins
 
-![core](https://img.shields.io/badge/core-1.3.1_stable-green)
+![core](https://img.shields.io/badge/core-1.3.2_stable-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-339933)
 ![rules](https://img.shields.io/badge/rules-19%2F19_implemented-9cf)
-![tests](https://img.shields.io/badge/tests-4291_passing-brightgreen)
+![tests](https://img.shields.io/badge/tests-7777_passing-brightgreen)
 [![ci](https://github.com/01laky/CipherSins/actions/workflows/ci.yml/badge.svg)](https://github.com/01laky/CipherSins/actions/workflows/ci.yml)
-![status](https://img.shields.io/badge/status-v1.3.1-green)
+![status](https://img.shields.io/badge/status-v1.3.2-green)
 
 **Static analysis for cryptographic misuse in Node/TS app code** — broken JWT verification, timing-unsafe compares, weak entropy, and legacy hashing in the paths that guard your users.
 
@@ -13,7 +13,7 @@
 
 Catch `jwt.decode()` without `jwt.verify()` before it reaches production — **not another regex grep on `node_modules`**.
 
-**Status:** **`1.3.1`** — single npm package (`ciphersins`) with CLI + programmatic API + **GitHub Action** and **19 rules**.
+**Status:** **`1.3.2`** — single npm package (`ciphersins`) with CLI + programmatic API + **GitHub Action** and **19 rules**.
 
 ---
 
@@ -138,7 +138,7 @@ Library API: `npm install ciphersins`
 ### GitHub Action (CI)
 
 ```yaml
-- uses: 01laky/CipherSins/.github/actions/scan@v1.3.1
+- uses: 01laky/CipherSins/.github/actions/scan@v1.3.2
   with:
     path: ./src
     fail-on: high
@@ -207,28 +207,29 @@ Exclude: `node_modules`, `dist`, `*.test.*`, `*.spec.*`.
 
 ## Documentation
 
-| Doc                                                     | Description                                      |
-| ------------------------------------------------------- | ------------------------------------------------ |
-| [About](./docs/about.md)                                | Product positioning, tagline, what we find       |
-| [Product proposal](./docs/proposal.md)                  | Scope, MVP rules, architecture, success criteria |
-| [Rules index](./docs/rules/README.md)                   | Per-rule docs and implementation status          |
-| [CS-JWT-01](./docs/rules/CS-JWT-01.md)                  | JWT integrity — decode without verify            |
-| [CS-JWT-02](./docs/rules/CS-JWT-02.md)                  | JWT verify without algorithms allowlist          |
-| [CS-JWT-03](./docs/rules/CS-JWT-03.md)                  | JWT `none` algorithm bypass (critical)           |
-| [CS-JWT-04](./docs/rules/CS-JWT-04.md)                  | JWT verify with `ignoreExpiration: true`         |
-| [CS-CMP-01](./docs/rules/CS-CMP-01.md)                  | Timing-unsafe compare on auth material           |
-| [CS-RNG-01](./docs/rules/CS-RNG-01.md)                  | Math.random in auth context                      |
-| [CS-HASH-01](./docs/rules/CS-HASH-01.md)                | MD5/SHA1 password hashing                        |
-| [CS-HASH-02](./docs/rules/CS-HASH-02.md)                | Weak bcrypt cost                                 |
-| [Comparison](./docs/comparison.md)                      | vs gitleaks, npm audit, Semgrep, ESLint          |
-| [Architecture](./docs/architecture.md)                  | Scan pipeline and rule detection diagrams        |
-| [CLI reference](./docs/cli.md)                          | Commands, output format, exit codes              |
-| [Architecture diagrams](./docs/img/README.md)           | Mermaid sources and SVG regeneration             |
-| [FAQ](./docs/faq.md)                                    | Common questions                                 |
-| [Development](./docs/development.md)                    | Contributor setup, adding rules                  |
-| [Config example](./docs/ciphersins.config.example.json) | Config schema and example                        |
-| [Releasing](./docs/releasing.md)                        | npm publish checklist for maintainers            |
-| [Contributing](./CONTRIBUTING.md)                       | Commit standards, git hooks                      |
+| Doc                                                     | Description                                |
+| ------------------------------------------------------- | ------------------------------------------ |
+| [About](./docs/about.md)                                | Product positioning, tagline, what we find |
+| [Scope](./docs/scope.md)                                | Non-goals, rule philosophy, test tiers     |
+| [Archived proposal](./docs/archive/proposal-v1.0.md)    | Original v1.0 implementation spec          |
+| [Rules index](./docs/rules/README.md)                   | Per-rule docs and implementation status    |
+| [CS-JWT-01](./docs/rules/CS-JWT-01.md)                  | JWT integrity — decode without verify      |
+| [CS-JWT-02](./docs/rules/CS-JWT-02.md)                  | JWT verify without algorithms allowlist    |
+| [CS-JWT-03](./docs/rules/CS-JWT-03.md)                  | JWT `none` algorithm bypass (critical)     |
+| [CS-JWT-04](./docs/rules/CS-JWT-04.md)                  | JWT verify with `ignoreExpiration: true`   |
+| [CS-CMP-01](./docs/rules/CS-CMP-01.md)                  | Timing-unsafe compare on auth material     |
+| [CS-RNG-01](./docs/rules/CS-RNG-01.md)                  | Math.random in auth context                |
+| [CS-HASH-01](./docs/rules/CS-HASH-01.md)                | MD5/SHA1 password hashing                  |
+| [CS-HASH-02](./docs/rules/CS-HASH-02.md)                | Weak bcrypt cost                           |
+| [Comparison](./docs/comparison.md)                      | vs gitleaks, npm audit, Semgrep, ESLint    |
+| [Architecture](./docs/architecture.md)                  | Scan pipeline and rule detection diagrams  |
+| [CLI reference](./docs/cli.md)                          | Commands, output format, exit codes        |
+| [Architecture diagrams](./docs/img/README.md)           | Mermaid sources and SVG regeneration       |
+| [FAQ](./docs/faq.md)                                    | Common questions                           |
+| [Development](./docs/development.md)                    | Contributor setup, adding rules            |
+| [Config example](./docs/ciphersins.config.example.json) | Config schema and example                  |
+| [Releasing](./docs/releasing.md)                        | npm publish checklist for maintainers      |
+| [Contributing](./CONTRIBUTING.md)                       | Commit standards, git hooks                |
 
 ---
 
@@ -239,7 +240,7 @@ Exclude: `node_modules`, `dist`, `*.test.*`, `*.spec.*`.
 | **Target**            | Cryptographic misuse in app code | Secrets in repo       | Dependency CVEs | General patterns / lint |
 | **Example hit**       | `jwt.decode()` without verify    | AWS key in `.env`     | lodash CVE      | Custom rule dependent   |
 | **TS import context** | Yes (AST + bindings)             | N/A                   | N/A             | Varies                  |
-| **npm package**       | **Published** (v1.0.0)           | Published             | Built-in        | Published               |
+| **npm package**       | **Published** (v1.3.2)           | Published             | Built-in        | Published               |
 
 Full matrix: **[docs/comparison.md](./docs/comparison.md)**.
 
@@ -295,13 +296,14 @@ pnpm install
 pnpm verify
 ```
 
-| Command                            | Description                                                                                                                              |
-| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm verify`                      | format → typecheck → build → install → test → CLI smoke                                                                                  |
-| `pnpm test`                        | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/ENC/DEC/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT (**4291** at v1.3.1) |
-| `pnpm exec ciphersins scan [path]` | Run linked CLI                                                                                                                           |
-| `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                                                                                    |
-| `pnpm format:fix`                  | Apply Prettier (tabs)                                                                                                                    |
+| Command                            | Description                                                                                 |
+| ---------------------------------- | ------------------------------------------------------------------------------------------- |
+| `pnpm verify`                      | format → typecheck → build → test → CLI smoke                                               |
+| `pnpm test`                        | Vitest — unit, per-rule, integration, CLI, audit, generated exhaustive (**7777** at v1.3.2) |
+| `pnpm run generate:tests`          | Regenerate `test/generated/` from `scripts/generate-exhaustive-tests.mjs`                   |
+| `pnpm exec ciphersins scan [path]` | Run linked CLI                                                                              |
+| `pnpm diagrams:build`              | Regenerate SVGs from `docs/img/*.mmd`                                                       |
+| `pnpm format:fix`                  | Apply Prettier (tabs)                                                                       |
 
 Adding a rule: [`docs/development.md#adding-a-rule`](./docs/development.md#adding-a-rule).
 

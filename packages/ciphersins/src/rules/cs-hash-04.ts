@@ -1,9 +1,8 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import { createFinding } from "./helpers/finding.js";
+import { getHashBindings } from "./helpers/hash-bindings.js";
 import { callHasPasswordContext } from "./helpers/password-context.js";
 import {
-	getHashBindingsForScrypt,
 	isTrackedScryptCall,
 	scryptCallHasWeakParams,
 	SCRYPT_MIN_BLOCK_SIZE,
@@ -12,18 +11,16 @@ import {
 } from "./helpers/scrypt-cost.js";
 
 const MESSAGE = `scrypt parameters below minimum (cost ≥ ${SCRYPT_MIN_COST}, blockSize ≥ ${SCRYPT_MIN_BLOCK_SIZE}, parallelization ≥ ${SCRYPT_MIN_PARALLELIZATION}) in password context; increase scrypt cost or use stronger KDF settings.`;
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-04.md";
 
 export const csHash04Rule: Rule = {
 	id: "CS-HASH-04",
 	title: "scrypt cost factor too low",
 	severity: "medium",
 	run(context: RuleContext): Finding[] {
-		const bindings = getHashBindingsForScrypt(context.sourceFile);
+		const bindings = getHashBindings(context.sourceFile);
 		const findings: Finding[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			const isScrypt =
 				isTrackedScryptCall(call, bindings, "scrypt") ||
 				isTrackedScryptCall(call, bindings, "scryptSync");
@@ -46,7 +43,6 @@ export const csHash04Rule: Rule = {
 				createFinding({
 					rule: csHash04Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

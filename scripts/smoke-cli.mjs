@@ -8,14 +8,29 @@ import { fileURLToPath } from "node:url";
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const cliEntry = path.join(rootDir, "packages/ciphersins/dist/cli.js");
 const fixtureDir = path.join(rootDir, "test/fixtures/scaffold");
-const jwtBadDir = path.join(rootDir, "fixtures/cs-jwt-01/bad");
-const jwt02BadDir = path.join(rootDir, "fixtures/cs-jwt-02/bad");
-const cmpBadDir = path.join(rootDir, "fixtures/cs-cmp-01/bad");
-const rngBadDir = path.join(rootDir, "fixtures/cs-rng-01/bad");
-const hashBadDir = path.join(rootDir, "fixtures/cs-hash-01/bad");
-const jwt03BadDir = path.join(rootDir, "fixtures/cs-jwt-03/bad");
-const jwt04BadDir = path.join(rootDir, "fixtures/cs-jwt-04/bad");
-const hash02BadDir = path.join(rootDir, "fixtures/cs-hash-02/bad");
+const noConfig = ["--no-config"];
+
+const SMOKE_RULES = [
+	["cs-jwt-01", "CS-JWT-01"],
+	["cs-jwt-02", "CS-JWT-02"],
+	["cs-jwt-03", "CS-JWT-03"],
+	["cs-jwt-04", "CS-JWT-04"],
+	["cs-jwt-05", "CS-JWT-05"],
+	["cs-jwt-06", "CS-JWT-06"],
+	["cs-cmp-01", "CS-CMP-01"],
+	["cs-rng-01", "CS-RNG-01"],
+	["cs-rng-02", "CS-RNG-02"],
+	["cs-hash-01", "CS-HASH-01"],
+	["cs-hash-02", "CS-HASH-02"],
+	["cs-hash-03", "CS-HASH-03"],
+	["cs-hash-04", "CS-HASH-04"],
+	["cs-hash-05", "CS-HASH-05"],
+	["cs-enc-01", "CS-ENC-01"],
+	["cs-enc-02", "CS-ENC-02"],
+	["cs-enc-03", "CS-ENC-03"],
+	["cs-enc-04", "CS-ENC-04"],
+	["cs-dec-01", "CS-DEC-01"],
+];
 
 function assert(condition, message) {
 	if (!condition) {
@@ -26,17 +41,11 @@ function assert(condition, message) {
 
 assert(fs.existsSync(cliEntry), `missing CLI build output at ${cliEntry}`);
 
-const noConfig = ["--no-config"];
-
 const direct = spawnSync(
 	process.execPath,
 	[cliEntry, "scan", ...noConfig, fixtureDir],
-	{
-		encoding: "utf8",
-		cwd: rootDir,
-	},
+	{ encoding: "utf8", cwd: rootDir },
 );
-
 assert(
 	direct.status === 0,
 	`direct cli exit code ${direct.status}\n${direct.stderr}`,
@@ -46,23 +55,13 @@ assert(
 	`unexpected stdout: ${direct.stdout}`,
 );
 
-for (const [dir, ruleId] of [
-	[jwtBadDir, "CS-JWT-01"],
-	[jwt02BadDir, "CS-JWT-02"],
-	[jwt03BadDir, "CS-JWT-03"],
-	[jwt04BadDir, "CS-JWT-04"],
-	[cmpBadDir, "CS-CMP-01"],
-	[rngBadDir, "CS-RNG-01"],
-	[hashBadDir, "CS-HASH-01"],
-	[hash02BadDir, "CS-HASH-02"],
-]) {
+for (const [dirName, ruleId] of SMOKE_RULES) {
+	const badDir = path.join(rootDir, "fixtures", dirName, "bad");
+	if (!fs.existsSync(badDir)) continue;
 	const result = spawnSync(
 		process.execPath,
-		[cliEntry, "scan", ...noConfig, dir],
-		{
-			encoding: "utf8",
-			cwd: rootDir,
-		},
+		[cliEntry, "scan", ...noConfig, badDir],
+		{ encoding: "utf8", cwd: rootDir },
 	);
 	assert(
 		result.status === 0,
@@ -74,44 +73,41 @@ for (const [dir, ruleId] of [
 	);
 }
 
-for (const [goodDir, expected] of [
-	[path.join(rootDir, "fixtures/cs-jwt-01/good"), "No findings."],
-	[path.join(rootDir, "fixtures/cs-jwt-02/good"), "No findings."],
-	[path.join(rootDir, "fixtures/cs-jwt-03/good"), "No findings."],
-	[path.join(rootDir, "fixtures/cs-jwt-04/good"), "No findings."],
-	[path.join(rootDir, "fixtures/cs-cmp-01/good"), "No findings."],
-	[path.join(rootDir, "fixtures/cs-rng-01/good"), "No findings."],
-	[path.join(rootDir, "fixtures/cs-hash-01/good"), "No findings."],
-	[
-		path.join(rootDir, "fixtures/cs-hash-02/good"),
-		"fixtures/cs-hash-02/good/node-rs-bcrypt-untracked.ts",
-	],
-]) {
+for (const [dirName, ruleId] of SMOKE_RULES) {
+	const goodDir = path.join(rootDir, "fixtures", dirName, "good");
+	if (!fs.existsSync(goodDir)) continue;
 	const goodScan = spawnSync(
 		process.execPath,
 		[cliEntry, "scan", ...noConfig, goodDir],
-		{
-			encoding: "utf8",
-			cwd: rootDir,
-		},
+		{ encoding: "utf8", cwd: rootDir },
 	);
 	assert(
 		goodScan.status === 0,
 		`good scan exit ${goodScan.status} for ${goodDir}\n${goodScan.stderr}`,
 	);
-	assert(
-		goodScan.stdout.includes(expected),
-		`expected ${expected} for ${goodDir}:\n${goodScan.stdout}`,
-	);
+	if (dirName === "cs-hash-02") {
+		assert(
+			goodScan.stdout.includes("node-rs-bcrypt-untracked.ts"),
+			`expected deliberate finding in hash-02 good:\n${goodScan.stdout}`,
+		);
+	} else if (dirName === "cs-rng-02") {
+		assert(
+			!goodScan.stdout.includes("CS-RNG-02"),
+			`expected no CS-RNG-02 in rng-02 good:\n${goodScan.stdout}`,
+		);
+	} else {
+		assert(
+			goodScan.stdout.includes("No findings."),
+			`expected No findings. for ${goodDir}:\n${goodScan.stdout}`,
+		);
+	}
 }
 
+const jwt03BadDir = path.join(rootDir, "fixtures/cs-jwt-03/bad");
 const jwt03FailOn = spawnSync(
 	process.execPath,
 	[cliEntry, "scan", ...noConfig, "--fail-on", "high", jwt03BadDir],
-	{
-		encoding: "utf8",
-		cwd: rootDir,
-	},
+	{ encoding: "utf8", cwd: rootDir },
 );
 assert(
 	jwt03FailOn.status === 1,
@@ -128,10 +124,7 @@ const jsonSmoke = spawnSync(
 		"json",
 		path.join(jwt03BadDir, "verify-algorithms-none-literal.ts"),
 	],
-	{
-		encoding: "utf8",
-		cwd: rootDir,
-	},
+	{ encoding: "utf8", cwd: rootDir },
 );
 assert(
 	jsonSmoke.status === 0,
@@ -157,10 +150,7 @@ const sarifSmoke = spawnSync(
 		sarifPath,
 		path.join(jwt03BadDir, "verify-algorithms-none-literal.ts"),
 	],
-	{
-		encoding: "utf8",
-		cwd: rootDir,
-	},
+	{ encoding: "utf8", cwd: rootDir },
 );
 try {
 	assert(
@@ -176,12 +166,10 @@ try {
 
 const cliBin = path.join(rootDir, "node_modules/.bin/ciphersins");
 assert(fs.existsSync(cliBin), `missing linked bin at ${cliBin}`);
-
 const viaBin = execFileSync(cliBin, ["scan", ...noConfig, fixtureDir], {
 	encoding: "utf8",
 	cwd: rootDir,
 });
-
 assert(viaBin.includes("No findings."), `linked bin stdout: ${viaBin}`);
 
 console.log("smoke-cli: OK");

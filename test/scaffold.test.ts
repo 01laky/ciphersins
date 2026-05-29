@@ -46,6 +46,7 @@ import {
 	type Rule,
 	type RuleContext,
 } from "ciphersins";
+import { collectCallExpressions } from "../packages/ciphersins/src/rules/helpers/collect-call-expressions.js";
 import { skippedPath } from "./helpers/skipped-path.js";
 import { pkgVersion } from "./cli/helpers.js";
 
@@ -374,6 +375,7 @@ describe("CS-S17 runRules plumbing", () => {
 		const context: RuleContext = {
 			filePath: path.resolve(emptyFixture),
 			sourceFile,
+			getCallExpressions: () => collectCallExpressions(sourceFile),
 		};
 
 		const probeRule: Rule = {

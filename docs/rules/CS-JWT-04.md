@@ -94,7 +94,7 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 
 Requires `--allow-critical-ignore` only for **critical** rules (CS-JWT-03), not CS-JWT-04. See [cli.md](../cli.md#inline-suppressions).
 
-See [proposal.md](../proposal.md) for roadmap items deferred to v1.1.
+See [scope.md](../scope.md) for v1.x scope; historical roadmap in [archive/proposal-v1.0.md](../archive/proposal-v1.0.md).
 
 ## Suppressing
 

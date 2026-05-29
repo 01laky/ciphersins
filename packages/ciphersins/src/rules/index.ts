@@ -18,8 +18,9 @@ import { csJwt05Rule } from "./cs-jwt-05.js";
 import { csJwt06Rule } from "./cs-jwt-06.js";
 import { csRng01Rule } from "./cs-rng-01.js";
 import { csRng02Rule } from "./cs-rng-02.js";
+import { ruleCweTags } from "./metadata.js";
 
-export const allRules: Rule[] = [
+const rules: Rule[] = [
 	csJwt01Rule,
 	csJwt02Rule,
 	csJwt03Rule,
@@ -40,6 +41,12 @@ export const allRules: Rule[] = [
 	csEnc04Rule,
 	csDec01Rule,
 ];
+
+for (const rule of rules) {
+	rule.cweTags = ruleCweTags(rule.id);
+}
+
+export const allRules: Rule[] = rules;
 
 export {
 	csJwt01Rule,

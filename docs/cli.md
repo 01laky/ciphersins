@@ -16,7 +16,7 @@ pnpm exec ciphersins --version
 | `scan [path]`     | Scan TypeScript/JavaScript files for crypto API misuse    |
 | `scan --help`     | Scan-specific flags, exit codes, and examples             |
 | `--help`, `-h`    | Top-level usage (command list)                            |
-| `--version`, `-v` | Print package version (**1.0.0**); works under `scan` too |
+| `--version`, `-v` | Print package version (**1.3.2**); works under `scan` too |
 
 When `path` is omitted, the scan root is `./src` if it exists, otherwise `.`. Multiple paths are supported: `ciphersins scan dir1 dir2`.
 
@@ -72,7 +72,7 @@ Machine-readable document with `schemaVersion: 2`, severity summary, relative pa
 ```json
 {
 	"schemaVersion": 2,
-	"version": "1.0.0",
+	"version": "1.3.2",
 	"tool": "ciphersins",
 	"summary": { "low": 0, "medium": 0, "high": 0, "critical": 0, "total": 0 },
 	"scannedFiles": ["src/auth.ts"],
@@ -108,14 +108,14 @@ Each finding object:
 | `snippet`  | string   | no       | Source line excerpt                |
 | `helpUrl`  | string   | no       | Link to `docs/rules/<ruleId>.md`   |
 
-`parseErrors`, `ruleErrors`, and `warnings` are available on the programmatic `ScanResult` from `scan()` but are **not** included in CLI JSON output in v1.0.0.
+`parseErrors`, `ruleErrors`, and `warnings` are available on the programmatic `ScanResult` from `scan()` but are **not** included in CLI JSON output.
 
 Example with findings and skipped paths:
 
 ```json
 {
 	"schemaVersion": 2,
-	"version": "1.0.0",
+	"version": "1.3.2",
 	"tool": "ciphersins",
 	"summary": { "low": 0, "medium": 0, "high": 1, "critical": 0, "total": 1 },
 	"scannedFiles": ["src/auth.ts"],
@@ -139,25 +139,25 @@ Example with findings and skipped paths:
 
 ### SARIF 2.1.0
 
-GitHub Code Scanning–compatible SARIF with full `tool.driver.rules` catalog (all 8 MVP rules), `partialFingerprints`, and `originalUriBaseIds.%WORKINGDIR%`.
+GitHub Code Scanning–compatible SARIF with full `tool.driver.rules` catalog (all 19 rules, CWE tags from `rules/metadata.ts`), `partialFingerprints`, and `originalUriBaseIds.%WORKINGDIR%`.
 
 Programmatic equivalent: `formatSarif()` from `ciphersins`.
 
 #### SARIF field mapping
 
-| CipherSins                | SARIF 2.1.0 location                                                                                                               |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `finding.ruleId`          | `results[].ruleId`                                                                                                                 |
-| `finding.severity`        | `results[].level` (`note` / `warning` / `error`)                                                                                   |
-| `finding.message`         | `results[].message.text`                                                                                                           |
-| `finding.file` (relative) | `results[].locations[].physicalLocation.artifactLocation.uri`                                                                      |
-| cwd                       | `originalUriBaseIds.%WORKINGDIR%.uri` (file URL + trailing slash)                                                                  |
-| `finding.line`            | `region.startLine` (1-based)                                                                                                       |
-| `finding.column`          | `region.startColumn` (UTF-16; `columnKind: "utf16CodeUnits"`)                                                                      |
-| `finding.snippet`         | `region.snippet.text` (omitted when absent)                                                                                        |
-| stable dedupe key         | `partialFingerprints.primaryLocationLineHash`                                                                                      |
-| all 8 rules (catalog)     | `tool.driver.rules[]` with `helpUri`, `help.text`, `defaultConfiguration.level`, `properties.tags`, `properties.security-severity` |
-| tool identity             | `tool.driver.name`: `CipherSins`; `automationDetails.id`: `ciphersins`                                                             |
+| CipherSins                | SARIF 2.1.0 location                                                                                                                           |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `finding.ruleId`          | `results[].ruleId`                                                                                                                             |
+| `finding.severity`        | `results[].level` (`note` / `warning` / `error`)                                                                                               |
+| `finding.message`         | `results[].message.text`                                                                                                                       |
+| `finding.file` (relative) | `results[].locations[].physicalLocation.artifactLocation.uri`                                                                                  |
+| cwd                       | `originalUriBaseIds.%WORKINGDIR%.uri` (file URL + trailing slash)                                                                              |
+| `finding.line`            | `region.startLine` (1-based)                                                                                                                   |
+| `finding.column`          | `region.startColumn` (UTF-16; `columnKind: "utf16CodeUnits"`)                                                                                  |
+| `finding.snippet`         | `region.snippet.text` (omitted when absent)                                                                                                    |
+| stable dedupe key         | `partialFingerprints.primaryLocationLineHash`                                                                                                  |
+| all 19 rules (catalog)    | `tool.driver.rules[]` with `helpUri`, `help.text`, `defaultConfiguration.level`, `properties.tags` (incl. CWE), `properties.security-severity` |
+| tool identity             | `tool.driver.name`: `CipherSins`; `automationDetails.id`: `ciphersins`                                                                         |
 
 Driver rule `name` is the rule ID without hyphens (e.g. `CSJWT01`). `helpUri` points to `docs/rules/<ruleId>.md` on GitHub.
 
@@ -165,13 +165,13 @@ When `--output` is set, formatted output is written **only** to the file (stdout
 
 ## Exit codes
 
-| Code  | Meaning                                                                                        |
-| ----- | ---------------------------------------------------------------------------------------------- |
-| **0** | Scan completed; no findings at/above `--fail-on` threshold (or threshold absent)               |
-| **1** | Scan completed; one or more findings at/above `--fail-on` threshold                            |
-| **2** | Unknown command, invalid flags, no files scanned, or all resolved files failed to parse        |
-| **3** | Config error (missing/malformed config, invalid config values, `--strict-config` unknown keys) |
-| **4** | Internal error (uncaught exception or rule execution failure)                                  |
+| Code  | Meaning                                                                                         |
+| ----- | ----------------------------------------------------------------------------------------------- |
+| **0** | Success — scan completed; no findings at/above `--fail-on` threshold (or threshold absent)      |
+| **1** | Findings — scan completed; one or more findings at/above `--fail-on` threshold                  |
+| **2** | Usage — unknown command, invalid flags, no files scanned, or all resolved files failed to parse |
+| **3** | Config error (missing/malformed config, invalid config values, `--strict-config` unknown keys)  |
+| **4** | Internal error (uncaught exception or rule execution failure)                                   |
 
 **Backward compatibility:** scans without `--fail-on` exit **0** when at least one file was scanned successfully, even when findings are present.
 
@@ -248,7 +248,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: 01laky/CipherSins/.github/actions/scan@v1.1.0
+      - uses: 01laky/CipherSins/.github/actions/scan@v1.3.2
         with:
           path: ./src
           fail-on: high
@@ -260,7 +260,7 @@ Manual `npx` fallback:
 
 ```yaml
 - name: CipherSins scan
-  run: npx ciphersins@1.1.0 scan ./src --format sarif --output ciphersins.sarif --fail-on high --no-color
+  run: npx ciphersins@1.3.2 scan ./src --format sarif --output ciphersins.sarif --fail-on high --no-color
 
 - name: Upload SARIF
   uses: github/codeql-action/upload-sarif@v3
@@ -297,4 +297,4 @@ pnpm exec ciphersins scan --cwd ./packages/app --include 'src/**/*.ts'
 pnpm exec ciphersins scan --max-findings 50 --format json
 ```
 
-Severity levels: **critical** (JWT-03), **high** (JWT-01/02, CMP, RNG, HASH-01), **medium** (JWT-04, HASH-02).
+Severity levels: see [rules index](./rules/README.md). **Critical:** CS-JWT-03. Default CI gate: `--fail-on high`.

@@ -36,14 +36,14 @@ CipherSins also flags **MD5/SHA1 password hashing** (`createHash`, weak-digest `
 
 ## CipherSins vs Semgrep / ESLint
 
-General SAST tools can encode similar rules, but CipherSins is **purpose-built** for a curated MVP rule set:
+General SAST tools can encode similar rules, but CipherSins is **purpose-built** for a curated rule set:
 
 - Consistent rule IDs (`CS-JWT-01` … `CS-RNG-02`)
 - Bad/good fixtures per rule
-- Numbered vitest cases per rule (**4291** tests at v1.3.1)
+- Numbered vitest cases per rule (**7777** tests at v1.3.2)
 - Linked rule documentation with fix guidance
 
-**Implemented at v1.3.1 (19 rules + full CLI):**
+**Implemented at v1.3.2 (19 rules + full CLI):**
 
 | Rule       | Severity | What it catches                                              |
 | ---------- | -------- | ------------------------------------------------------------ |
@@ -78,17 +78,19 @@ You might still use Semgrep or ESLint alongside CipherSins for broader coverage.
 - Enforcing general code style → use **ESLint**
 - Analyzing non-JS/TS stacks → out of scope
 
-## Roadmap overlap
+## Platform features (v1.3.2)
 
-| Feature                                   | Status at v1.0.0                           |
-| ----------------------------------------- | ------------------------------------------ |
-| JSON output                               | **Implemented**                            |
-| SARIF 2.1.0 output                        | **Implemented**                            |
-| `ciphersins.config.json`                  | **Implemented** (full schema)              |
-| `--only` / `--ignore` rule filters        | **Implemented**                            |
-| Inline suppressions                       | **Implemented**                            |
-| `--fail-on` for CI gates                  | **Implemented**                            |
-| Programmatic `formatJson` / `formatSarif` | **Implemented** (`ciphersins`)             |
-| npm publish                               | **Published** (`ciphersins`, `ciphersins`) |
+| Feature                                            | Status                                                                  |
+| -------------------------------------------------- | ----------------------------------------------------------------------- |
+| JSON output (`schemaVersion: 2`)                   | **Implemented**                                                         |
+| SARIF 2.1.0 + CWE tags                             | **Implemented**                                                         |
+| `ciphersins.config.json`                           | **Implemented** — [JSON schema](./schema/ciphersins.config.schema.json) |
+| `--only` / `--ignore` rule filters                 | **Implemented**                                                         |
+| Inline suppressions                                | **Implemented**                                                         |
+| `--fail-on` for CI gates                           | **Implemented**                                                         |
+| Programmatic `scan` / `formatJson` / `formatSarif` | **Implemented** (`ciphersins`)                                          |
+| GitHub Action composite scan                       | **Implemented** — [github-action.md](./github-action.md)                |
+| npm publish                                        | **Published** (`ciphersins`)                                            |
+| 19 static rules                                    | **Implemented** — [rules index](./rules/README.md)                      |
 
-See [proposal.md](./proposal.md) for the full MVP checklist.
+Scope and non-goals: [scope.md](./scope.md).

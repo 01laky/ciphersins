@@ -50,9 +50,7 @@ export default defineConfig({
 				"packages/**/src/version.ts",
 				"packages/**/src/index.ts",
 				"packages/**/src/cli.ts",
-				"packages/ciphersins/src/commands/list-rules.ts",
-				"packages/ciphersins/src/commands/print-config.ts",
-				"packages/ciphersins/src/rule-help-url.ts",
+				"packages/**/src/rule-help-url.ts",
 				"**/*.d.ts",
 			],
 			thresholds: {

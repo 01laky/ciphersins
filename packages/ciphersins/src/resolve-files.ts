@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { glob } from "tinyglobby";
-import { isDirectory, isFile, pathExists } from "./create-rule-context.js";
+import { isDirectory, isFile, pathExists } from "./engine/fs-utils.js";
 import { expandUserPath } from "./expand-user-path.js";
 import { skipPath } from "./skipped-path.js";
 import {
@@ -171,28 +171,4 @@ export function isScannableExtension(filePath: string): boolean {
 	return /\.(cjs|mjs|cts|mts|tsx?|jsx?)$/i.test(filePath);
 }
 
-export function readPathKind(
-	targetPath: string,
-): "file" | "directory" | "missing" {
-	if (!pathExists(targetPath)) {
-		return "missing";
-	}
-
-	if (isFile(targetPath)) {
-		return "file";
-	}
-
-	if (isDirectory(targetPath)) {
-		return "directory";
-	}
-
-	return "missing";
-}
-
-export function listDirectoryEntries(targetPath: string): string[] {
-	try {
-		return fs.readdirSync(targetPath);
-	} catch {
-		return [];
-	}
-}
+export { listDirectoryEntries, readPathKind } from "./engine/fs-utils.js";

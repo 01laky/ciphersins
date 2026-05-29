@@ -1,5 +1,4 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import {
 	getCipherAlgorithmArgument,
 	getCipherBindings,
@@ -10,8 +9,6 @@ import { isWeakCipherAlgorithmLiteral } from "./helpers/weak-cipher-algorithms.j
 
 const MESSAGE =
 	"Weak or deprecated cipher algorithm passed to createCipheriv/createDecipheriv; use AES-GCM or another modern algorithm.";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-03.md";
 
 export const csEnc03Rule: Rule = {
 	id: "CS-ENC-03",
@@ -21,7 +18,7 @@ export const csEnc03Rule: Rule = {
 		const bindings = getCipherBindings(context.sourceFile);
 		const findings: Finding[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			const isCipheriv = matchesCipherMethodCall(
 				call,
 				bindings,
@@ -45,7 +42,6 @@ export const csEnc03Rule: Rule = {
 				createFinding({
 					rule: csEnc03Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

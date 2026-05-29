@@ -1,6 +1,5 @@
 import ts from "typescript";
 import type { HashBindings } from "./hash-bindings.js";
-import { getHashBindings } from "./hash-bindings.js";
 
 export const PBKDF2_MIN_ITERATIONS = 100_000;
 
@@ -89,10 +88,4 @@ export function isTrackedPbkdf2Call(
 	}
 
 	return false;
-}
-
-export function getHashBindingsForPbkdf2(
-	sourceFile: ts.SourceFile,
-): HashBindings {
-	return getHashBindings(sourceFile);
 }

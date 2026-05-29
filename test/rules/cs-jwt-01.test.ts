@@ -11,6 +11,7 @@ import {
 	parseSourceFile,
 	scan,
 } from "ciphersins";
+import { collectCallExpressions } from "../../packages/ciphersins/src/rules/helpers/collect-call-expressions.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
@@ -642,6 +643,7 @@ describe("CS-JWT-01 audit section 9.1", () => {
 		return csJwt01Rule.run({
 			filePath: path.resolve(rootDir, fileName),
 			sourceFile,
+			getCallExpressions: () => collectCallExpressions(sourceFile),
 		});
 	}
 

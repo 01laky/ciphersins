@@ -1,5 +1,4 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import {
 	getCipherBindings,
 	matchesCipherMethodCall,
@@ -8,8 +7,6 @@ import { createFinding } from "./helpers/finding.js";
 
 const MESSAGE =
 	"Deprecated crypto.createDecipher/createCipher API (OpenSSL password-based EVP_BytesToKey); use createDecipheriv/createCipheriv with explicit key and IV.";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-DEC-01.md";
 
 export const csDec01Rule: Rule = {
 	id: "CS-DEC-01",
@@ -19,7 +16,7 @@ export const csDec01Rule: Rule = {
 		const bindings = getCipherBindings(context.sourceFile);
 		const findings: Finding[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			if (
 				!matchesCipherMethodCall(call, bindings, "createDecipher") &&
 				!matchesCipherMethodCall(call, bindings, "createCipher")
@@ -31,7 +28,6 @@ export const csDec01Rule: Rule = {
 				createFinding({
 					rule: csDec01Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

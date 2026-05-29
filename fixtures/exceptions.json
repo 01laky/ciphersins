@@ -1,0 +1,10 @@
+{
+	"badLimitationFixtures": [
+		"verify-ignore-expiration-double-negation.ts",
+		"sign-none-algorithm-via-variable.ts",
+		"verify-none-via-variable-options.ts",
+		"verify-shorthand-empty-algorithms-var.ts",
+		"hash-const-rounds-8.ts"
+	],
+	"goodDeliberateFindings": ["node-rs-bcrypt-untracked.ts"]
+}

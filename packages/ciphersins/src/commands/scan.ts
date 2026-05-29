@@ -11,14 +11,12 @@ import { loadConfig } from "../config/load-config.js";
 import { mergeScanOptions } from "../config/merge-scan-options.js";
 import { runListRulesCommand } from "./list-rules.js";
 import { runPrintConfigCommand } from "./print-config.js";
-import { ensureBlockingStdout } from "../ensure-blocking-stdout.js";
 import { resolveCliPath } from "../expand-path.js";
 import { formatFailSummary } from "../format-fail-summary.js";
+import { errorMessage } from "../shared/error-message.js";
 import { formatPretty } from "../formatters/pretty.js";
 import { isVersionFlag, parseScanArgs } from "../parse-scan-args.js";
 import { VERSION } from "../version.js";
-
-ensureBlockingStdout();
 
 export const TOOL_VERSION = VERSION;
 
@@ -96,8 +94,7 @@ function loadMergedConfig(
 			};
 		}
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		return { ok: false, exitCode: 3, message };
+		return { ok: false, exitCode: 3, message: errorMessage(error) };
 	}
 
 	return {
@@ -219,8 +216,7 @@ export async function runScanCommand(args: string[]): Promise<number> {
 		return 0;
 	} catch (error) {
 		cleanupActiveOutputTemp();
-		const message = error instanceof Error ? error.message : String(error);
-		process.stderr.write(`error: ${message}\n`);
+		process.stderr.write(`error: ${errorMessage(error)}\n`);
 		return 4;
 	}
 }

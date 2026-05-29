@@ -1,5 +1,4 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import { createFinding } from "./helpers/finding.js";
 import {
 	getHashBindings,
@@ -9,8 +8,6 @@ import { callHasPasswordContext } from "./helpers/password-context.js";
 
 const MESSAGE =
 	"Weak hash algorithm (MD5 or SHA1) used where password-related naming suggests password storage; use bcrypt, scrypt, argon2, or PBKDF2.";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-HASH-01.md";
 
 export const csHash01Rule: Rule = {
 	id: "CS-HASH-01",
@@ -20,7 +17,7 @@ export const csHash01Rule: Rule = {
 		const bindings = getHashBindings(context.sourceFile);
 		const findings: Finding[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			if (!isWeakHashOperation(call, bindings)) {
 				continue;
 			}
@@ -33,7 +30,6 @@ export const csHash01Rule: Rule = {
 				createFinding({
 					rule: csHash01Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

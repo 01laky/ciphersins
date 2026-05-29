@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.base.json",
+	"include": [
+		"test/unit/**/*.ts",
+		"test/helpers/**/*.ts",
+		"packages/ciphersins/src/**/*.ts"
+	],
+	"compilerOptions": {
+		"noEmit": true,
+		"rootDir": "."
+	}
+}

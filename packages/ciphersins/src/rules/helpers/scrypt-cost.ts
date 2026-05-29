@@ -1,6 +1,5 @@
 import ts from "typescript";
 import type { HashBindings } from "./hash-bindings.js";
-import { getHashBindings } from "./hash-bindings.js";
 import { isCallbackArgument } from "./jwt-verify-options.js";
 
 export const SCRYPT_MIN_COST = 16_384;
@@ -181,10 +180,4 @@ export function scryptCallHasWeakParams(
 		return false;
 	}
 	return scryptOptionsHaveWeakParams(optionsArg, sourceFile);
-}
-
-export function getHashBindingsForScrypt(
-	sourceFile: ts.SourceFile,
-): HashBindings {
-	return getHashBindings(sourceFile);
 }

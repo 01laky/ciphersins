@@ -13,3 +13,9 @@ execFileSync("node", ["scripts/sync-version.mjs"], {
 
 process.stdout.write("typecheck-packages: packages/ciphersins\n");
 execFileSync("npm", ["run", "typecheck"], { cwd: pkgDir, stdio: "inherit" });
+
+process.stdout.write("typecheck: test suite\n");
+execFileSync("npx", ["tsc", "--noEmit", "-p", "tsconfig.test.json"], {
+	cwd: rootDir,
+	stdio: "inherit",
+});

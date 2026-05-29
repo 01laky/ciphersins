@@ -3,6 +3,24 @@
 All notable changes to this project are documented here.
 Format based on [Keep a Changelog](https://keepachangelog.com/); versioning follows [Semantic Versioning](https://semver.org/).
 
+## [1.3.2]
+
+### Changed
+
+- **Engine refactor** — shared `engine/fs-utils.ts` for path existence and file-kind checks; `shared/error-message.ts` for consistent CLI error strings; JWT rules consolidated via `rules/helpers/jsonwebtoken-rule-runner.ts`.
+- **Rule metadata** — `rules/metadata.ts` centralizes `RULE_CWE_TAGS`; registry attaches CWE tags at load; `createFinding()` defaults `helpUrl` via `ruleHelpUrl()` (removed 19× duplicated `HELP_URL` constants).
+- **RuleContext performance** — `getCallExpressions()` lazily caches `collectCallExpressions()` per scanned file for all rules.
+- **Exhaustive test layout** — generator renamed to `scripts/generate-exhaustive-tests.mjs`; output under `test/generated/` with `it.each` tables; `npm run generate:tests`; fixture matrix exceptions in `fixtures/exceptions.json`; shared helper `test/helpers/scan-source.ts`.
+- **CI tooling** — `check:generated`, `check:diagrams`; `tsconfig.test.json` typechecks test suite; `sync-version.mjs` patches GitHub Action default; smoke CLI covers all **19** rule families.
+- **Documentation** — living spec `docs/scope.md`; v1.0 proposal archived to `docs/archive/proposal-v1.0.md`; config JSON schema at `docs/schema/ciphersins.config.schema.json`; fixtures README; all user-facing docs updated for v1.3.2 (19 rules, exit codes, test tiers).
+- **Architecture diagrams** — `pipeline.mmd` and `rules-overview.mmd` document lazy call cache, JWT runner, and `test/generated/` layout; SVGs regenerated.
+- **GitHub Action default version** — composite action `version` input default `1.3.1` → `1.3.2`; `run.sh` fallback aligned.
+
+### Added
+
+- **Unit tests** — public API contract, SARIF structure, config schema, CLI exit codes, command module coverage (`list-rules`, `print-config`).
+- **Vitest coverage** — **7777** tests (5682 scan-based generated cases via `generate-exhaustive-tests.mjs`; JWT/HASH/ENC/CMP-RNG overlap/parser grids with `multiplyJwt`/`multiplyHash` wrappers; ~22.6k+ LOC generated); no new rules — analyzer behavior unchanged.
+
 ## [1.3.1]
 
 ### Added

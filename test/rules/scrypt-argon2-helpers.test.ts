@@ -14,13 +14,13 @@ import {
 	isTrackedArgon2HashCall,
 } from "../../packages/ciphersins/src/rules/helpers/argon2-params.js";
 import { getArgon2Bindings } from "../../packages/ciphersins/src/rules/helpers/argon2-bindings.js";
+import { getHashBindings } from "../../packages/ciphersins/src/rules/helpers/hash-bindings.js";
 import {
 	getScryptOptionsArgument,
 	isTrackedScryptCall,
 	scryptCallHasWeakParams,
 	scryptOptionsHaveWeakParams,
 } from "../../packages/ciphersins/src/rules/helpers/scrypt-cost.js";
-import { getHashBindingsForScrypt } from "../../packages/ciphersins/src/rules/helpers/scrypt-cost.js";
 
 function parseSource(source: string, fileName = "sample.ts"): ts.SourceFile {
 	return ts.createSourceFile(
@@ -152,7 +152,7 @@ describe("scrypt cost helpers", () => {
 			"scryptSync('pw', 'salt', 64, { cost: 4096 });",
 		].join("\n");
 		const sourceFile = parseSource(source);
-		const bindings = getHashBindingsForScrypt(sourceFile);
+		const bindings = getHashBindings(sourceFile);
 		const call = findCallByCalleeText(sourceFile, "scryptSync");
 
 		expect(isTrackedScryptCall(call, bindings, "scryptSync")).toBe(true);
@@ -164,7 +164,7 @@ describe("scrypt cost helpers", () => {
 			"crypto.scryptSync('pw', 'salt', 64, { cost: 4096 });",
 		].join("\n");
 		const sourceFile = parseSource(source);
-		const bindings = getHashBindingsForScrypt(sourceFile);
+		const bindings = getHashBindings(sourceFile);
 		const call = findCallByCalleeText(sourceFile, "scryptSync");
 
 		expect(isTrackedScryptCall(call, bindings, "scryptSync")).toBe(true);

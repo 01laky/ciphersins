@@ -1,5 +1,4 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import {
 	getCipherAlgorithmArgument,
 	getCipherBindings,
@@ -10,8 +9,6 @@ import { createFinding } from "./helpers/finding.js";
 
 const MESSAGE =
 	"ECB mode cipher (algorithm ending with -ecb); use a mode with proper IV handling such as GCM or CBC.";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-04.md";
 
 export const csEnc04Rule: Rule = {
 	id: "CS-ENC-04",
@@ -21,7 +18,7 @@ export const csEnc04Rule: Rule = {
 		const bindings = getCipherBindings(context.sourceFile);
 		const findings: Finding[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			const isCipheriv = matchesCipherMethodCall(
 				call,
 				bindings,
@@ -45,7 +42,6 @@ export const csEnc04Rule: Rule = {
 				createFinding({
 					rule: csEnc04Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

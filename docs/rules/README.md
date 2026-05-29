@@ -1,6 +1,6 @@
 # CipherSins rules index
 
-Static analysis rules for crypto API misuse. Overview: [about.md](../about.md) · Product spec: [`proposal.md`](../proposal.md) · Landing page: [README](../README.md).
+Static analysis rules for crypto API misuse. Overview: [about.md](../about.md) · Scope: [`scope.md`](../scope.md) · Landing page: [README](../../README.md).
 
 Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>/{bad,good}/` and numbered vitest coverage.
 
@@ -26,7 +26,7 @@ Implemented rules link to their documentation. Each rule has `fixtures/<rule-id>
 | [CS-ENC-04](./CS-ENC-04.md)   | high     | ECB mode cipher              | implemented |
 | [CS-DEC-01](./CS-DEC-01.md)   | medium   | Deprecated createDecipher    | implemented |
 
-**19/19 rules implemented** at v1.3.1.
+**19/19 rules implemented** at v1.3.2.
 
 Each rule doc includes **Suppressing** (inline comments), **Library scope** (which npm modules are tracked), **Limitations** (known false negatives/positives), and **Source** (implementation file under `packages/ciphersins/src/rules/`).
 

@@ -1,12 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
+import { errorMessage } from "./shared/error-message.js";
 
 export class ParseSourceFileError extends Error {
 	readonly filePath: string;
 
 	constructor(filePath: string, cause: unknown) {
-		const detail = cause instanceof Error ? cause.message : String(cause);
+		const detail = errorMessage(cause);
 		super(`Failed to parse ${filePath}: ${detail}`);
 		this.name = "ParseSourceFileError";
 		this.filePath = filePath;

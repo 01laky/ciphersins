@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { csJwt01Rule, parseSourceFile } from "ciphersins";
+import { collectCallExpressions } from "../../packages/ciphersins/src/rules/helpers/collect-call-expressions.js";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(testDir, "../..");
@@ -15,6 +16,7 @@ function runJwt01OnSource(fileName: string, source: string) {
 	return csJwt01Rule.run({
 		filePath: path.resolve(rootDir, fileName),
 		sourceFile,
+		getCallExpressions: () => collectCallExpressions(sourceFile),
 	});
 }
 

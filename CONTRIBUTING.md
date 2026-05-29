@@ -4,7 +4,7 @@ Thank you for your interest in contributing.
 
 ## Canonical spec
 
-Read [`docs/proposal.md`](./docs/proposal.md) before making changes. It defines scope, MVP rules, and non-goals.
+Read [`docs/scope.md`](./docs/scope.md) before making changes. It defines scope, non-goals, and rule philosophy. Historical v1.0 proposal: [`docs/archive/proposal-v1.0.md`](./docs/archive/proposal-v1.0.md).
 
 For local setup and commands, see [`docs/development.md`](./docs/development.md).
 

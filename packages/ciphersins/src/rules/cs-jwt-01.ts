@@ -1,45 +1,24 @@
-import ts from "typescript";
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import { createFinding } from "./helpers/finding.js";
-import {
-	getJsonWebTokenBindings,
-	hasJsonWebTokenUsage,
-	isJsonWebTokenRequireCall,
-	matchesJsonWebTokenMethodCall,
-} from "./helpers/jsonwebtoken-bindings.js";
+import { prepareJsonWebTokenContext } from "./helpers/jsonwebtoken-rule-runner.js";
+import { matchesJsonWebTokenMethodCall } from "./helpers/jsonwebtoken-bindings.js";
 import { verifyCallSuppressesDecode } from "./helpers/jsonwebtoken-verify-scope.js";
 
 const RULE_ID = "CS-JWT-01";
 const MESSAGE =
 	"jwt.decode() used without jwt.verify() in the same function scope or a directly called helper.";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-JWT-01.md";
 
 export const csJwt01Rule: Rule = {
 	id: RULE_ID,
 	title: "JWT decode without verify",
 	severity: "high",
 	run(context: RuleContext): Finding[] {
-		const bindings = getJsonWebTokenBindings(context.sourceFile);
-		const calls = collectCallExpressions(context.sourceFile);
-
-		for (const call of calls) {
-			if (isJsonWebTokenRequireCall(call.expression)) {
-				bindings.hasInlineRequire = true;
-			}
-			if (
-				ts.isPropertyAccessExpression(call.expression) &&
-				isJsonWebTokenRequireCall(call.expression.expression)
-			) {
-				bindings.hasInlineRequire = true;
-			}
-		}
-
-		if (!hasJsonWebTokenUsage(bindings)) {
+		const prepared = prepareJsonWebTokenContext(context);
+		if (!prepared) {
 			return [];
 		}
 
+		const { bindings, calls } = prepared;
 		const verifyCalls = calls.filter((call) =>
 			matchesJsonWebTokenMethodCall(call, bindings, "verify"),
 		);
@@ -69,7 +48,6 @@ export const csJwt01Rule: Rule = {
 				createFinding({
 					rule: csJwt01Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

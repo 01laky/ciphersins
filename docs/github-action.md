@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: 01laky/CipherSins/.github/actions/scan@v1.3.1
+      - uses: 01laky/CipherSins/.github/actions/scan@v1.3.2
         with:
           path: ./src
           fail-on: high
@@ -37,7 +37,7 @@ jobs:
 | Input                   | Default                                | Description                                                                                     |
 | ----------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `path`                  | `.` (resolves to `./src` when present) | Comma-separated scan roots                                                                      |
-| `version`               | `1.3.1`                                | npm pin for `ciphersins`, or `workspace` for monorepo dev                                       |
+| `version`               | `1.3.2`                                | npm pin for `ciphersins`, or `workspace` for monorepo dev                                       |
 | `fail-on`               | `high`                                 | `low` \| `medium` \| `high` \| `critical` \| `none`                                             |
 | `format`                | `sarif`                                | `pretty` \| `json` \| `sarif`                                                                   |
 | `output`                | `ciphersins.sarif` / `.json`           | Output file path (empty = stdout)                                                               |
@@ -81,7 +81,7 @@ jobs:
   scan-app:
     steps:
       - uses: actions/checkout@v4
-      - uses: 01laky/CipherSins/.github/actions/scan@v1.3.1
+      - uses: 01laky/CipherSins/.github/actions/scan@v1.3.2
         with:
           path: src
           cwd: packages/app
@@ -127,7 +127,7 @@ When `fail-on` is set on the Action input, it **overrides** `failOn` from `ciphe
 ## Manual fallback
 
 ```yaml
-- run: npx ciphersins@1.3.1 scan ./src --format sarif --output ciphersins.sarif --fail-on high --no-color
+- run: npx ciphersins@1.3.2 scan ./src --format sarif --output ciphersins.sarif --fail-on high --no-color
 ```
 
 See [cli.md](./cli.md) for all CLI flags.

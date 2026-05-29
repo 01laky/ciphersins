@@ -1,6 +1,6 @@
 # Development
 
-Guide for working on CipherSins locally. Product spec: [`proposal.md`](./proposal.md).
+Guide for working on CipherSins locally. Living spec: [`scope.md`](./scope.md).
 
 ## Prerequisites
 
@@ -18,28 +18,50 @@ Git hooks strip AI co-author trailers from commit messages. See [`../CONTRIBUTIN
 
 ## Common commands
 
-| Command                             | Purpose                                                                                                                                   |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                                                                                             |
-| `npm run build`                     | Build publishable `ciphersins` package (engine + CLI)                                                                                     |
-| `npm test`                          | Vitest — CS-S01–S49, CS-JWT/JWT-OPT/CMP/RNG/HASH/INT, CS-CLI, CS-ACT, CS-REP, CS-RULE-CFG, CS-SUP, CS-AUDIT, CS-V131 (**4291** at v1.3.1) |
-| `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                                                                                              |
-| `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                                                                          |
-| `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                                                                                              |
-| `npm run generate:v131-tests`       | Regenerate auto-generated `CS-V131-*` exhaustive vitest suites from `scripts/generate-v131-tests.mjs`                                     |
-| `npm run format:fix`                | Apply Prettier (tabs)                                                                                                                     |
+| Command                             | Purpose                                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `npm run verify` or `pnpm verify`\* | format → typecheck → build → test → CLI smoke                                                          |
+| `npm run build`                     | Build publishable `ciphersins` package (engine + CLI)                                                  |
+| `npm test`                          | Vitest — unit, per-rule, integration, CLI, audit, and generated exhaustive suites (**7777** at v1.3.2) |
+| `npm run test:ci`                   | Same tests with coverage + JUnit (`junit.xml`) — used in GitHub Actions                                |
+| `pnpm exec ciphersins scan [path]`  | Run local CLI against a path (after install)                                                           |
+| `npm run smoke:cli`                 | Post-build CLI smoke via `scripts/smoke-cli.mjs`                                                       |
+| `npm run diagrams:build`            | Regenerate README SVGs from `docs/img/*.mmd`                                                           |
+| `npm run generate:tests`            | Regenerate auto-generated suites from `scripts/generate-exhaustive-tests.mjs` into `test/generated/`   |
+| `npm run format:fix`                | Apply Prettier (tabs)                                                                                  |
 
 \*Root scripts invoke **`npm run`** internally so **`npm run build`** works even when Corepack cannot launch nested **`pnpm`**.
+
+**`verify` vs `test:ci`:** `verify` is the local pre-push gate (format, typecheck, build, full test run, smoke CLI). `test:ci` is the CI reporter variant (coverage + JUnit) without format/typecheck/smoke — see `.github/workflows/ci.yml`.
 
 ## Package layout
 
 ```text
-packages/ciphersins/   npm package — scan engine + CLI (`import { scan } from "ciphersins"`, bin `ciphersins`)
-fixtures/              Rule bad/good samples (e.g. fixtures/cs-jwt-01/)
-test/fixtures/         Internal harness fixtures only
-docs/rules/            Per-rule documentation and index
-docs/img/              Mermaid sources + committed SVGs for README/docs
+packages/ciphersins/          npm package — scan engine + CLI
+  src/engine/fs-utils.ts        shared path existence / file kind helpers
+  src/shared/error-message.ts   consistent CLI error strings
+  src/rules/metadata.ts         RULE_CWE_TAGS for SARIF
+  src/rules/helpers/            jsonwebtoken-rule-runner, finding, bindings, …
+fixtures/                       Rule bad/good samples — see fixtures/README.md
+test/fixtures/                  Internal harness fixtures only
+test/generated/                 Auto-generated exhaustive tests (do not hand-edit)
+docs/rules/                     Per-rule documentation and index
+docs/img/                       Mermaid sources + committed SVGs
+docs/schema/                    ciphersins.config.schema.json
 ```
+
+## Test tiers
+
+| Tier                     | Typical paths                                                                           | What it covers                                                       |
+| ------------------------ | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| **Unit / helpers**       | `test/rules/*-helpers*.test.ts`, `test/rules/jwt-verify-options.test.ts`, …             | Binding resolution, option parsers, cost thresholds                  |
+| **Per-rule**             | `test/rules/cs-jwt-*.test.ts`, `test/rules/cs-hash-*.test.ts`, …                        | `fixtures/<rule-id>/{bad,good}/` finding counts                      |
+| **Integration**          | `test/rules/cross-rule-integration.test.ts`, `test/faq-overlap.test.ts`, overlap suites | Multi-rule interactions, overlap matrix                              |
+| **CLI**                  | `test/cli/*.test.ts`                                                                    | argv, config merge, formats, exit codes                              |
+| **Engine / audit**       | `test/audit/*.test.ts`, `test/scaffold.test.ts`                                         | resolve, parse, suppressions, reporting                              |
+| **Generated exhaustive** | `test/generated/*.test.ts`                                                              | JWT/HASH/ENC/CMP-RNG grids, fixture matrix, CLI/reporting expansions |
+
+Fixture matrix exceptions (known limitations / deliberate good findings): [`fixtures/exceptions.json`](../fixtures/exceptions.json).
 
 ## Scan defaults
 
@@ -49,42 +71,57 @@ When no path is passed:
 2. Include = `**/*.{ts,tsx,js,jsx}` and uppercase variants
 3. Exclude = `**/node_modules/**`, `**/dist/**`, `**/*.test.*`, `**/*.spec.*`
 
-Config file parsing is **implemented** — see [`ciphersins.config.example.json`](./ciphersins.config.example.json) and [`cli.md`](./cli.md).
+Config file parsing is **implemented** — see [`ciphersins.config.example.json`](./ciphersins.config.example.json), [`schema/ciphersins.config.schema.json`](./schema/ciphersins.config.schema.json), and [`cli.md`](./cli.md).
 
 ## Adding a rule
 
-Worked examples: **CS-JWT-01**, **CS-JWT-03**, **CS-CMP-01**, **CS-RNG-01**, **CS-HASH-01**, **CS-HASH-02**, **CS-ENC-01**, **CS-ENC-02**, **CS-DEC-01**, **CS-HASH-03**, **CS-HASH-04**, **CS-HASH-05**, **CS-ENC-03**, **CS-ENC-04**, **CS-JWT-05**, **CS-JWT-06**, **CS-RNG-02** in `packages/ciphersins/src/rules/`. Shared helpers: **`jwt-verify-options`** (JWT-02/03/04), **`jwt-sign-options`** (JWT-05/06), **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH-01/02/03/04/05), **`bcrypt-bindings`** / **`bcrypt-cost`** (HASH-02), **`crypto-cipher-bindings`** / **`cipher-literals`** (ENC-01/02/03/04, DEC-01, RNG-02), **`pbkdf2-iterations`** (HASH-03), **`scrypt-cost`** (HASH-04), **`argon2-bindings`** / **`argon2-params`** (HASH-05), **`weak-cipher-algorithms`** (ENC-03), **`ecb-cipher-algorithms`** (ENC-04), **`random-bytes-length`** (RNG-02), **`jsonwebtoken-bindings`** / **`jsonwebtoken-verify-scope`** (JWT-01).
+Worked examples: all nineteen rules in `packages/ciphersins/src/rules/`. Shared helpers include **`jsonwebtoken-rule-runner`** (JWT), **`jwt-verify-options`** / **`jwt-sign-options`**, **`auth-material-names`** (CMP/RNG), **`password-context`** (HASH), **`crypto-cipher-bindings`** / **`cipher-literals`** (ENC/DEC/RNG-02), **`pbkdf2-iterations`**, **`scrypt-cost`**, **`argon2-params`**, and others under `rules/helpers/`.
 
 1. Create `fixtures/<rule-id>/bad/` and `fixtures/<rule-id>/good/` with minimal samples
 2. Implement `Rule` in `packages/ciphersins/src/rules/` using AST analysis (no regex-only detection)
-3. Build findings with `createFinding()` in `packages/ciphersins/src/rules/helpers/finding.ts` for consistent line/column/snippet fields
-4. Register in `packages/ciphersins/src/rules/index.ts`
-5. Add `docs/rules/<RULE-ID>.md` and link from [`docs/rules/README.md`](./rules/README.md)
-6. Add vitest coverage in `test/rules/` with expected finding counts per fixture
-7. Update architecture diagrams in `docs/img/` if the rule changes the pipeline (`pnpm diagrams:build`)
+3. Build findings with `createFinding()` — `helpUrl` defaults via `ruleHelpUrl()`
+4. Add CWE tags in `rules/metadata.ts` if applicable
+5. Register in `packages/ciphersins/src/rules/index.ts`
+6. Add `docs/rules/<RULE-ID>.md` and link from [`docs/rules/README.md`](./rules/README.md)
+7. Add vitest coverage in `test/rules/` with expected finding counts per fixture
+8. Regenerate exhaustive tests if the matrix should cover new fixtures: `npm run generate:tests`
+9. Update architecture diagrams in `docs/img/` if the rule changes the pipeline (`pnpm diagrams:build`)
 
 Rule IDs follow `CS-<CATEGORY>-<NUMBER>` (e.g. `CS-JWT-01`).
 
-## v1.3.1 test expansion
+## Generated exhaustive tests (v1.3.2)
 
-Large edge-case suites use prefix **`CS-V131-*`** and are **auto-generated** — do not hand-edit files marked `Auto-generated by scripts/generate-v131-tests.mjs`.
+Large edge-case suites are **auto-generated** — do not hand-edit files under `test/generated/` or headers referencing `scripts/generate-exhaustive-tests.mjs`.
 
-| Path                               | Role                                                                                   |
-| ---------------------------------- | -------------------------------------------------------------------------------------- |
-| `scripts/generate-v131-tests.mjs`  | Generator for JWT/HASH/ENC/CMP-RNG/overlap/fixture-matrix/CLI/reporting suites         |
-| `test/helpers/v131-scan-source.ts` | Shared `scanSource()` helper with optional `allowCriticalIgnore` for suppression tests |
-| `test/rules/cs-v131-*.test.ts`     | Per-area exhaustive scan tests                                                         |
-| `test/cs-v131-*.test.ts`           | Fixture matrix, scan-engine, reporting                                                 |
+| Path                                    | Role                                                                           |
+| --------------------------------------- | ------------------------------------------------------------------------------ |
+| `scripts/generate-exhaustive-tests.mjs` | Generator for JWT/HASH/ENC/CMP-RNG/overlap/fixture-matrix/CLI/reporting suites |
+| `test/generated/`                       | Output vitest files (replaces v1.3.1 `test/rules/cs-v131-*.test.ts` layout)    |
+| `fixtures/exceptions.json`              | Matrix exceptions synced with generator                                        |
 
-After changing generator logic: `npm run generate:v131-tests && npm test`.
+After changing generator logic:
+
+```bash
+npm run generate:tests && npm test
+```
+
+### Migrating from v1.3.1 test paths
+
+| v1.3.1 (deprecated layout)         | v1.3.2                                                                 |
+| ---------------------------------- | ---------------------------------------------------------------------- |
+| `scripts/generate-v131-tests.mjs`  | `scripts/generate-exhaustive-tests.mjs`                                |
+| `npm run generate:v131-tests`      | `npm run generate:tests`                                               |
+| `test/rules/cs-v131-*.test.ts`     | `test/generated/*.test.ts`                                             |
+| `test/cs-v131-*.test.ts`           | `test/generated/` (consolidated)                                       |
+| `test/helpers/v131-scan-source.ts` | shared helpers under `test/helpers/` as referenced by generated suites |
 
 Export individual rules from `ciphersins` when isolated unit tests need `rule.run(context)`.
 
 ## Versioning
 
-- Repo version **1.0.0** — first stable release with npm publish workflow.
-- Prior phases: `0.9.1` = full config/suppressions; `0.9.0` = CLI JSON/SARIF/`--fail-on`; `0.8.0` = CS-JWT-03 + CS-JWT-04, **8/8 MVP**; earlier minors per [CHANGELOG](../CHANGELOG.md).
+- Repo version **1.3.2** — refactor release (no new rules); see [CHANGELOG](../CHANGELOG.md).
+- Prior: **1.3.1** exhaustive test harness; **1.3.0** seven new rules; **1.0.0** first npm publish with eight MVP rules.
 
 ## CI
 
-GitHub Actions runs `pnpm verify` on Node 20, 22, and 24 for every push/PR to `main`.
+GitHub Actions runs `pnpm verify` on Node 20, 22, and 24 for every push/PR to `main`. Release tags use `test:ci` via `release.yml`.

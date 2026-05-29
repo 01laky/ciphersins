@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { assertKnownRuleIds, parseRulesConfig } from "../rule-config.js";
 import { expandUserPath } from "../expand-user-path.js";
+import { errorMessage } from "../shared/error-message.js";
 import { isSeverity } from "../reporting/severity.js";
 import type { Severity } from "../types.js";
 
@@ -34,7 +35,7 @@ export function loadConfigFile(configPath: string): LoadedConfig {
 	try {
 		parsed = JSON.parse(raw);
 	} catch (error) {
-		const detail = error instanceof Error ? error.message : String(error);
+		const detail = errorMessage(error);
 		throw new Error(`invalid config (${configPath}): ${detail}`);
 	}
 

@@ -1,6 +1,5 @@
 import ts from "typescript";
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import {
 	expressionIsHardcodedSecretMaterial,
 	expressionIsSecureRandomIv,
@@ -17,8 +16,6 @@ import { createFinding } from "./helpers/finding.js";
 
 const MESSAGE =
 	"AES-GCM with a static or reused IV/nonce; generate a unique IV per encryption with randomBytes.";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-02.md";
 
 interface GcmCallEntry {
 	call: ts.CallExpression;
@@ -34,7 +31,7 @@ export const csEnc02Rule: Rule = {
 		const bindings = getCipherBindings(context.sourceFile);
 		const gcmCalls: GcmCallEntry[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			if (!matchesCipherMethodCall(call, bindings, "createCipheriv")) {
 				continue;
 			}
@@ -71,7 +68,6 @@ export const csEnc02Rule: Rule = {
 					createFinding({
 						rule: csEnc02Rule,
 						message: MESSAGE,
-						helpUrl: HELP_URL,
 						filePath: context.filePath,
 						sourceFile: context.sourceFile,
 						node: entry.call,

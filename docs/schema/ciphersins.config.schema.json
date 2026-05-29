@@ -1,0 +1,49 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://github.com/01laky/CipherSins/blob/main/docs/schema/ciphersins.config.schema.json",
+	"title": "CipherSins config",
+	"description": "Optional JSON config for ciphersins scan (ciphersins.config.json). CLI flags override these values.",
+	"type": "object",
+	"additionalProperties": false,
+	"properties": {
+		"include": {
+			"type": "array",
+			"items": { "type": "string", "minLength": 1 },
+			"description": "Glob patterns for files to scan"
+		},
+		"exclude": {
+			"type": "array",
+			"items": { "type": "string", "minLength": 1 },
+			"description": "Glob patterns to skip"
+		},
+		"failOn": {
+			"type": "string",
+			"enum": ["none", "low", "medium", "high", "critical"],
+			"description": "Exit 1 when findings at or above this severity exist (unless CLI --fail-on overrides)"
+		},
+		"only": {
+			"type": "array",
+			"items": {
+				"type": "string",
+				"pattern": "^CS-[A-Z]+-[0-9]{2}$"
+			},
+			"description": "Run only these rule IDs"
+		},
+		"ignore": {
+			"type": "array",
+			"items": {
+				"type": "string",
+				"pattern": "^CS-[A-Z]+-[0-9]{2}$"
+			},
+			"description": "Skip these rule IDs"
+		},
+		"rules": {
+			"type": "object",
+			"additionalProperties": {
+				"type": "string",
+				"enum": ["off", "low", "medium", "high", "critical", "warn", "error"]
+			},
+			"description": "Per-rule severity override (warn→medium, error→high) or off to disable"
+		}
+	}
+}

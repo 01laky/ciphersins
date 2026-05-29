@@ -3,10 +3,10 @@ import { describe, expect, it } from "vitest";
 import {
 	expressionIsLowPbkdf2IterationCount,
 	getPbkdf2IterationsArgument,
-	getHashBindingsForPbkdf2,
 	isTrackedPbkdf2Call,
 	PBKDF2_MIN_ITERATIONS,
 } from "../../packages/ciphersins/src/rules/helpers/pbkdf2-iterations.js";
+import { getHashBindings } from "../../packages/ciphersins/src/rules/helpers/hash-bindings.js";
 
 function parseSource(source: string, fileName = "sample.ts"): ts.SourceFile {
 	return ts.createSourceFile(
@@ -132,7 +132,7 @@ describe("pbkdf2 iteration helpers", () => {
 			"pbkdf2Sync('secret', 'salt', 1000, 32, 'sha256');",
 		].join("\n");
 		const sourceFile = parseSource(source);
-		const bindings = getHashBindingsForPbkdf2(sourceFile);
+		const bindings = getHashBindings(sourceFile);
 		const call = findCallByCalleeText(sourceFile, "pbkdf2Sync");
 
 		expect(isTrackedPbkdf2Call(call, bindings, "pbkdf2Sync")).toBe(true);
@@ -144,7 +144,7 @@ describe("pbkdf2 iteration helpers", () => {
 			"pbkdf2('secret', 'salt', 1000, 32, 'sha256', () => {});",
 		].join("\n");
 		const sourceFile = parseSource(source);
-		const bindings = getHashBindingsForPbkdf2(sourceFile);
+		const bindings = getHashBindings(sourceFile);
 		const call = findCallByCalleeText(sourceFile, "pbkdf2");
 
 		expect(isTrackedPbkdf2Call(call, bindings, "pbkdf2")).toBe(true);
@@ -156,7 +156,7 @@ describe("pbkdf2 iteration helpers", () => {
 			"crypto.pbkdf2Sync('secret', 'salt', 1000, 32, 'sha256');",
 		].join("\n");
 		const sourceFile = parseSource(source);
-		const bindings = getHashBindingsForPbkdf2(sourceFile);
+		const bindings = getHashBindings(sourceFile);
 		const call = findCallByCalleeText(sourceFile, "pbkdf2Sync");
 
 		expect(isTrackedPbkdf2Call(call, bindings, "pbkdf2Sync")).toBe(true);
@@ -206,7 +206,7 @@ describe("pbkdf2 iteration helpers", () => {
 			"pbkdf2Sync('secret', 'salt', 1000, 32, 'sha256');",
 		].join("\n");
 		const sourceFile = parseSource(source);
-		const bindings = getHashBindingsForPbkdf2(sourceFile);
+		const bindings = getHashBindings(sourceFile);
 		const call = findCallByCalleeText(sourceFile, "pbkdf2Sync");
 
 		expect(isTrackedPbkdf2Call(call, bindings, "pbkdf2Sync")).toBe(true);

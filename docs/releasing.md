@@ -91,8 +91,8 @@ npm publish --access public   # in packages/ciphersins
 After npm package is live:
 
 ```bash
-git tag v1.0.2
-git push origin v1.0.2
+git tag v1.3.2
+git push origin v1.3.2
 ```
 
 The [release workflow](../.github/workflows/release.yml) on tag `v*.*.*`:
@@ -101,7 +101,7 @@ The [release workflow](../.github/workflows/release.yml) on tag `v*.*.*`:
 2. Runs `pack:check`
 3. Creates a GitHub Release with auto-generated notes
 
-Tag must match package version (e.g. tag `v1.1.0` → package version `1.1.0`).
+Tag must match package version (e.g. tag `v1.3.2` → package version `1.3.2`).
 
 ## Publishing the GitHub Action
 
@@ -111,14 +111,14 @@ The composite action lives at `.github/actions/scan/`. It is versioned by **git 
 
 | Tag      | Purpose                                                 |
 | -------- | ------------------------------------------------------- |
-| `v1.1.0` | Exact semver pin — `uses: …/scan@v1.1.0`                |
+| `v1.3.2` | Exact semver pin — `uses: …/scan@v1.3.2`                |
 | `v1`     | Floating major — `uses: …/scan@v1` (move on each minor) |
 
 After npm publish:
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag v1.3.2
+git push origin v1.3.2
 git tag -f v1
 git push origin v1 --force
 ```
@@ -127,7 +127,7 @@ git push origin v1 --force
 
 1. Merge release to `main`, CI green
 2. `npm run publish:npm` (requires `--otp=…` with token auth)
-3. Push tag `v1.1.0` → triggers `release.yml`
+3. Push tag `v1.3.2` → triggers `release.yml`
 4. Update floating tag `v1` if applicable
 
 The Action installs `ciphersins` from npm at runtime. Bump the Action default `version` input when publishing a new npm release.

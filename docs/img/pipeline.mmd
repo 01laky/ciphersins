@@ -27,7 +27,7 @@ flowchart TB
 	subgraph RULES["Rule engine"]
 		direction TB
 		REG["allRules · 19 rules"]
-		CTX["createRuleContext() · frozen"]
+		CTX["createRuleContext() · frozen · lazy call cache"]
 		RUN["runRules() · per file · try/catch"]
 		SUP["applySuppressions()"]
 		REG --> RUN
@@ -45,12 +45,14 @@ flowchart TB
 		SORT --> SARIF
 	end
 
-	subgraph QA["Quality gate · v1.3.1"]
+	subgraph QA["Quality gate · v1.3.2"]
 		direction TB
-		GEN["generate-v131-tests.mjs"]
-		V131["CS-V131-* suites · 4291 vitest total"]
+		GEN["generate-exhaustive-tests.mjs"]
+		GENOUT["test/generated/ · 7777 vitest total"]
+		CACHE["RuleContext.getCallExpressions() cache"]
 		FIX["fixture matrix · overlap · suppressions · SARIF/json"]
-		GEN --> V131 --> FIX
+		GEN --> GENOUT --> FIX
+		CACHE -.-> RUN
 	end
 
 	subgraph OUTPUT["CLI output"]
@@ -74,7 +76,7 @@ flowchart TB
 	SARIF --> SOUT
 	SUM --> PRETTY
 	SUM --> FAIL
-	RUN -.-> V131
+	RUN -.-> GENOUT
 
 	classDef input fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#e0f2fe
 	classDef resolve fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ede9fe
@@ -89,6 +91,6 @@ flowchart TB
 	class REG,CTX,RUN,SUP,FINDINGS rules
 	class SORT,JSON,SARIF report
 	class SUM,PRETTY,JOUT,SOUT,FAIL output
-	class GEN,V131,FIX qa
+	class GEN,GENOUT,CACHE,FIX qa
 
 	classDef qa fill:#14532d,stroke:#4ade80,stroke-width:2px,color:#dcfce7

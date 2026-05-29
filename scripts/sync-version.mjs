@@ -4,6 +4,18 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const rootDir = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+const version = syncPackageVersion("packages/ciphersins");
+
+patchFile(
+	path.join(rootDir, ".github/actions/scan/action.yml"),
+	/default: "1\.3\.1"/,
+	`default: "${version}"`,
+);
+patchFile(
+	path.join(rootDir, ".github/actions/scan/run.sh"),
+	/INPUT_VERSION="\$\{INPUT_VERSION:-1\.1\.0\}"/,
+	`INPUT_VERSION="\${INPUT_VERSION:-${version}}"`,
+);
 
 function syncPackageVersion(relativePath) {
 	const packageJsonPath = path.join(rootDir, relativePath, "package.json");
@@ -16,4 +28,11 @@ function syncPackageVersion(relativePath) {
 	return packageJson.version;
 }
 
-syncPackageVersion("packages/ciphersins");
+function patchFile(filePath, pattern, replacement) {
+	if (!fs.existsSync(filePath)) return;
+	const content = fs.readFileSync(filePath, "utf8");
+	if (!pattern.test(content)) return;
+	fs.writeFileSync(filePath, content.replace(pattern, replacement));
+}
+
+console.log(`sync-version: ${version}`);

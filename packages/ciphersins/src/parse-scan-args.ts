@@ -1,6 +1,7 @@
 import { parseArgs } from "node:util";
 import { assertKnownRuleIds } from "./rule-config.js";
 import { isSeverity } from "./reporting/severity.js";
+import { errorMessage } from "./shared/error-message.js";
 import type { Severity } from "./types.js";
 
 export type OutputFormat = "pretty" | "json" | "sarif";
@@ -180,8 +181,7 @@ export function parseScanArgs(args: string[]): ParsedScanArgs {
 				);
 			}
 		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			return { ok: false, message };
+			return { ok: false, message: errorMessage(error) };
 		}
 
 		const overlap = findOnlyIgnoreOverlap(only, ignore);
@@ -220,8 +220,7 @@ export function parseScanArgs(args: string[]): ParsedScanArgs {
 			strictConfig: values["strict-config"] ?? false,
 		};
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		return { ok: false, message };
+		return { ok: false, message: errorMessage(error) };
 	}
 }
 

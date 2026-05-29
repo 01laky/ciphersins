@@ -1,5 +1,4 @@
 import type { Finding, Rule, RuleContext } from "../types.js";
-import { collectCallExpressions } from "./helpers/collect-call-expressions.js";
 import { expressionResolvesToHardcodedSecretMaterial } from "./helpers/cipher-literals.js";
 import {
 	getCipherBindings,
@@ -11,8 +10,6 @@ import { createFinding } from "./helpers/finding.js";
 
 const MESSAGE =
 	"Hardcoded key or IV passed to createCipheriv/createDecipheriv; use environment variables, a KMS, or randomBytes for IVs.";
-const HELP_URL =
-	"https://github.com/01laky/CipherSins/blob/main/docs/rules/CS-ENC-01.md";
 
 export const csEnc01Rule: Rule = {
 	id: "CS-ENC-01",
@@ -22,7 +19,7 @@ export const csEnc01Rule: Rule = {
 		const bindings = getCipherBindings(context.sourceFile);
 		const findings: Finding[] = [];
 
-		for (const call of collectCallExpressions(context.sourceFile)) {
+		for (const call of context.getCallExpressions()) {
 			const isCipheriv = matchesCipherMethodCall(
 				call,
 				bindings,
@@ -56,7 +53,6 @@ export const csEnc01Rule: Rule = {
 				createFinding({
 					rule: csEnc01Rule,
 					message: MESSAGE,
-					helpUrl: HELP_URL,
 					filePath: context.filePath,
 					sourceFile: context.sourceFile,
 					node: call,

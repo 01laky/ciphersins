@@ -510,19 +510,21 @@ describe("CS-S46 scan metadata consistency", () => {
 });
 
 describe("CS-S47 edge fixtures with all rules active", () => {
-	it("CS-S47 scans edge-case harness with only CBC static IV ENC-01 finding", async () => {
+	it("CS-S47 scans edge-case harness with CBC static IV ENC-01 and JWT sign no expiry", async () => {
 		const result = await scan({ paths: [edgeDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(1);
-		expect(result.findings[0]?.ruleId).toBe("CS-ENC-01");
+		expect(result.findings).toHaveLength(2);
+		expect(result.findings.some((f) => f.ruleId === "CS-ENC-01")).toBe(true);
+		expect(result.findings.some((f) => f.ruleId === "CS-JWT-05")).toBe(true);
 		expect(result.scannedFiles.length).toBeGreaterThan(0);
 	});
 
-	it("CS-S47b edge-case harness file count stable with one ENC-01 finding", async () => {
+	it("CS-S47b edge-case harness file count stable with ENC-01 and JWT-05 findings", async () => {
 		const result = await scan({ paths: [edgeDir], cwd: rootDir });
 
-		expect(result.scannedFiles).toHaveLength(8);
-		expect(result.findings).toHaveLength(1);
-		expect(result.findings[0]?.ruleId).toBe("CS-ENC-01");
+		expect(result.scannedFiles).toHaveLength(9);
+		expect(result.findings).toHaveLength(2);
+		expect(result.findings.some((f) => f.ruleId === "CS-ENC-01")).toBe(true);
+		expect(result.findings.some((f) => f.ruleId === "CS-JWT-05")).toBe(true);
 	});
 });

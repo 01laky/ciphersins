@@ -99,13 +99,10 @@ describe("cross-rule integration", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toHaveLength(6);
+		expect(result.findings).toHaveLength(2);
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
 		).toHaveLength(1);
-		expect(
-			result.findings.filter((f) => f.ruleId === "CS-JWT-05"),
-		).toHaveLength(4);
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-RNG-01"),
 		).toHaveLength(1);
@@ -337,7 +334,7 @@ describe("cross-rule integration", () => {
 			cwd: rootDir,
 		});
 
-		expect(result.findings).toHaveLength(6);
+		expect(result.findings).toHaveLength(2);
 		expect(result.scannedFiles).toHaveLength(176);
 	});
 
@@ -498,7 +495,7 @@ describe("cross-rule integration", () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
 		expect(result.scannedFiles).toHaveLength(176);
-		expect(result.findings).toHaveLength(6);
+		expect(result.findings).toHaveLength(2);
 	});
 
 	it("CS-INT-31 verify-none-and-ignore-expiration.ts yields JWT-03 and JWT-04 on same call", async () => {
@@ -604,10 +601,11 @@ describe("cross-rule integration", () => {
 		expect(ruleIds.has("CS-JWT-05")).toBe(true);
 	});
 
-	it("CS-INT-40 edge-cases harness scans with CBC static IV ENC-01 only", async () => {
+	it("CS-INT-40 edge-cases harness scans with CBC static IV ENC-01 and JWT-05", async () => {
 		const result = await scan({ paths: [edgeCasesDir], cwd: rootDir });
 
-		expect(result.findings).toHaveLength(1);
-		expect(result.findings[0]?.ruleId).toBe("CS-ENC-01");
+		expect(result.findings).toHaveLength(2);
+		expect(result.findings.some((f) => f.ruleId === "CS-ENC-01")).toBe(true);
+		expect(result.findings.some((f) => f.ruleId === "CS-JWT-05")).toBe(true);
 	});
 });

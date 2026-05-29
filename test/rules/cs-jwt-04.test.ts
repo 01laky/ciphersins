@@ -983,16 +983,13 @@ jwt.verify(token, secret, { ignoreExpiration: true });
 		).toMatchSnapshot();
 	});
 
-	it("CS-JWT-04-102 all eight good fixture directories yield HASH-02 and JWT-05 only", async () => {
+	it("CS-JWT-04-102 all eight good fixture directories yield HASH-02 only", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.findings).toHaveLength(5);
+		expect(result.findings).toHaveLength(1);
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
 		).toHaveLength(1);
-		expect(
-			result.findings.filter((f) => f.ruleId === "CS-JWT-05"),
-		).toHaveLength(4);
 	});
 
 	it("CS-JWT-04-103 verify-in-dead-code-ignore-expiration.ts still flags unreachable verify", async () => {

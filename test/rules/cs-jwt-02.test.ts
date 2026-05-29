@@ -469,9 +469,13 @@ describe("CS-JWT-02 per-file good fixtures", () => {
 		expect(result.findings).toEqual([]);
 	});
 
-	it("CS-JWT-02-45 sign-only.ts yields JWT-05 only not JWT-02", async () => {
+	it("CS-JWT-02-45 sign-no-expiry yields JWT-05 only not JWT-02", async () => {
+		const file = path.join(
+			rootDir,
+			"fixtures/cs-jwt-05/bad/sign-no-expiry.ts",
+		);
 		const result = await scan({
-			paths: [fixturePath("good", "sign-only.ts")],
+			paths: [file],
 			cwd: rootDir,
 		});
 

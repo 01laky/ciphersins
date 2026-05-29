@@ -951,16 +951,13 @@ jwt.sign({ sub: "u" }, secret, { algorithm: "HS256" });
 		expect(filterByRule(result.findings, "CS-JWT-03")).toEqual([]);
 	});
 
-	it("CS-JWT-03-93 all eight good fixture directories yield HASH-02 and JWT-05 only", async () => {
+	it("CS-JWT-03-93 all eight good fixture directories yield HASH-02 only", async () => {
 		const result = await scan({ paths: allGoodDirs, cwd: rootDir });
 
-		expect(result.findings).toHaveLength(5);
+		expect(result.findings).toHaveLength(1);
 		expect(
 			result.findings.filter((f) => f.ruleId === "CS-HASH-02"),
 		).toHaveLength(1);
-		expect(
-			result.findings.filter((f) => f.ruleId === "CS-JWT-05"),
-		).toHaveLength(4);
 	});
 
 	it("CS-JWT-03-94 CLI bad scan matches verify-named-import-none.ts path format", () => {
